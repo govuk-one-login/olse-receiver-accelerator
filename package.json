@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "A reference repository to help accelerate the development of a GOV.UK One Login Signal Exchange Receiver",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node esbuild.config.mjs",
     "prepare": "husky",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
@@ -26,6 +26,7 @@
     "@tsconfig/node-ts": "^23.6.1",
     "@tsconfig/node22": "^22.0.2",
     "@types/node": "^24.0.3",
+    "esbuild": "^0.25.5",
     "eslint": "^9.29.0",
     "eslint-config-prettier": "^10.1.5",
     "husky": "^9.1.7",
