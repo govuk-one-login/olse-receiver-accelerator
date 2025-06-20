@@ -11,7 +11,7 @@
     "resolveJsonModule": true /* Enable importing .json files. */,
     "moduleDetection": "force" /* Control what method is used to detect module-format JS files. */,
     "isolatedModules": true /* Ensure that each file can be safely transpiled without relying on other imports. */,
-    "verbatimModuleSyntax": true /* Do not transform or elide any imports or exports not marked as type-only, ensuring they are written in the output file's format based on the 'module' setting. */,
+    "verbatimModuleSyntax": false /* Do not transform or elide any imports or exports not marked as type-only, ensuring they are written in the output file's format based on the 'module' setting. */,
 
     /* Strictness*/
     "strict": true /* Enable all strict type-checking options. */,
