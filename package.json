@@ -7,8 +7,8 @@
     "prepare": "husky",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "format": "prettier --write",
-    "format:check": "prettier --check",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
     "type-check": "tsc --noEmit",
     "test": "jest --config tests/unit/jest.config.ts"
   },
@@ -40,8 +40,8 @@
   },
   "lint-staged": {
     "**/*.ts": [
-      "eslint --fix",
-      "prettier --write"
+      "npm run lint:fix",
+      "npm run format:fix"
     ]
   },
   "engines": {
