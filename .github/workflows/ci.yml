@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  validate-build:
+  Basic-Checks:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
