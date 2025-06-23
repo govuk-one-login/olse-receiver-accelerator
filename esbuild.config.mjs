@@ -40,4 +40,4 @@ async function build() {
 }
 
 // --- Run the build ---
-build()
+build().then(() => console.log('finished build'))
