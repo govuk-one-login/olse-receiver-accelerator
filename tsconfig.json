@@ -42,7 +42,8 @@
     "**/*.test.ts",
     "**/*.spec.ts",
     "tests/unit/jest.config.ts",
-    "esbuild.config.mjs"
+    "esbuild.config.mjs",
+    "eslint.config.mjs"
   ],
   "exclude": ["node_modules", "dist"]
 }
