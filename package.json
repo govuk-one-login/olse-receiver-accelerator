@@ -3,14 +3,17 @@
   "version": "0.0.1",
   "description": "A reference repository to help accelerate the development of a GOV.UK One Login Signal Exchange Receiver",
   "scripts": {
-    "build": "node esbuild.config.mjs",
     "prepare": "husky",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "type-check": "tsc --noEmit",
-    "test": "jest --config tests/unit/jest.config.ts"
+    "build": "node esbuild.config.mjs",
+    "watch:build": "node esbuild.config.mjs --watch",
+    "serve": "nodemon -L -V dist/index.js",
+    "dev": "concurrently \"npm:watch:build\" \"npm:serve\"",
+    "test:unit": "jest --config tests/unit/jest.config.ts"
   },
   "repository": {
     "type": "git",
@@ -24,14 +27,17 @@
   "homepage": "https://github.com/govuk-one-login/olse-receiver-accelerator#readme",
   "devDependencies": {
     "@eslint/js": "^9.29.0",
+    "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.3",
+    "concurrently": "^9.2.0",
     "esbuild": "^0.25.5",
     "eslint": "^9.29.0",
     "eslint-config-prettier": "^10.1.5",
     "husky": "^9.1.7",
     "jest": "^30.0.0",
     "lint-staged": "^16.1.2",
+    "nodemon": "^3.1.10",
     "prettier": "3.5.3",
     "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
@@ -46,5 +52,8 @@
   },
   "engines": {
     "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
   }
 }
