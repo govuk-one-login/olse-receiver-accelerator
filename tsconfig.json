@@ -37,10 +37,12 @@
     "allowUnusedLabels": false /* Disable error reporting for unused labels. */,
     "allowUnreachableCode": false /* Disable error reporting for unreachable code. */
   },
-  "extends": [
-    "@tsconfig/node22/tsconfig.json",
-    "@tsconfig/node-ts/tsconfig.json"
+  "include": [
+    "**/*.ts",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "tests/unit/jest.config.ts",
+    "esbuild.config.mjs"
   ],
-  "include": ["**/*.ts"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
+  "exclude": ["node_modules", "dist"]
 }
