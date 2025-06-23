@@ -4,6 +4,5 @@ A reference repository to help accelerate the development of a GOV.UK One Login 
 
 # Commnads
 
-
 - `npm run dev`: Run a live server that reloads when changes are made
 - `npm run test:unit`: Run the unit tests
