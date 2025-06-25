@@ -9,11 +9,11 @@
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "type-check": "tsc --noEmit",
-    "build": "node esbuild.config.mjs",
-    "watch:build": "node esbuild.config.mjs --watch",
-    "serve": "nodemon -L -V dist/index.js",
-    "dev": "concurrently \"npm:watch:build\" \"npm:serve\"",
-    "test:unit": "jest --config tests/unit/jest.config.ts"
+    "container:build": "CONTAINER=true node esbuild.config.mjs",
+    "container:watch:build": "npm run container:build -- --watch",
+    "container:serve": "nodemon -L -V dist/index.js",
+    "container:dev": "concurrently \"npm:container:watch:build\" \"npm:container:serve\"",
+    "container:test:unit": "jest --config tests/unit/jest.config.ts"
   },
   "repository": {
     "type": "git",
