@@ -9,6 +9,7 @@ on:
 
 jobs:
   Run-CI-Checks:
+    name: Run CI check
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -31,3 +32,21 @@ jobs:
 
       - name: Type Check
         run: npm run type-check
+
+  Run-Vendor-Checks:
+    name: Vendor
+    needs: [Run-CI-Checks]
+    permissions:
+      id-token: write
+      contents: read
+    secrets: inherit
+    uses: ./.github/workflows/vendor.yml
+
+  Run-Implementor-Checks:
+    name: Implementor
+    needs: [Run-CI-Checks]
+    permissions:
+      id-token: write
+      contents: read
+    secrets: inherit
+    uses: ./.github/workflows/implementor.yml
