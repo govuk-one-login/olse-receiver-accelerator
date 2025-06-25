@@ -34,7 +34,7 @@ jobs:
         run: npm run type-check
 
   Run-Vendor-Checks:
-    name: Run Vendor checks
+    name: Vendor
     needs: [Run-CI-Checks]
     permissions:
       id-token: write
@@ -43,7 +43,7 @@ jobs:
     uses: ./.github/workflows/vendor.yml
 
   Run-Implementor-Checks:
-    name: Run Implementor checks
+    name: Implementor
     needs: [Run-CI-Checks]
     permissions:
       id-token: write
