@@ -25,5 +25,5 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # - name: Run implementor tests
-      #   run: npm run test
+      - name: Run implementor unit tests
+        run: npm run test
