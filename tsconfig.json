@@ -41,7 +41,7 @@
     "**/*.ts",
     "**/*.test.ts",
     "**/*.spec.ts",
-    "tests/unit/jest.config.ts",
+    "tests/vendor/unit/jest.config.ts",
     "esbuild.config.mjs",
     "eslint.config.mjs"
   ],

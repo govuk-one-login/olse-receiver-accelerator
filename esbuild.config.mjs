@@ -1,27 +1,35 @@
 // esbuild.config.js
 import esbuild from 'esbuild'
 
+console.log(process.env['CONTAINER'])
+
+const baseEsBuildConfig = {
+  bundle: true,
+  minify: false,
+  platform: 'node',
+  sourcemap: true,
+  target: 'node20',
+  format: 'cjs',
+  treeShaking: true,
+  loader: {
+    '.ts': 'ts' // Handles .ts files
+  },
+  logLevel: 'info'
+}
+
+if (process.env['CONTAINER'] === 'true') {
+  console.log('Running esbuild for container')
+}
+
+const finalConfig = {
+  ...baseEsBuildConfig,
+  entryPoints: ['examples/express.ts'],
+  outfile: 'dist/express.js'
+}
 // --- Build Script ---
 async function build() {
   try {
-    const context = await esbuild.context({
-      entryPoints: ['src/index.ts'],
-      // If you have multiple entry points and want them as separate files, use `outdir`
-      // outdir: outdir,
-      // If you have a single entry point or want to bundle everything into one file, use `outfile`
-      outfile: 'dist/index.js',
-      bundle: true,
-      minify: false,
-      platform: 'node',
-      sourcemap: true,
-      target: 'node20',
-      format: 'cjs',
-      treeShaking: true,
-      loader: {
-        '.ts': 'ts' // Handles .ts files
-      },
-      logLevel: 'info' // 'silent', 'verbose', 'info', 'warning', 'error',
-    })
+    const context = await esbuild.context(finalConfig)
 
     if (process.argv.includes('--watch')) {
       // Watch mode
