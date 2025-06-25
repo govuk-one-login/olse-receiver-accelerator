@@ -12,7 +12,6 @@ updates:
     target-branch: main
     labels:
       - direct-dependency-update
-      - dependencies
       - javascript
     ignore:
       - dependency-name: 'node'
@@ -31,7 +30,7 @@ updates:
     target-branch: main
     labels:
       - direct-dependency-update
-      - dependencies
+      - docker
     commit-message:
       prefix: BAU
 
@@ -46,7 +45,6 @@ updates:
     target-branch: main
     labels:
       - direct-dependency-update
-      - dependencies
       - github_actions
     commit-message:
       prefix: BAU

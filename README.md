@@ -4,5 +4,5 @@ A reference repository to help accelerate the development of a GOV.UK One Login 
 
 # Commands
 
-- `npm run dev`: Run a live server that reloads when changes are made
-- `npm run test:unit`: Run the unit tests
+- `npm run container:dev`: Run a live expressJS server that reloads when changes are made
+- `npm run container:test:unit`: Run the unit tests
