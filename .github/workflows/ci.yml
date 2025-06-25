@@ -31,3 +31,21 @@ jobs:
 
       - name: Type Check
         run: npm run type-check
+
+  Run-Vendor-Checks:
+    name: Run Vendor checks
+    needs: [Run-CI-Checks]
+    permissions:
+      id-token: write
+      contents: read
+    secrets: inherit
+    uses: ./.github/workflows/vendor.yml
+
+  Run-Implementor-Checks:
+    name: Run Implementor checks
+    needs: [Run-CI-Checks]
+    permissions:
+      id-token: write
+      contents: read
+    secrets: inherit
+    uses: ./.github/workflows/implementor.yml
