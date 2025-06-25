@@ -1,17 +1,19 @@
 import { JestConfigWithTsJest } from 'ts-jest'
 
+const containerBasePath = 'examples/express-container'
+
 const config: JestConfigWithTsJest = {
   verbose: true,
-  rootDir: '../../',
-  testMatch: ['<rootDir>/src/**/*.test.ts'],
+  rootDir: '../../../',
+  testMatch: [`<rootDir>/${containerBasePath}/**/*.test.ts`],
   preset: 'ts-jest',
   testEnvironment: 'node',
   collectCoverageFrom: [
-    'src/**/*.ts',
+    `${containerBasePath}/**/*.ts`,
     // Exclude test files from coverage
-    '!src/**/*.test.ts'
+    `!${containerBasePath}/**/*.test.ts`
   ],
-  coverageDirectory: 'coverage',
+  coverageDirectory: `coverage/${containerBasePath}`,
   collectCoverage: true,
   coverageReporters: ['text']
 }
