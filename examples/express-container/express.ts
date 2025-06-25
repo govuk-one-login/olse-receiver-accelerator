@@ -6,7 +6,7 @@ const app = express()
 const v1Router = express()
 
 v1Router.get('/:id', (req: Request, res: Response) => {
-  res.json({ userId: req.params['id'] })
+  res.json({ id: req.params['id'] })
 })
 
 app.use('/v1', v1Router)
