@@ -1,8 +1,6 @@
 // esbuild.config.js
 import esbuild from 'esbuild'
 
-console.log(process.env['CONTAINER'])
-
 const baseEsBuildConfig = {
   bundle: true,
   minify: false,
@@ -23,8 +21,8 @@ if (process.env['CONTAINER'] === 'true') {
 
 const finalConfig = {
   ...baseEsBuildConfig,
-  entryPoints: ['examples/express.ts'],
-  outfile: 'dist/express.js'
+  entryPoints: ['examples/express-container/server.ts'],
+  outfile: 'dist/server.js'
 }
 // --- Build Script ---
 async function build() {
