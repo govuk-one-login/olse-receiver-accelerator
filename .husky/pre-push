@@ -1,1 +1,1 @@
-npm run container:test:unit
+npm run vendor:test

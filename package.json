@@ -11,9 +11,9 @@
     "type-check": "tsc --noEmit",
     "container:build": "CONTAINER=true node esbuild.config.mjs",
     "container:watch:build": "npm run container:build -- --watch",
-    "container:serve": "nodemon -L -V dist/index.js",
+    "container:serve": "nodemon -L -V dist/server.js",
     "container:dev": "concurrently \"npm:container:watch:build\" \"npm:container:serve\"",
-    "container:test:unit": "jest --config tests/vendor/unit/jest.config.ts",
+    "vendor:test": "jest --config tests/vendor/jest.config.ts",
     "test:unit": "jest --config tests/implementor/unit/jest.config.ts"
   },
   "repository": {
@@ -31,6 +31,7 @@
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.3",
+    "@types/supertest": "^6.0.3",
     "concurrently": "^9.2.0",
     "esbuild": "^0.25.5",
     "eslint": "^9.29.0",
@@ -40,6 +41,7 @@
     "lint-staged": "^16.1.2",
     "nodemon": "^3.1.10",
     "prettier": "3.5.3",
+    "supertest": "^7.1.1",
     "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
