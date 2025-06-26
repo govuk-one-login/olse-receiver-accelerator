@@ -5,7 +5,7 @@ const vendorBasePath = '**/vendor'
 
 const config: JestConfigWithTsJest = {
   verbose: true,
-  rootDir: '../../../',
+  rootDir: '../../',
   testMatch: [
     `<rootDir>/${containerBasePath}/**/*.test.ts`,
     `<rootDir>/${vendorBasePath}/**/*.test.ts`
@@ -18,7 +18,9 @@ const config: JestConfigWithTsJest = {
     // Exclude test files from coverage
     `!${containerBasePath}/**/*.test.ts`,
     `!${vendorBasePath}/**/*.test.ts`,
-    '!**/*/jest.config.ts'
+    '!**/*/jest.config.ts',
+    // exclude server.ts
+    `!${containerBasePath}/server.ts`
   ],
   coverageDirectory: `coverage/vendor`,
   collectCoverage: true,
