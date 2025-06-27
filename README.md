@@ -21,3 +21,11 @@ npm run prepare # setup pre-commit hooks
 # Issues, feature requests and contributions
 
 Feel free to raise issues, feature request and contribute using the standard Github best practices. If you are a user of GOV.UK One Login, then you can also talk to your engagement manager.
+
+# For Signal Exchange Team
+
+Follow these guidelines when making changes to the repository
+
+1. Adhere to the detailed docs above
+2. use [semantic versioning](https://semver.org/)
+3. Make appropriate updates to the changelog
