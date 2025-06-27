@@ -20,7 +20,7 @@ This repository provides two approaches to develop with the receiver while adher
 
 ## Container
 
-Under the `examples` directory, we provide a sample [ExpressJS](https://expressjs.com/) implementation of the receiver. This is designed to be an *"environment agnostic"* implementation of the receiver by deploying the ExpressJS server in a docker container. 
+Under the `examples` directory, we provide a sample [ExpressJS](https://expressjs.com/) implementation of the receiver. This is designed to be an _"environment agnostic"_ implementation of the receiver by deploying the ExpressJS server in a docker container.
 
 ## AWS native
 
@@ -30,16 +30,16 @@ Under the `examples` directory, there is also an example implementation using AW
 
 If the approaches above do not meet your needs, you can always use the examples to drive the development of an approach that meets you technology stack. Just ensure that you adhere to [RFC 8935](https://www.rfc-editor.org/rfc/rfc8935.html) as well as the standard setout by the Signal Exchange Team.
 
-# Development guidelines 
+# Development guidelines
 
-We recommend that you create a [fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks) of this repository and then extend the receiver to suit your needs. The forking model allows you to use the existing code that the Signal Exchange Team wrote whilst allowing you add functionality specific to your needs. If the Signal Exchange Team releases an update to the repository, you can [sync the fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork)  to get the latest changes using the Github UI or git.
+We recommend that you create a [fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks) of this repository and then extend the receiver to suit your needs. The forking model allows you to use the existing code that the Signal Exchange Team wrote whilst allowing you add functionality specific to your needs. If the Signal Exchange Team releases an update to the repository, you can [sync the fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork) to get the latest changes using the Github UI or git.
 
 ## Directory Structure
 
 Any directories
 
-- `examples/*` - used to store examples 
-- `*/vendor/*` - common and useful code 
+- `examples/*` - used to store examples
+- `*/vendor/*` - common and useful code
 
 Are directories that should not be modified as they are maintained by the Signal Exchange Team. When an update is released, files within these directories will be modified so when you attempt to sync the repository, you should not run into any merge conflicts
 

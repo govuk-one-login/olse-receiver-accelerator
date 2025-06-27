@@ -9,9 +9,9 @@ A reference repository to help accelerate the development of a GOV.UK One Login 
 Ensure that all your commits are [signed](https://docs.github.com/en/authentication/managing-commit-signature-verification) and that you use the node version as specified in `package.json` and `.nvmrc`
 
 ```bash
-nvm use # sets the correct node version using [nvm](https://github.com/nvm-sh/nvm) 
+nvm use # sets the correct node version using [nvm](https://github.com/nvm-sh/nvm)
 npm install # install npm dependencies
-npm run prepare # setup pre-commit hooks 
+npm run prepare # setup pre-commit hooks
 ```
 
 - `npm run container:dev`: Run a live expressJS server that reloads when changes are made
