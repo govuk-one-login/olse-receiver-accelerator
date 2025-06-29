@@ -27,10 +27,12 @@
   },
   "homepage": "https://github.com/govuk-one-login/olse-receiver-accelerator#readme",
   "devDependencies": {
+    "@babel/core": "^7.27.7",
     "@eslint/js": "^9.29.0",
+    "@types/babel__core": "^7.20.5",
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
-    "@types/node": "^24.0.3",
+    "@types/node": "^24.0.4",
     "concurrently": "^9.2.0",
     "esbuild": "^0.25.5",
     "eslint": "^9.29.0",
@@ -55,6 +57,9 @@
     "node": ">=22.0.0"
   },
   "dependencies": {
-    "express": "^5.1.0"
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "express": "^5.1.0",
+    "jose": "^6.0.11"
   }
 }

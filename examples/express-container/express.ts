@@ -1,16 +1,12 @@
-import express, { Request, Response } from 'express'
+import express from "express";
+import routes from "./routes";
 
-const port = process.env['PORT'] ?? 3000
+const port = process.env['PORT'] ?? 3000;
+const app = express();
 
-const app = express()
-const v1Router = express()
-
-v1Router.get('/:id', (req: Request, res: Response) => {
-  res.json({ id: req.params['id'] })
-})
-
-app.use('/v1', v1Router)
+app.use(express.json());
+app.use(routes);
 
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port.toString()}`)
-})
+  console.log(`Server running at http://localhost:${port.toString()}`);
+});
