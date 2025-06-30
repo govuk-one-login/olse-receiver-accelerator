@@ -43,7 +43,8 @@
     "**/*.spec.ts",
     "tests/vendor/jest.config.ts",
     "esbuild.config.mjs",
-    "eslint.config.mjs"
+    "eslint.config.mjs",
+    "src/auth/jwt.ts"
   ],
   "exclude": ["node_modules", "dist"]
 }

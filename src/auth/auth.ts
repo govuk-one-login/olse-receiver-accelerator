@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import { generateJWT } from './jwt.ts'
 
 const auth = (req: Request, res: Response) => {
   const client_id = req.query['client_id']
@@ -9,6 +10,7 @@ const auth = (req: Request, res: Response) => {
     client_secret === process.env['CLIENT_SECRET']
   ) {
     res.send(200)
+
     return
   }
 
