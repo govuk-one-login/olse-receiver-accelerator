@@ -9,6 +9,7 @@
 - [Development guidelines](#development-guidelines)
   - [Directory Structure](#directory-structure)
   - [Release Management](#release-management)
+- [Next Steps](#next-steps)
 
 # Getting Started
 
@@ -46,6 +47,8 @@ Are directories that should not be modified as they are maintained by the Signal
 ## Release Management
 
 The Signal Exchange Team will use [semantic versioning](https://semver.org/) across the repository as well as use Git Tags and changelogs to help with release change and management. The Signal Exchange Team will try to minimise the number of breaking changes but when it is not possible, we will give plenty of notice and provide a migration pathway with minimal disruption.
+
+# Next Steps
 
 Next you should look at the docs that explains the examples, how they work and what work that needs to be done to make the examples useful. See
 
