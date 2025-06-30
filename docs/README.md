@@ -5,7 +5,7 @@
 - [Application Development Approaches](#application-development-approaches)
   - [Container](#container)
   - [AWS native](#aws-native)
-  - [Alternative approach](#alternative-approach)
+  - [Alternative approaches](#alternative-approaches)
 - [Development guidelines](#development-guidelines)
   - [Directory Structure](#directory-structure)
   - [Release Management](#release-management)
@@ -16,7 +16,7 @@ These docs serve as a guidance on how to work with this repository to help with 
 
 # Application Development Approaches
 
-This repository provides two approaches to develop with the receiver while adhering to [RFC 8935](https://www.rfc-editor.org/rfc/rfc8935.html).
+This repository provides two approaches to develop with the receiver while adhering to [RFC 8935](https://www.rfc-editor.org/rfc/rfc8935.html) (ensure that you read the RFC).
 
 ## Container
 
@@ -26,7 +26,7 @@ Under the `examples` directory, we provide a sample [ExpressJS](https://expressj
 
 Under the `examples` directory, there is also an example implementation using AWS cloud native technologies such as AWS API Gateway, AWS Lambda, AWS cognito etc.
 
-## Alternative approach
+## Alternative approaches
 
 If the approaches above do not meet your needs, you can always use the examples to drive the development of an approach that meets you technology stack. Just ensure that you adhere to [RFC 8935](https://www.rfc-editor.org/rfc/rfc8935.html) as well as the standard setout by the Signal Exchange Team.
 
