@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
-import { generateJWT } from './jwt.ts'
+import { generateJWT } from './jwt'
 
-const auth = (req: Request, res: Response) => {
+const auth = async (req: Request, res: Response) => {
   const client_id = req.query['client_id']
   const client_secret = req.query['client_secret']
 
@@ -9,8 +9,13 @@ const auth = (req: Request, res: Response) => {
     client_id === process.env['CLIENT_ID'] &&
     client_secret === process.env['CLIENT_SECRET']
   ) {
-    res.send(200)
-
+    try {
+      const token = await generateJWT()
+      res.json({ token })
+    } catch (error) {
+      console.error('Error generating JWT:', error)
+      res.status(500).json({ error: 'Internal server error' })
+    }
     return
   }
 
