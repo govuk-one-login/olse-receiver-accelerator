@@ -7,6 +7,7 @@
   - [Payload Validation](#payload-validation)
   - [Signal Validation](#signal-validation)
   - [Signal routing](#signal-routing)
+  - [Verification Signal](#verification-signal)
 
 # About the container solution
 
@@ -31,3 +32,7 @@ After the Payload has been decoded and validated as a JWT, it can then be valida
 ## Signal routing
 
 At this point the signal is valid and can then be processed by your upstream processes. Signal routing is ensureing that is routed to the appropriate location.
+
+## Verification Signal
+
+The container will have a basic cron job that will attempt to call the Signal Transmitter's Verification signal every 15 minutes. The payload for the `state` field will be a JWT so that when the receiver receives the verification signal sent by the transmitter, the recevier can verify the signal.
