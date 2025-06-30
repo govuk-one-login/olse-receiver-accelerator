@@ -47,4 +47,7 @@ Are directories that should not be modified as they are maintained by the Signal
 
 The Signal Exchange Team will use [semantic versioning](https://semver.org/) across the repository as well as use Git Tags and changelogs to help with release change and management. The Signal Exchange Team will try to minimise the number of breaking changes but when it is not possible, we will give plenty of notice and provide a migration pathway with minimal disruption.
 
-Next you should look at the docs that explains the examples, how they work and what work that needs to be done to make the examples useful. See file [examples.md](example.md)
+Next you should look at the docs that explains the examples, how they work and what work that needs to be done to make the examples useful. See
+
+- [container-example.md](container-example.md) to see how the container example works and how it can be modified.
+- [lambda-example.md](lambda-example.md) to see how the lambda based example works and how it can be modified
