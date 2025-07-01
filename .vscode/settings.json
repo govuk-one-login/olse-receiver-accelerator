@@ -1,0 +1,42 @@
+{
+  // allow the vscode jest extension to find the jest tests
+  "jest.virtualFolders": [
+    {
+      "name": "Vendor Test",
+      "jestCommandLine": "npm run vendor:test --"
+    },
+    {
+      "name": "Unit Test",
+      "jestCommandLine": "npm run test:unit --"
+    }
+  ],
+  // sensible autosave settings
+  "editor.formatOnSave": true,
+  "files.autoSave": "onFocusChange",
+  // prompt vscode to use the typescript version in package.json vs the typescript version bundled in vscode
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  // required for cloudformation so the yaml extensions doesnt generate errors for these tags
+  "yaml.customTags": [
+    "!Base64 scalar",
+    "!Cidr scalar",
+    "!And sequence",
+    "!Equals sequence",
+    "!If sequence",
+    "!Not sequence",
+    "!Or sequence",
+    "!Condition scalar",
+    "!FindInMap sequence",
+    "!GetAtt scalar",
+    "!GetAtt sequence",
+    "!GetAZs scalar",
+    "!ImportValue scalar",
+    "!Join sequence",
+    "!Select sequence",
+    "!Split sequence",
+    "!Sub scalar",
+    "!Sub sequence",
+    "!Transform mapping",
+    "!Ref scalar"
+  ]
+}
