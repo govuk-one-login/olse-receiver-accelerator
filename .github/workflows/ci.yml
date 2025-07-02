@@ -53,7 +53,7 @@ jobs:
 
   Deploy-Feature-Branch:
     name: Feature Branch
-    needs: [Run-CI-Checks]
+    needs: [Run-CI-Checks, Run-Vendor-Checks, Run-Implementor-Checks]
     permissions:
       id-token: write
       contents: read
