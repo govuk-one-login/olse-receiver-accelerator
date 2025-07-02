@@ -1,1 +1,1 @@
-npm run vendor:test
+npm run test:vendor
