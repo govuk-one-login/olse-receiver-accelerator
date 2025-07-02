@@ -50,3 +50,12 @@ jobs:
       contents: read
     secrets: inherit
     uses: ./.github/workflows/implementor.yml
+
+  Deploy-Feature-Branch:
+    name: Feature Branch
+    needs: [Run-CI-Checks]
+    permissions:
+      id-token: write
+      contents: read
+    secrets: inherit
+    uses: ./.github/workflows/deploy-feature-branch.yml
