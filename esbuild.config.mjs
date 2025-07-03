@@ -15,17 +15,19 @@ const baseEsBuildConfig = {
   logLevel: 'info'
 }
 
-if (process.env['CONTAINER'] === 'true') {
-  console.log('Running esbuild for container')
+async function main() {
+  if (process.env['CONTAINER'] === 'true') {
+    console.log('Running esbuild for container')
+    await buildForContainer()
+  }
 }
 
-const finalConfig = {
-  ...baseEsBuildConfig,
-  entryPoints: ['examples/express-container/server.ts'],
-  outfile: 'dist/server.js'
-}
-// --- Build Script ---
-async function build() {
+async function buildForContainer() {
+  const finalConfig = {
+    ...baseEsBuildConfig,
+    entryPoints: ['examples/express-container/server.ts'],
+    outfile: 'dist/examples/express-container/server.js'
+  }
   try {
     const context = await esbuild.context(finalConfig)
 
@@ -46,4 +48,4 @@ async function build() {
 }
 
 // --- Run the build ---
-build().then(() => console.log('finished build'))
+main().then(() => console.log('finished build'))
