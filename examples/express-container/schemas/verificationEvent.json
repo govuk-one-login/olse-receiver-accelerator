@@ -1,0 +1,68 @@
+{
+  "type": "object",
+  "properties": {
+    "jti": {
+      "type": "string",
+      "description": "JWT ID - A unique identifier for the JWT."
+    },
+    "iss": {
+      "type": "string",
+      "format": "uri",
+      "description": "Issuer - Identifies the principal that issued the JWT."
+    },
+    "aud": {
+      "type": "string",
+      "description": "Audience - Identifies the recipients that the JWT is intended for."
+    },
+    "iat": {
+      "type": "integer",
+      "description": "Issued At - Time at which the JWT was issued, represented as a Unix timestamp."
+    },
+    "sub_id": {
+      "type": "object",
+      "description": "Subject Identifier - Identifies the subject of the JWT.",
+      "properties": {
+        "format": {
+          "type": "string",
+          "description": "Format of the subject identifier (e.g., 'opaque')."
+        },
+        "id": {
+          "type": "string",
+          "description": "The actual subject identifier."
+        }
+      },
+      "required": [
+        "format",
+        "id"
+      ]
+    },
+    "events": {
+      "type": "object",
+      "description": "Security Event Token (SET) specific events.",
+      "patternProperties": {
+        "^https://schemas\\.openid\\.net/secevent/ssf/event-type/[a-zA-Z0-9_-]+$": {
+          "type": "object",
+          "description": "A specific security event.",
+          "properties": {
+            "state": {
+              "type": "string",
+              "description": "Event-specific data, such as a base64 encoded state value for a verification event."
+            }
+          },
+          "required": [
+            "state"
+          ]
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "jti",
+    "iss",
+    "aud",
+    "iat",
+    "sub_id",
+    "events"
+  ]
+}
