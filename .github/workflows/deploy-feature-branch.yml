@@ -10,7 +10,7 @@ env:
 jobs:
   deploy-feature:
     name: Deploy
-    # if: startsWith(github.ref, 'refs/heads/feature')
+    if: startsWith(github.head_ref, 'refs/feature')
     runs-on: ubuntu-latest
     steps:
       - name: Debug GitHub context
