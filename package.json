@@ -13,6 +13,7 @@
     "container:watch:build": "npm run container:build -- --watch",
     "container:serve": "nodemon -L -V dist/examples/express-container/server.js",
     "container:dev": "concurrently \"npm:container:watch:build\" \"npm:container:serve\"",
+    "lambda:build": "AWS_LAMBDA_REFERENCE=true node esbuild.config.mjs",
     "test:vendor": "jest --config tests/vendor/jest.config.ts",
     "test:unit": "jest --config tests/implementor/unit/jest.config.ts"
   },
@@ -28,6 +29,7 @@
   "homepage": "https://github.com/govuk-one-login/olse-receiver-accelerator#readme",
   "devDependencies": {
     "@eslint/js": "^9.30.0",
+    "@types/aws-lambda": "^8.10.150",
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.7",
@@ -45,7 +47,8 @@
     "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.35.0"
+    "typescript-eslint": "^8.35.0",
+    "yaml-cfn": "^0.3.2"
   },
   "lint-staged": {
     "**/*.ts": [
