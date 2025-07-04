@@ -1,6 +1,10 @@
 name: Deploy Feature Branch
 
 on:
+  push:
+    branches:
+      - 'feature/**'
+      - 'feature/*'
   workflow_dispatch:
   workflow_call:
 
@@ -10,7 +14,7 @@ env:
 jobs:
   deploy-feature:
     name: Deploy
-    if: contains(github.ref, 'refs/heads/feature') || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main')
+    if: startsWith(github.ref, 'refs/heads/feature') || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main')
     runs-on: ubuntu-latest
     steps:
       - name: Download build artifact
