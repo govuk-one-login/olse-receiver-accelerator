@@ -31,10 +31,7 @@
           "description": "The actual subject identifier."
         }
       },
-      "required": [
-        "format",
-        "id"
-      ]
+      "required": ["format", "id"]
     },
     "events": {
       "type": "object",
@@ -49,20 +46,11 @@
               "description": "Event-specific data, such as a base64 encoded state value for a verification event."
             }
           },
-          "required": [
-            "state"
-          ]
+          "required": ["state"]
         }
       },
       "additionalProperties": true
     }
   },
-  "required": [
-    "jti",
-    "iss",
-    "aud",
-    "iat",
-    "sub_id",
-    "events"
-  ]
+  "required": ["jti", "iss", "aud", "iat", "sub_id", "events"]
 }
