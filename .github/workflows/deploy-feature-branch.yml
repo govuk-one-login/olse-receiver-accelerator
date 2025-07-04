@@ -1,10 +1,6 @@
 name: Deploy Feature Branch
 
 on:
-  push:
-    branches:
-      - 'feature/**'
-      - 'feature/*'
   workflow_dispatch:
   workflow_call:
 
