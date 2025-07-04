@@ -5,8 +5,8 @@ on:
   workflow_call:
 
 jobs:
-  vendor-tests:
-    name: Tests
+  vendor:
+    name: Test and build
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
