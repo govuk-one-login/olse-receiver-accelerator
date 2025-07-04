@@ -54,7 +54,6 @@ jobs:
   Deploy-Feature-Branch:
     name: Feature Branch
     needs: [Run-CI-Checks, Run-Vendor-Checks, Run-Implementor-Checks]
-    if: startsWith(github.ref, 'refs/heads/feature') || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main')
     permissions:
       id-token: write
       contents: read

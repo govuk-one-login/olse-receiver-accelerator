@@ -10,6 +10,7 @@ env:
 jobs:
   deploy-feature:
     name: Deploy
+    if: startsWith(github.ref, 'refs/heads/feature') || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main')
     runs-on: ubuntu-latest
     steps:
       - name: Download build artifact
