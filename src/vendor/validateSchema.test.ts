@@ -1,12 +1,7 @@
-import { validateSignalAgainstSchema } from './validateSchema'
+import { validateSignalAgainstSchemas } from './validateSchema'
 
 describe('validateSignalAgainstSchema', () => {
-  test('it should return false if signal does not match any given schema', () => {
-    const signalSet = 'not a valid signal'
-    expect(validateSignalAgainstSchema(signalSet)).toBe(false)
-  })
-
-  test('it should return true if signal does match any given schema', () => {
+  test('it should return valid: true if signal does match one of the given schema', async () => {
     const signalSet = {
       jti: '123456',
       iss: 'https://transmitter.example.com',
@@ -22,6 +17,19 @@ describe('validateSignalAgainstSchema', () => {
         }
       }
     }
-    expect(validateSignalAgainstSchema(signalSet)).toBe(true)
+    expect(await validateSignalAgainstSchemas(signalSet)).toStrictEqual({
+      valid: true,
+      schema: '../../examples/express-container/schemas/verificationEvent.json'
+    })
+  })
+
+  test('it should return valid: false if signal does not match one of the given schema', async () => {
+    const signalSet = {
+      description: 'description',
+      iss: 2
+    }
+    expect(await validateSignalAgainstSchemas(signalSet)).toStrictEqual({
+      valid: false
+    })
   })
 })
