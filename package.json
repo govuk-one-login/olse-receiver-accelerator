@@ -14,7 +14,7 @@
     "container:watch:build": "npm run container:build -- --watch",
     "container:serve": "nodemon -L -V dist/server.js",
     "container:dev": "concurrently \"npm:container:watch:build\" \"npm:container:serve\"",
-    "test:vendor": "jest --config tests/vendor/jest.config.mjs",
+    "test:vendor": "jest --config tests/vendor/unit/jest.config.mjs",
     "test:unit": "jest --config tests/implementor/unit/jest.config.mjs"
   },
   "repository": {

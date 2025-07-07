@@ -1,23 +1,13 @@
+import { baseJestConfig } from '../../baseJestUnitConfig.mjs'
+
 /**
  * @type {import('ts-jest').JestConfigWithTsJest}
  */
 const config = {
+  ...baseJestConfig,
   verbose: true,
   rootDir: '../../../',
   testMatch: [`<rootDir>/src/**/*.test.ts`],
-  testPathIgnorePatterns: ['<rootDir>/src/vendor/'],
-  preset: 'ts-jest/presets/default-esm',
-  extensionsToTreatAsEsm: ['.ts'],
-  testEnvironment: 'node',
-  transform: {
-    '^.+\\.ts$': [
-      'ts-jest',
-      {
-        useESM: true
-      }
-    ]
-  },
-  transformIgnorePatterns: ['node_modules/(?!(jose)/)'],
   collectCoverageFrom: [
     `src/**/*.ts`,
     // Exclude test files from coverage
@@ -28,8 +18,7 @@ const config = {
     '!**/*/jest.config.{ts,mts,mjs}'
   ],
   coverageDirectory: `coverage/implementor`,
-  collectCoverage: true,
-  coverageReporters: ['text']
+  testPathIgnorePatterns: ['<rootDir>/src/vendor/']
 }
 
 export default config
