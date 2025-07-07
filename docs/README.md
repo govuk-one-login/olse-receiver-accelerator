@@ -29,7 +29,7 @@ Under the `examples` directory, there is also an example implementation using AW
 
 ## Alternative approaches
 
-If the approaches above do not meet your needs, you can always use the examples to drive the development of an approach that meets you technology stack. Just ensure that you adhere to [RFC 8935](https://www.rfc-editor.org/rfc/rfc8935.html) as well as the standard setout by the Signal Exchange Team.
+If the approaches above do not meet your needs, you can always use the examples to drive the development of an approach that meets you technology stack. Just ensure that you adhere to [RFC 8935](https://www.rfc-editor.org/rfc/rfc8935.html) as well as the standards set by the Signal Exchange Team.
 
 # Development guidelines
 
