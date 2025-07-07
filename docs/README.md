@@ -25,7 +25,7 @@ Under the `examples` directory, we provide a sample [ExpressJS](https://expressj
 
 ## AWS native
 
-Under the `examples` directory, there is also an example implementation using AWS cloud native technologies such as AWS API Gateway, AWS Lambda, AWS cognito etc.
+Under the `examples` directory, there is also an example implementation using AWS cloud native technologies such as Amazon API Gateway, AWS Lambda, AWS Cognito etc.
 
 ## Alternative approaches
 
