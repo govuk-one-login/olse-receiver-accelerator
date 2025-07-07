@@ -20,6 +20,6 @@ const ajv = new Ajv()
 addFormats(ajv)
 const validate = ajv.compile(verificationEventSchema)
 
-export function validateSignalAgainstSchema(signal) {
+export function validateSignalAgainstSchema(signal: unknown) {
   return validate(signal)
 }
