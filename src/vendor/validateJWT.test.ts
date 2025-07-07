@@ -18,7 +18,26 @@ describe('validateJWT', () => {
       audience: 'urn:example:audience'
     })
 
-    console.log(payload)
-    console.log(protectedHeader)
+    expect(payload).toBeDefined()
+    expect(protectedHeader).toBeDefined()
+  })
+
+  test('should return false if JWT is not valid', async () => {
+    const alg = 'RS256'
+    const jwk = {
+      kty: 'RSA',
+      n: 'whYOFK2Ocbbpb_zVypi9SeKiNUqKQH0zTKN1-6fpCTu6ZalGI82s7XK3tan4dJt90ptUPKD2zvxqTzFNfx4HHHsrYCf2-FMLn1VTJfQazA2BvJqAwcpW1bqRUEty8tS_Yv4hRvWfQPcc2Gc3-_fQOOW57zVy-rNoJc744kb30NjQxdGp03J2S3GLQu7oKtSDDPooQHD38PEMNnITf0pj-KgDPjymkMGoJlO3aKppsjfbt_AH6GGdRghYRLOUwQU-h-ofWHR3lbYiKtXPn5dN24kiHy61e3VAQ9_YAZlwXC_99GGtw_NpghFAuM4P1JDn0DppJldy3PGFC0GfBCZASw',
+      e: 'AQAB'
+    }
+    const publicKey = await jose.importJWK(jwk, alg)
+    const jwt =
+      'LCJhdWQiOiJ1cm46ZXhhbXBsZTphdWRpZW5jZSJ9.gXrPZ3yM_60dMXGE69dusbpzYASNA-XIOwsb5D5xYnSxyj6_D6OR'
+
+    void expect(async () => {
+      void (await validateJWT(jwt, publicKey, {
+        issuer: 'urn:example:issuer',
+        audience: 'urn:example:audience'
+      }))
+    }).rejects.toThrow('Invalid Compact JWS')
   })
 })
