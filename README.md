@@ -27,5 +27,5 @@ Feel free to raise issues, feature request and contribute using the standard Git
 Follow these guidelines when making changes to the repository
 
 1. Adhere to the detailed docs above
-2. use [semantic versioning](https://semver.org/)
+2. Use [semantic versioning](https://semver.org/)
 3. Make appropriate updates to the changelog
