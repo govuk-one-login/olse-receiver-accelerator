@@ -33,7 +33,7 @@ If the approaches above do not meet your needs, you can always use the examples 
 
 # Development guidelines
 
-We recommend that you create a [fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks) of this repository and then extend the receiver to suit your needs. The forking model allows you to use the existing code that the Signal Exchange Team wrote whilst allowing you add functionality specific to your needs. If the Signal Exchange Team releases an update to the repository, you can [sync the fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork) to get the latest changes using the Github UI or git.
+We recommend that you create a [fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks) of this repository and then extend the receiver to suit your needs. The forking model allows you to use the existing code that the Signal Exchange Team wrote whilst allowing you add functionality specific to your needs. If the Signal Exchange Team releases an update to the repository, you can [sync the fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork) to get the latest changes using the GitHub UI or git.
 
 ## Directory Structure
 
