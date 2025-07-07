@@ -6,7 +6,7 @@ import eslintConfigPrettier from 'eslint-config-prettier/flat'
 
 export default tseslint.config(
   {
-    ignores: ['dist/', '*.mjs']
+    ignores: ['dist/', '**/*.mjs']
   },
   eslint.configs.recommended,
   tseslint.configs.recommendedTypeChecked,

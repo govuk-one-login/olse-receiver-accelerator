@@ -1,34 +1,24 @@
-// import { validateJWT } from "./validateJWT";
-// import * as jose from 'jose'
-
-// // const { publicKey, privateKey } = jose.generateKeyPair('PS256', {
-// //         extractable: true,
-// //     })
-// const JWKS = jose.createLocalJWKSet({
-//   keys: [
-//     {
-//       kty: 'RSA',
-//       e: 'AQAB',
-//       n: '12oBZRhCiZFJLcPg59LkZZ9mdhSMTKAQZYq32k_ti5SBB6jerkh-WzOMAO664r_qyLkqHUSp3u5SbXtseZEpN3XPWGKSxjsy-1JyEFTdLSYe6f9gfrmxkUF_7DTpq0gn6rntP05g2-wFW50YO7mosfdslfrTJYWHFhJALabAeYirYD7-9kqq9ebfFMF4sRRELbv9oi36As6Q9B3Qb5_C1rAzqfao_PCsf9EPsTZsVVVkA5qoIAr47lo1ipfiBPxUCCNSdvkmDTYgvvRm6ZoMjFbvOtgyts55fXKdMWv7I9HMD5HwE9uW839PWA514qhbcIsXEYSFMPMV6fnlsiZvQQ',
-//       alg: 'PS256',
-//     },
-//     {
-//       crv: 'P-256',
-//       kty: 'EC',
-//       x: 'ySK38C1jBdLwDsNWKzzBHqKYEE5Cgv-qjWvorUXk9fw',
-//       y: '_LeQBw07cf5t57Iavn4j-BqJsAD1dpoz8gokd3sBsOo',
-//       alg: 'ES256',
-//     },
-//   ],
-// })
-// describe('validateJWT', () => {
-//   test('should return false if JWT is not valid', () => {
-//     expect(validateJWT("aaaaa.bbbb.ccccc", JWKS)).toBe(false)
-//   })
-// })
+import * as jose from 'jose'
+import { validateJWT } from './validateJWT'
 
 describe('validateJWT', () => {
-  test('Needs one running test to push', () => {
-    expect(1).toBe(1)
+  test('should return false if JWT is not valid', async () => {
+    const alg = 'RS256'
+    const jwk = {
+      kty: 'RSA',
+      n: 'whYOFK2Ocbbpb_zVypi9SeKiNUqKQH0zTKN1-6fpCTu6ZalGI82s7XK3tan4dJt90ptUPKD2zvxqTzFNfx4HHHsrYCf2-FMLn1VTJfQazA2BvJqAwcpW1bqRUEty8tS_Yv4hRvWfQPcc2Gc3-_fQOOW57zVy-rNoJc744kb30NjQxdGp03J2S3GLQu7oKtSDDPooQHD38PEMNnITf0pj-KgDPjymkMGoJlO3aKppsjfbt_AH6GGdRghYRLOUwQU-h-ofWHR3lbYiKtXPn5dN24kiHy61e3VAQ9_YAZlwXC_99GGtw_NpghFAuM4P1JDn0DppJldy3PGFC0GfBCZASw',
+      e: 'AQAB'
+    }
+    const publicKey = await jose.importJWK(jwk, alg)
+    const jwt =
+      'eyJhbGciOiJSUzI1NiJ9.eyJ1cm46ZXhhbXBsZTpjbGFpbSI6dHJ1ZSwiaWF0IjoxNjY5MDU2NDg4LCJpc3MiOiJ1cm46ZXhhbXBsZTppc3N1ZXIiLCJhdWQiOiJ1cm46ZXhhbXBsZTphdWRpZW5jZSJ9.gXrPZ3yM_60dMXGE69dusbpzYASNA-XIOwsb5D5xYnSxyj6_D6OR_uR_1vqhUm4AxZxcrH1_-XJAve9HCw8az_QzHcN-nETt-v6stCsYrn6Bv1YOc-mSJRZ8ll57KVqLbCIbjKwerNX5r2_Qg2TwmJzQdRs-AQDhy-s_DlJd8ql6wR4n-kDZpar-pwIvz4fFIN0Fj57SXpAbLrV6Eo4Byzl0xFD8qEYEpBwjrMMfxCZXTlAVhAq6KCoGlDTwWuExps342-0UErEtyIqDnDGcrfNWiUsoo8j-29IpKd-w9-C388u-ChCxoHz--H8WmMSZzx3zTXsZ5lXLZ9IKfanDKg'
+
+    const { payload, protectedHeader } = await validateJWT(jwt, publicKey, {
+      issuer: 'urn:example:issuer',
+      audience: 'urn:example:audience'
+    })
+
+    console.log(payload)
+    console.log(protectedHeader)
   })
 })

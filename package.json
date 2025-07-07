@@ -1,6 +1,7 @@
 {
   "name": "olse-receiver-accelerator",
   "version": "0.0.1",
+  "type": "module",
   "description": "A reference repository to help accelerate the development of a GOV.UK One Login Signal Exchange Receiver",
   "scripts": {
     "prepare": "husky",
@@ -13,8 +14,8 @@
     "container:watch:build": "npm run container:build -- --watch",
     "container:serve": "nodemon -L -V dist/server.js",
     "container:dev": "concurrently \"npm:container:watch:build\" \"npm:container:serve\"",
-    "test:vendor": "jest --config tests/vendor/jest.config.ts",
-    "test:unit": "jest --config tests/implementor/unit/jest.config.ts"
+    "test:vendor": "jest --config tests/vendor/jest.config.mjs",
+    "test:unit": "jest --config tests/implementor/unit/jest.config.mjs"
   },
   "repository": {
     "type": "git",
@@ -60,7 +61,6 @@
   },
   "dependencies": {
     "express": "^5.1.0",
-    "fs": "^0.0.1-security",
     "jose": "^6.0.11"
   }
 }
