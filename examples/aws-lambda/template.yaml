@@ -71,7 +71,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: dist/examples/aws-lambda/src/lambda/hello
-        dist/examples/aws-lambda/hello
       FunctionName: !Sub ${AWS::StackName}-hello
       Handler: handler.handler
 
