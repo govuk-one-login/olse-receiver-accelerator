@@ -45,8 +45,7 @@
               "type": "string",
               "description": "Event-specific data, such as a base64 encoded state value for a verification event."
             }
-          },
-          "required": ["state"]
+          }
         }
       },
       "additionalProperties": true
