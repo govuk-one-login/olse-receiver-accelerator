@@ -50,4 +50,6 @@ jobs:
           sam deploy \
             --stack-name ${stack_name} \
             --no-fail-on-empty-changeset \
-            --resolve-s3
+            --resolve-s3 \
+            --template-file examples/aws-lambda/template.yaml \
+            --config-file examples/aws-lambda/samconfig.toml
