@@ -1,6 +1,7 @@
 {
   "name": "olse-receiver-accelerator",
   "version": "0.0.1",
+  "type": "module",
   "description": "A reference repository to help accelerate the development of a GOV.UK One Login Signal Exchange Receiver",
   "scripts": {
     "prepare": "husky",
@@ -14,8 +15,8 @@
     "container:serve": "nodemon -L -V dist/examples/express-container/server.js",
     "container:dev": "concurrently \"npm:container:watch:build\" \"npm:container:serve\"",
     "lambda:build": "AWS_LAMBDA_REFERENCE=true node esbuild.config.mjs",
-    "test:vendor": "jest --config tests/vendor/jest.config.ts",
-    "test:unit": "jest --config tests/implementor/unit/jest.config.ts"
+    "test:vendor": "jest --config tests/vendor/unit/jest.config.mjs",
+    "test:unit": "jest --config tests/implementor/unit/jest.config.mjs"
   },
   "repository": {
     "type": "git",
@@ -28,18 +29,20 @@
   },
   "homepage": "https://github.com/govuk-one-login/olse-receiver-accelerator#readme",
   "devDependencies": {
-    "@eslint/js": "^9.30.0",
     "@types/aws-lambda": "^8.10.150",
+    "@eslint/js": "^9.30.1",
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
-    "@types/node": "^24.0.7",
+    "@types/node": "^24.0.10",
     "@types/supertest": "^6.0.3",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
     "concurrently": "^9.2.0",
     "esbuild": "^0.25.5",
-    "eslint": "^9.30.0",
+    "eslint": "^9.30.1",
     "eslint-config-prettier": "^10.1.5",
     "husky": "^9.1.7",
-    "jest": "^30.0.3",
+    "jest": "^30.0.4",
     "lint-staged": "^16.1.2",
     "nodemon": "^3.1.10",
     "prettier": "3.6.2",
@@ -47,8 +50,8 @@
     "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.35.0",
     "yaml-cfn": "^0.3.2"
+    "typescript-eslint": "^8.35.1"
   },
   "lint-staged": {
     "**/*.ts": [
@@ -60,6 +63,7 @@
     "node": ">=22.0.0"
   },
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "jose": "^6.0.11"
   }
 }
