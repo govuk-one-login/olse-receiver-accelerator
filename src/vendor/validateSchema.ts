@@ -1,4 +1,4 @@
-import Ajv from 'ajv'
+import Ajv, { AnySchema } from 'ajv'
 import addFormats from 'ajv-formats'
 import { readdir } from 'fs/promises'
 
@@ -10,7 +10,8 @@ export async function validateSignalAgainstSchemas(signalSet: unknown) {
   const schemaList = await readdir(absoluteSchemaPath)
   for (const schemaName of schemaList) {
     const filePath = '../.' + absoluteSchemaPath + '/' + schemaName
-    const schema: unknown = await import(filePath)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const schema: AnySchema = await import(filePath)
     const validate = ajv.compile(schema)
     if (validate(signalSet)) {
       return { valid: true, schema: filePath }
