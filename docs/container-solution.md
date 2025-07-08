@@ -23,11 +23,11 @@ The authentication works by implementing the client credentials flow. The authen
 
 ## Payload Validation
 
-The payload in the body will be a Security Event Token (SET). A SET is a JWT so can be validated as a JWT. Unlike Auth, the public key is provided by the GOV.UK One Login Signal Exchange Transmitter.
+The payload in the HTTP request body will be a Security Event Token (SET). A SET is a JWT so can be validated as a JWT. Unlike Auth, the public key is provided by the GOV.UK One Login Signal Exchange Transmitter.
 
 ## Signal Validation
 
-After the Payload has been decoded and validated as a JWT, it can then be validated. The Signal Exchange Team can provide json schemas to make validation simpler.
+After the request body has been decoded and validated as a JWT, you will have the Seurity Event Token (SET) which can then be validated furtger. The Signal Exchange Team can provide json schemas to make validation simpler.
 
 ## Signal routing
 
