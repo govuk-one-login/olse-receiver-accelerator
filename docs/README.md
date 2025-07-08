@@ -37,12 +37,14 @@ We recommend that you create a [fork](https://docs.github.com/en/pull-requests/c
 
 ## Directory Structure
 
-Any directories
+Any files and directories under
 
 - `examples/*` - used to store examples
 - `*/vendor/*` - common and useful code
 
-Are directories that should not be modified as they are maintained by the Signal Exchange Team. When an update is released, files within these directories will be modified so when you attempt to sync the repository, you should not run into any merge conflicts
+Are directories that should not be modified as they are maintained by the Signal Exchange Team. When an update is released, files within these directories will be modified so when you attempt to sync the repository, you should not run into any merge conflicts.
+
+There are other directories, files and configuration files not listed that can be modified to suit your needs but extra care will need to be taken when synchronizing your fork from upstream
 
 ## Release Management
 
