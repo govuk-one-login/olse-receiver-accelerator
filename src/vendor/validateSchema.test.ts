@@ -32,6 +32,9 @@ describe('validateSignalAgainstSchema', () => {
       sub_id: {
         format: 'opaque',
         id: 'f67e39a0a4d34d56b3aa1bc4cff0069f'
+      },
+      events: {
+        'https://schemas.openid.net/secevent/ssf/event-type/verification': {}
       }
     }
     expect(await validateSignalAgainstSchemas(signalSet)).toStrictEqual({
