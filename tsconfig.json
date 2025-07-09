@@ -35,7 +35,9 @@
     "noFallthroughCasesInSwitch": true /* Enable error reporting for fallthrough cases in switch statements. */,
     "noPropertyAccessFromIndexSignature": true /* Enforces using indexed accessors for keys declared using an indexed type. */,
     "allowUnusedLabels": false /* Disable error reporting for unused labels. */,
-    "allowUnreachableCode": false /* Disable error reporting for unreachable code. */
+    "allowUnreachableCode": false /* Disable error reporting for unreachable code. */,
+    "allowImportingTsExtensions": true,
+    "noEmit": true
   },
   "include": [
     "**/*.ts",
