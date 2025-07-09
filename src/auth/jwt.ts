@@ -1,14 +1,14 @@
 import { SignJWT } from 'jose'
 import * as fs from 'fs'
 import * as path from 'path'
-import { importPKCS8 } from 'jose'
+import { importJWK } from 'jose'
 
-// const PRIVATE_KEY_PATH = path.join(__dirname, '../../keys/private.key')
-// const privateKeyPem = fs.readFileSync(PRIVATE_KEY_PATH, 'utf8')
+const PRIVATE_KEY_PATH = path.join(__dirname, '../../keys/private.key')
+const privateKeyPem = fs.readFileSync(PRIVATE_KEY_PATH, 'utf8')
 
 // Import the private key (RS256 requires PKCS#8 format)
 const getPrivateKey = async () => {
-  return await importPKCS8(privateKeyPem, 'RS256')
+  return await importJWK(privateKeyPem, 'RS256')
 }
 
 export const generateJWT = async (): Promise<string> => {
