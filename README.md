@@ -14,4 +14,5 @@ npm install
 ```
 
 - `npm run container:dev`: Run a live expressJS server that reloads when changes are made
-- `npm run vendor:test`: Run the vendor tests
+- `npm run test:vendor`: Run the vendor tests
+- `npm run test:unit`: Run the unit tests written by the implementor.

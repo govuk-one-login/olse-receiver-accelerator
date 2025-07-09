@@ -7,7 +7,7 @@ const baseEsBuildConfig = {
   platform: 'node',
   sourcemap: true,
   target: 'node20',
-  format: 'cjs',
+  format: 'esm',
   treeShaking: true,
   loader: {
     '.ts': 'ts' // Handles .ts files
