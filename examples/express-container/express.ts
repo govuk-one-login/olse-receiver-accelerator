@@ -1,8 +1,6 @@
 import express, { Request, Response } from 'express'
 import { auth } from '../../src/auth/auth'
 
-
-
 const app = express()
 const v1Router = express()
 

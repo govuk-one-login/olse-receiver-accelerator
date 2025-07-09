@@ -23,4 +23,3 @@ jobs:
 
       - name: Run vendor unit tests
         run: npm run test:vendor
-
