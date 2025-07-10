@@ -11,7 +11,7 @@
 
 # About the lambda example
 
-The container example is for if you decide to deploy a receiver in AWS Lambda.
+This example shows how to deploy OLSE receiver in AWS Lambda.
 
 # Getting started
 
