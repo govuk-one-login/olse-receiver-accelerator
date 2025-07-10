@@ -36,15 +36,12 @@ async function buildFor_AWS_LAMBDA_REFERENCE() {
   const { Resources } = yamlParse(
     readFileSync(join(dirname('.'), `${baseLambdaPath}/template.yaml`), 'utf-8')
   )
-  // const awsResources = Object.values(Resources) as IAwsResource[]
-  const awsResources = Object.values(Resources)
 
-  //   const lambdas = awsResources.filter(
-  //   (resource) => resource.Type === 'AWS::Serverless::Function'
-  // ) as ILambdaFunction[]
+  const awsResources = Object.values(Resources)
   const lambdas = awsResources.filter(
     (resource) => resource.Type === 'AWS::Serverless::Function'
   )
+
   const entries = lambdas.reduce((entryPoints, lambda) => {
     const lambdaName = lambda.Properties.CodeUri.split('/').pop()
     if (!(lambdaName in entryPoints)) {
