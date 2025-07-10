@@ -1,4 +1,4 @@
-# olse-receiver-accelerator
+# One Login Signal Exchange receiver (OLSE) accelerator
 
 A reference repository to help accelerate the development of a GOV.UK One Login Signal Exchange Receiver. This repo is maintained by the Signal Exchange Team and users are expected to create a fork of this repo. Detailed docs are available in the [docs](docs/README.md) directory.
 
