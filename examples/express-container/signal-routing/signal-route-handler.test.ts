@@ -20,9 +20,9 @@ describe('handleSetRouting', () => {
             json: jest.fn()
         } as unknown as Response;
 
-        const result = handleSignalRouting(req, res);
+        handleSignalRouting(req, res);
 
-        expect(result.status).toHaveBeenCalledWith(200);
+        expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith({ success: true });
     });
 

@@ -39,5 +39,4 @@ export enum RiscEventType {
     ACCOUNT_PURGED = 'http://schemas.openid.net/secevent/risc/event/account_purged',
     ACCOUNT_DISABLED = 'http://schemas.openid.net/risc/event/account_disabled',
     ACCOUNT_ENABLED = 'http://schemas.openid.net/risc/event/account_enabled',
-    SESSIONS_REVOKED = 'http://schemas.openid.net/risc/event/sessions_revoked',
 }
