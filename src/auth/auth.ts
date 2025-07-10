@@ -1,6 +1,6 @@
-import { Request, Response } from 'express'
+import { Request } from 'express'
 import { generateJWT } from './jwt'
-import { getClientCredentials } from '../../examples/express-container/express'
+import { getAuthInput } from '../../examples/express-container/getAuthInput'
 
 interface ValidResponse {
   valid: true
@@ -14,12 +14,16 @@ interface ValidResponse {
 interface InvalidResponse {
   valid: false
   error: string
+  response_code: number
 }
 
 type Result = ValidResponse | InvalidResponse
-const auth = async (req: Request, res: Response): Promise<Result> => {
-  const { client_id, client_secret } = getClientCredentials(req)
-
+export const auth = async (req: Request): Promise<Result> => {
+  const { client_id, client_secret, grant_type } = getAuthInput(req)
+  if (grant_type !== 'client_credentials') {
+    console.log('hi')
+    return { valid: false, error: 'invalid_grant', response_code: 400 }
+  }
   if (
     client_id === process.env['CLIENT_ID'] &&
     client_secret === process.env['CLIENT_SECRET']
@@ -36,19 +40,18 @@ const auth = async (req: Request, res: Response): Promise<Result> => {
           console.log(
             'Invalid request: The request is missing required parameters or is malformed'
           )
-          return { valid: false, error: 'invalid_request' }
+          return { valid: false, error: 'invalid_request', response_code: 400 }
         } else if (error.message === 'invalid_grant') {
           console.log(
             'Invalid grant: The provided authorisation grant is invalid or expired'
           )
-          return { valid: false, error: 'invalid_grant' }
+          return { valid: false, error: 'invalid_grant', response_code: 400 }
         }
       }
-      return { valid: false, error: 'invalid_request' }
+      return { valid: false, error: 'invalid_request', response_code: 400 }
     }
   } else {
-    return { valid: false, error: 'invalid_client' }
+    console.log('Supplied client id or secret did not match expected values')
+    return { valid: false, error: 'invalid_client', response_code: 401 }
   }
 }
-
-export { auth }
