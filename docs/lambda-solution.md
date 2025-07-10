@@ -33,7 +33,7 @@ After the Payload has been decoded and validated as a JWT, it can then be valida
 
 ## Signal routing
 
-At this point the signal is valid and can then be processed by your upstream processes. Signal routing is ensureing that is routed to the appropriate location.
+At this point the signal is valid and can be processed by RP specific upstream processes. Signal routing is ensuring that this valid signal is routed to the appropriate location.
 
 ## Verification Signal
 
