@@ -30,7 +30,7 @@ jobs:
           role-to-assume: ${{ secrets.GH_ACTIONS_DEV_DEPLOY_ROLE_ARN }}
       - name: Deploy to feature stack in the dev account
         env:
-          FEATURE_BRANCH_NAME: ${{ github.event.ref }}
+          FEATURE_BRANCH_NAME: ${{ github.head_ref }}
         run: |
           # copy cloudformation files to root as SAM deploy cannot find the path
           cp ./examples/aws-lambda/samconfig.toml samconfig.toml
