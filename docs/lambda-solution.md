@@ -19,7 +19,7 @@ The lambda example is under `examples/aws-lambda`. You must **copy** this entire
 
 ## Auth
 
-The authentication works by implementing the client credentials flow. The authentication mechanism uses AWS API Gateway with AWS Cognito to authenticate the request.
+In this example authentication follows the client credentials flow. The authentication mechanism uses AWS API Gateway with AWS Cognito to authenticate the request.
 
 ## Payload Validation
 
