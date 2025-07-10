@@ -2,7 +2,7 @@ version = 0.1
 [default.deploy.parameters]
 stack_name = "olse-receiver-accel"
 region = "eu-west-2"
-tags = "Product=\"GOV.UK Sign In\" System=\"TxMA\" Environment=\"dev\" Owner=\"di-txma-team-2@digital.cabinet-office.gov.uk\""
+tags = "Product=\"GOV.UK Sign In\" System=\"Signal Exchange\" Environment=\"dev\" Owner=\"signal-exchange-team@digital.cabinet-office.gov.uk\""
 capabilities = "CAPABILITY_NAMED_IAM"
 parameter_overrides = [
     "Environment=dev",
