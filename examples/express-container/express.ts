@@ -1,12 +1,26 @@
 import express, { Request, Response } from 'express'
+import { handleSignalRouting } from './signal-routing/signal-route-handler'
 
-const app = express()
-const v1Router = express()
+export const app = express()
+app.use(express.json());
+const v1Router = express.Router()
 
-v1Router.get('/:id', (req: Request, res: Response) => {
-  res.json({ id: Number(req.params['id']) })
-})
+function signalEventHandler(req: Request, res: Response) {
+  try {
+
+    // Auth handler
+
+    // Validation handler
+
+    // Routing handler
+    console.log('Received request:', req.body)
+    handleSignalRouting(req, res)
+  } catch (err) {
+    console.error('Error processing request:', err);
+    res.status(500).json({ error: 'Internal server error:' });
+  }
+}
+
+v1Router.post('/Events', signalEventHandler)
 
 app.use('/v1', v1Router)
-
-export { app }
