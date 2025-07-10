@@ -26,7 +26,6 @@ const auth = async (req: Request, res: Response): Promise<Result> => {
   ) {
     try {
       const token = await generateJWT()
-      res.json({ token })
       return {
         valid: true,
         data: { token_type: 'Bearer', access_token: token, expires_in: 3600 }

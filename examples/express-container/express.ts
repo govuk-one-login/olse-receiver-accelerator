@@ -14,6 +14,8 @@ v1Router.post('/token', (req: Request, res: Response) => {
   const v = 'hello'
   res.json({ hello: v, time: new Date().toISOString() })
   console.log(v)
+  const { client_id, client_secret } = getClientCredentials()
+  if ()
 })
 
 app.use('/v1', v1Router)

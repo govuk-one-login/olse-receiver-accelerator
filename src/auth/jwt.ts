@@ -1,21 +1,19 @@
-import { SignJWT } from 'jose'
+import { SignJWT, importJWK, JWK } from 'jose'
 import * as fs from 'fs'
 import * as path from 'path'
-import { importJWK } from 'jose'
 
-const PRIVATE_KEY_PATH = path.join(__dirname, '../../keys/private.key')
-const privateKeyPem = fs.readFileSync(PRIVATE_KEY_PATH, 'utf8')
+const PRIVATE_KEY_PATH = path.join(__dirname, '../../keys/authPrivate.key')
 
-// Import the private key (RS256 requires PKCS#8 format)
 const getPrivateKey = async () => {
-  return await importJWK(privateKeyPem, 'RS256')
+  const privateKeyJwk = JSON.parse(fs.readFileSync(PRIVATE_KEY_PATH, 'utf8')) as JWK
+  return await importJWK(privateKeyJwk, 'PS256')
 }
 
 export const generateJWT = async (): Promise<string> => {
   const privateKey = await getPrivateKey()
 
   return await new SignJWT({ 'urn:example:claim': true })
-    .setProtectedHeader({ alg: 'RS256' })
+    .setProtectedHeader({ alg: 'PS256' })
     .setIssuedAt()
     .setExpirationTime('2h')
     .sign(privateKey)
