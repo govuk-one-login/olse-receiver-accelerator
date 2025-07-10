@@ -18,7 +18,7 @@ npm run prepare # setup pre-commit hooks
 - `npm run vendor:test`: Run the vendor tests
 - `npm run test:unit`: Run the unit tests for the user of the repo
 
-# Issues, feature requests and contributions
+# How to contribute to the One Login Signal Exchange receiver accelerator
 
 Feel free to raise issues, feature request and contribute using the standard GitHub best practices. If you are a user of GOV.UK One Login, then you can also talk to your engagement manager.
 
