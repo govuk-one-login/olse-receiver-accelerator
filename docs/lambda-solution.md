@@ -25,7 +25,7 @@ In this example authentication follows the client credentials flow. The authenti
 
 The payload in the body will be a Security Event Token (SET). A SET is a JWT so can be validated as a JWT. Unlike Auth, the public key is provided by the GOV.UK One Login Signal Exchange Transmitter.
 
-The code for this will only be ran after auth.
+The code for this will only be executed after auth.
 
 ## Signal Validation
 
