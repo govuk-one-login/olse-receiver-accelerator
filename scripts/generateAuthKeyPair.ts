@@ -1,5 +1,5 @@
 import * as jose from 'jose'
-import { writeFileSync } from 'fs'
+import { existsSync, mkdirSync, writeFileSync } from 'fs'
 
 const main = async () => {
   const { publicKey, privateKey } = await jose.generateKeyPair('PS256', {
@@ -7,6 +7,9 @@ const main = async () => {
   })
   const privateJwk = await jose.exportJWK(privateKey)
   const publicJwk = await jose.exportJWK(publicKey)
+  if (!existsSync('./keys/')) {
+    mkdirSync('./keys/')
+  }
   writeFileSync('./keys/authPrivate.key', JSON.stringify(privateJwk))
   writeFileSync('./keys/authPublic.key', JSON.stringify(publicJwk))
 }
