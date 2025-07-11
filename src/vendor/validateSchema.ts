@@ -17,7 +17,8 @@ export async function validateSignalAgainstSchemas(signalSet: unknown) {
     const validate = ajv.compile(schema)
     if (validate(signalSet)) {
       return { valid: true, schema: filePath }
+    } else {
+      return { valid: false, message: validate.errors }
     }
   }
-  return { valid: false }
 }

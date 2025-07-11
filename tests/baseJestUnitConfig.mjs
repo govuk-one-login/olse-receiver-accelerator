@@ -25,5 +25,5 @@ export const baseJestConfig = {
     '^(\\.{1,2}/.*)\\.js$': '$1'
   },
   collectCoverage: true,
-  coverageReporters: ['text']
+  coverageReporters: ['text', 'html']
 }
