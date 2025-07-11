@@ -132,7 +132,6 @@ describe('Express server /v1 endpoint', () => {
         'LCJhdWQiOiJ1cm46ZXhhbXBsZTphdWRpZW5jZSJ9.gXrPZ3yM_60dMXGE69dusbpzYASNA-XIOwsb5D5xYnSxyj6_D6OR'
       const payload = { jwt: jwt }
       const response = await request(app).post('/v1/Events').send(payload)
-      console.log(response)
       expect(response.status).toBe(400)
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       expect(response.body.message).toStrictEqual(

@@ -22,7 +22,8 @@ v1Router.post('/token', async (req: Request, res: Response) => {
 })
 
 v1Router.post('/Events', async (req: Request, res: Response) => {
-  const publicKey = getPublicKey()
+  const publicKey = await getPublicKey('wwww.example.com')
+  console.log(publicKey)
   let verifiedJwtBody
   try {
     // eslint-disable-next-line
