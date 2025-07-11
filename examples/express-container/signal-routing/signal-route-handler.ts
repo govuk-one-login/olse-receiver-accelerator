@@ -1,30 +1,50 @@
-import { Response } from 'express';
-import { SetRequest as signalRequest, SetErrorCode } from '../types/types';
-import { sendSignalResponse as sendSignalResponse } from '../utils/response-helper';
-import { handleAccountDisabled, handleAccountPurged } from './signal-handlers';
+import { Response } from 'express'
+import {
+  RiscEventType,
+  SetErrorCode,
+  SetPayload,
+  SetRequest
+} from '../types/types'
+import { sendSignalResponse } from '../utils/response-helper'
+import { handleAccountDisabled, handleAccountPurged } from './signal-handlers'
 
-export function handleSignalRouting(req: signalRequest, res: Response): Response {
-    const signalPayload = req.body;
-    if (!signalPayload.events || !Array.isArray(signalPayload.events)) {
-        return sendSignalResponse(res, false, SetErrorCode.INVALID_REQUEST, 'Invalid payload structure');
+export function handleSignalRouting(req: SetRequest, res: Response): Response {
+  const signalPayload: SetPayload = req.body
+  try {
+    if (!signalPayload.events) {
+      return sendSignalResponse(
+        res,
+        false,
+        SetErrorCode.MISSING_EVENTS,
+        'Missing events in request body'
+      )
     }
-
-    try {
-        for (const event of signalPayload.events) {
-            switch (event.type) {
-                case 'http://schemas.openid.net/secevent/risc/event/account_purged':
-                    handleAccountPurged(signalPayload, event.data, req, res);
-                    break;
-                case 'http://schemas.openid.net/secevent/risc/event/account_disabled':
-                    handleAccountDisabled(signalPayload, event.data, req, res);
-                    break;
-                // Add or remove cases to be routed
-                default:
-                    return sendSignalResponse(res, false, SetErrorCode.INVALID_REQUEST, 'Unsupported event type');
-            }
-        }
-        return sendSignalResponse(res, true);
-    } catch (error) {
-        return sendSignalResponse(res, false, SetErrorCode.AUTHENTICATION_FAILED, 'Failed to process the request');
+    for (const [eventType, eventData] of Object.entries(signalPayload.events)) {
+      switch (eventType as RiscEventType) {
+        case RiscEventType.ACCOUNT_PURGED:
+          handleAccountPurged(signalPayload, eventData, req, res)
+          break
+        case RiscEventType.ACCOUNT_DISABLED:
+          handleAccountDisabled(signalPayload, eventData, req, res)
+          break
+        // Add or remove cases to be routed
+        default:
+          return sendSignalResponse(
+            res,
+            false,
+            SetErrorCode.UNSUPPORTED_EVENT_TYPE,
+            'Unsupported event type'
+          )
+      }
     }
+    return sendSignalResponse(res, true)
+  } catch (error) {
+    console.error('Error processing signal routing:', error)
+    return sendSignalResponse(
+      res,
+      false,
+      SetErrorCode.FAILED_TO_PROCESS,
+      'Failed to process the request'
+    )
+  }
 }

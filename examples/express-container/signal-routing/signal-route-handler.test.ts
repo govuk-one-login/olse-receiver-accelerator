@@ -1,50 +1,85 @@
-import { Response } from 'express';
-import { handleSignalRouting } from './signal-route-handler';
-import { SetRequest, SetErrorCode } from '../types/types';
+import { Response } from 'express'
+import { handleSignalRouting } from './signal-route-handler'
+import { SetRequest, SetErrorCode } from '../types/types'
+import { sendSignalResponse } from '../utils/response-helper'
+import { handleAccountDisabled, handleAccountPurged } from './signal-handlers'
+
+jest.mock('../utils/response-helper')
+jest.mock('./signal-handlers')
+
+const mockSendSignalResponse = sendSignalResponse as jest.MockedFunction<
+  typeof sendSignalResponse
+>
+const mockHandleAccountDisabled = handleAccountDisabled as jest.MockedFunction<
+  typeof handleAccountDisabled
+>
+const mockHandleAccountPurged = handleAccountPurged as jest.MockedFunction<
+  typeof handleAccountPurged
+>
 
 describe('handleSetRouting', () => {
-    it('should return 200 for valid requests', () => {
-        const req = {
-            body: {
-                events: [
-                    {
-                        type: 'http://schemas.openid.net/secevent/risc/event/account_purged',
-                        data: {}
-                    }
-                ]
+  let mockRes: Partial<Response>
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockRes = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis()
+    }
+  })
+  it('should return 200 for valid requests', () => {
+    const req: Partial<SetRequest> = {
+      body: {
+        iss: 'https://example.com',
+        iat: 1633072800,
+        events: {
+          'http://schemas.openid.net/secevent/risc/event/account_disabled': {
+            subject: {
+              subject_type: 'account',
+              account: { acct: 'user@example.com' }
             }
-        } as unknown as SetRequest;
+          }
+        }
+      }
+    }
 
-        const res = {
-            status: jest.fn().mockReturnThis(),
-            json: jest.fn()
-        } as unknown as Response;
+    // const res: Partial<Response> = {
+    //     status: jest.fn().mockReturnThis(),
+    //     json: jest.fn().mockReturnThis(),
+    // }
 
-        handleSignalRouting(req, res);
+    handleSignalRouting(req as SetRequest, mockRes as Response)
 
-        expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.json).toHaveBeenCalledWith({ success: true });
-    });
+    expect(mockSendSignalResponse).toHaveBeenCalledWith(mockRes, true)
+    expect(mockHandleAccountDisabled).toHaveBeenCalledTimes(1)
+    expect(mockHandleAccountPurged).not.toHaveBeenCalled()
+  })
 
-    it('should return 400 for invalid requests', () => {
-        const req = {
-            body: {
-                events: [
-                    {
-                        type: 'http://schemas.openid.net/secevent/risc/event/account_enabled',
-                        data: {}
-                    }
-                ]
+  it('should return 400 for invalid requests', () => {
+    const req: Partial<SetRequest> = {
+      body: {
+        iss: 'https://example.com',
+        iat: 1633072800,
+        events: {
+          'http://schemas.openid.net/secevent/risc/event/account_enabled': {
+            subject: {
+              subject_type: 'account',
+              account: { acct: 'user@example.com' }
             }
-        } as unknown as SetRequest;
-        const res = {} as Response
-        res.json = jest.fn();
-        res.status = jest.fn().mockReturnThis();
-        res.set = jest.fn().mockReturnThis();
+          }
+        }
+      }
+    }
+    const res = {} as Response
 
-        handleSignalRouting(req, res);
+    handleSignalRouting(req as SetRequest, res)
 
-        expect(res.status).toHaveBeenCalledWith(400);
-        expect(res.json).toHaveBeenCalledWith({ err: SetErrorCode.INVALID_REQUEST, description: 'Unsupported event type' });
-    });
-});
+    expect(mockSendSignalResponse).toHaveBeenCalledWith(
+      res,
+      false,
+      SetErrorCode.UNSUPPORTED_EVENT_TYPE,
+      'Unsupported event type'
+    )
+    expect(mockHandleAccountDisabled).not.toHaveBeenCalled()
+    expect(mockHandleAccountPurged).not.toHaveBeenCalled()
+  })
+})
