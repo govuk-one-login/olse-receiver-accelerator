@@ -21,7 +21,6 @@ type Result = ValidResponse | InvalidResponse
 export const auth = async (req: Request): Promise<Result> => {
   const { client_id, client_secret, grant_type } = getAuthInput(req)
   if (grant_type !== 'client_credentials') {
-    console.log('hi')
     return { valid: false, error: 'invalid_grant', response_code: 400 }
   }
   if (

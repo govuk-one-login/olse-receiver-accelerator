@@ -48,8 +48,7 @@ describe('validateSignalAgainstSchema', () => {
       description: 'description',
       iss: 2
     }
-    expect(await validateSignalAgainstSchemas(signalSet)).toStrictEqual({
-      valid: false
-    })
+    const validatedSignal = await validateSignalAgainstSchemas(signalSet)
+    expect(validatedSignal?.valid).toStrictEqual(false)
   })
 })

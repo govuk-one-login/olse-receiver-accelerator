@@ -13,7 +13,23 @@ const getPrivateKey = async () => {
 export const generateJWT = async (): Promise<string> => {
   const privateKey = await getPrivateKey()
 
-  return await new SignJWT({})
+  return await new SignJWT({
+    sub_id: { format: 'string', id: 'sub_id' },
+    events: {}
+  })
+    .setProtectedHeader({ alg: 'PS256' })
+    .setIssuedAt()
+    .setExpirationTime('1h')
+    .setIssuer('https://transmitter.example.com')
+    .setJti('jti')
+    .setAudience('aud')
+    .sign(privateKey)
+}
+
+export const generateBasicJWT = async (): Promise<string> => {
+  const privateKey = await getPrivateKey()
+
+  return await new SignJWT()
     .setProtectedHeader({ alg: 'PS256' })
     .setIssuedAt()
     .setExpirationTime('1h')

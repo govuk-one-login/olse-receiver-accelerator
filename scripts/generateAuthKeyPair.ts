@@ -7,8 +7,8 @@ const main = async () => {
   })
   const privateJwk = await jose.exportJWK(privateKey)
   const publicJwk = await jose.exportJWK(publicKey)
-  if (!existsSync('./.keys/')) {
-    mkdirSync('./.keys/')
+  if (!existsSync('./keys/')) {
+    mkdirSync('./keys/')
   }
   writeFileSync('./keys/authPrivate.key', JSON.stringify(privateJwk))
   writeFileSync('./keys/authPublic.key', JSON.stringify(publicJwk))
