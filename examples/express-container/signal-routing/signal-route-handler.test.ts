@@ -42,11 +42,6 @@ describe('handleSetRouting', () => {
       }
     }
 
-    // const res: Partial<Response> = {
-    //     status: jest.fn().mockReturnThis(),
-    //     json: jest.fn().mockReturnThis(),
-    // }
-
     handleSignalRouting(req as SetRequest, mockRes as Response)
 
     expect(mockSendSignalResponse).toHaveBeenCalledWith(mockRes, true)

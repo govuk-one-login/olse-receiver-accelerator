@@ -15,15 +15,9 @@ describe('Signal Handlers', () => {
     const jsonSpy = jest.spyOn(res, 'json').mockReturnThis()
 
     const signalPayload: SetPayload = { sub: 'user0' }
-    const eventData = 'user requested deletion'
+    const eventData = { description: 'user requested deletion' }
 
     handleAccountPurged(signalPayload, eventData, req, res)
-
-    // expect(res.status).toHaveBeenCalledWith(200);
-    // expect(res.json).toHaveBeenCalledWith({
-    //     success: true,
-    //     message: "Account purged.",
-    // });
     expect(statusSpy).toHaveBeenCalledWith(200)
     expect(jsonSpy).toHaveBeenCalledWith({
       success: true,
@@ -39,7 +33,7 @@ describe('Signal Handlers', () => {
     const statusSpy = jest.spyOn(res, 'status').mockReturnThis()
     const jsonSpy = jest.spyOn(res, 'json').mockReturnThis()
     const signalPayload: SetPayload = { sub: 'user1' }
-    const eventData = 'admin action'
+    const eventData = { description: 'admin action' }
 
     handleAccountDisabled(signalPayload, eventData, req, res)
 
