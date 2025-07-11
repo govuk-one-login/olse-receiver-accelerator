@@ -1,8 +1,9 @@
 import { Response } from 'express'
 import { handleSignalRouting } from './signal-route-handler'
-import { SetRequest, SetErrorCode } from '../types/types'
+import { SetRequest } from '../interfaces/interfaces'
 import { sendSignalResponse } from '../utils/response-helper'
 import { handleAccountDisabled, handleAccountPurged } from './signal-handlers'
+import { SetErrorCode } from '../enums/enums'
 
 jest.mock('../utils/response-helper')
 jest.mock('./signal-handlers')

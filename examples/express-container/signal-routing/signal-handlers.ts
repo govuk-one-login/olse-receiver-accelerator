@@ -1,4 +1,4 @@
-import { SetPayload, SetRequest } from '../types/types'
+import { SetPayload, SetRequest } from '../interfaces/interfaces'
 import { Response } from 'express'
 
 export function handleAccountPurged(

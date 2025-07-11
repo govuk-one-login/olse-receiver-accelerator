@@ -1,4 +1,4 @@
-import { SetErrorCode } from '../types/types'
+import { SetErrorCode } from '../enums/enums'
 import { sendSignalResponse } from './response-helper'
 import { Response } from 'express'
 

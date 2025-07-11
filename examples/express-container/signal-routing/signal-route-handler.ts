@@ -1,10 +1,6 @@
 import { Response } from 'express'
-import {
-  RiscEventType,
-  SetErrorCode,
-  SetPayload,
-  SetRequest
-} from '../types/types'
+import { SetPayload, SetRequest } from '../interfaces/interfaces'
+import { RiscEventType, SetErrorCode } from '../enums/enums'
 import { sendSignalResponse } from '../utils/response-helper'
 import { handleAccountDisabled, handleAccountPurged } from './signal-handlers'
 

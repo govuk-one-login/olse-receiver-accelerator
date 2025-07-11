@@ -1,5 +1,5 @@
 import { Response } from 'express'
-import { SetErrorCode } from '../types/types'
+import { SetErrorCode } from '../enums/enums'
 
 export function sendSignalResponse(
   res: Response,

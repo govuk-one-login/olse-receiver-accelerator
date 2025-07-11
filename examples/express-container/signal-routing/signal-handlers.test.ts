@@ -1,4 +1,5 @@
-import { SetPayload, SetRequest } from '../types/types'
+import { SetRequest } from '../interfaces/interfaces'
+import { SetPayload } from '../interfaces/interfaces'
 import { handleAccountDisabled, handleAccountPurged } from './signal-handlers'
 import { Response } from 'express'
 
