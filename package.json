@@ -51,10 +51,8 @@
     "typescript-eslint": "^8.35.1"
   },
   "lint-staged": {
-    "**/*.ts": [
-      "npm run lint:fix",
-      "npm run format:fix"
-    ]
+    "*": "npm run format:fix",
+    "*.{js,ts}": "npm run lint:fix"
   },
   "engines": {
     "node": ">=22.0.0"
