@@ -20,13 +20,6 @@ export interface SetErrorResponse {
   description: string
 }
 
-export type SetHandler = (
-  setPayload: SetPayload,
-  eventData: string,
-  req: SetRequest,
-  res: Response
-) => Promise<void>
-
 export enum SetErrorCode {
   MISSING_EVENTS = 'missing_events',
   INVALID_REQUEST = 'invalid_request',

@@ -19,13 +19,13 @@ export function handleSignalRouting(req: SetRequest, res: Response): Response {
         'Missing events in request body'
       )
     }
-    for (const [eventType, eventData] of Object.entries(signalPayload.events)) {
+    for (const [eventType] of Object.entries(signalPayload.events)) {
       switch (eventType as RiscEventType) {
         case RiscEventType.ACCOUNT_PURGED:
-          handleAccountPurged(signalPayload, eventData, req, res)
+          handleAccountPurged(signalPayload, req, res)
           break
         case RiscEventType.ACCOUNT_DISABLED:
-          handleAccountDisabled(signalPayload, eventData, req, res)
+          handleAccountDisabled(signalPayload, req, res)
           break
         // Add or remove cases to be routed
         default:

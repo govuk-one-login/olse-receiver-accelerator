@@ -3,7 +3,6 @@ import { Response } from 'express'
 
 export function handleAccountPurged(
   _setPayload: SetPayload,
-  _eventData: object,
   _req: SetRequest,
   res: Response
 ): void {
@@ -12,7 +11,6 @@ export function handleAccountPurged(
 
 export function handleAccountDisabled(
   _setPayload: SetPayload,
-  _eventData: object,
   _req: SetRequest,
   res: Response
 ): void {
