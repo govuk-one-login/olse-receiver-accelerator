@@ -19,7 +19,7 @@ describe('validateSignalAgainstSchema', () => {
     }
     expect(await validateSignalAgainstSchemas(signalSet)).toStrictEqual({
       valid: true,
-      schema: '../../examples/express-container/schemas/verificationEvent.json'
+      schema: './examples/express-container/schemas/verificationEvent.json'
     })
   })
 
@@ -39,7 +39,7 @@ describe('validateSignalAgainstSchema', () => {
     }
     expect(await validateSignalAgainstSchemas(signalSet)).toStrictEqual({
       valid: true,
-      schema: '../../examples/express-container/schemas/verificationEvent.json'
+      schema: './examples/express-container/schemas/verificationEvent.json'
     })
   })
 
