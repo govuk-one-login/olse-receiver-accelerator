@@ -22,8 +22,7 @@ v1Router.post('/token', async (req: Request, res: Response) => {
 })
 
 v1Router.post('/Events', async (req: Request, res: Response) => {
-  const publicKey = await getPublicKey('wwww.example.com')
-  console.log(publicKey)
+  const publicKey = getPublicKey('wwww.example.com')
   let verifiedJwtBody
   try {
     // eslint-disable-next-line
@@ -38,7 +37,7 @@ v1Router.post('/Events', async (req: Request, res: Response) => {
     verifiedJwtBody?.payload
   )
   if (schemsIsValid?.valid) {
-    res.status(202).type('json').json(schemsIsValid)
+    res.status(202)
   } else {
     res
       .status(400)
