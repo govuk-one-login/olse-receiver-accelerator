@@ -59,3 +59,12 @@ jobs:
       contents: read
     secrets: inherit
     uses: ./.github/workflows/deploy-vendor-feature-branch-to-aws.yml
+
+  deploy-vendor-main-branch-to-aws:
+    name: Feature Branch
+    needs: [Run-CI-Checks, Run-Vendor-Checks, Run-Implementor-Checks]
+    permissions:
+      id-token: write
+      contents: read
+    secrets: inherit
+    uses: ./.github/workflows/deploy-vendor-feature-branch-to-aws.yml
