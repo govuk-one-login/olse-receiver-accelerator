@@ -1,14 +1,13 @@
 import { Response } from 'express'
-import { SetErrorCode } from '../enums/enums'
 
 export function sendSignalResponse(
   res: Response,
   success: boolean,
-  errorCode?: SetErrorCode,
+  errorCode?: string,
   description?: string
 ): Response {
   if (success) {
-    return res.status(200).json({ success: true })
+    return res.status(202)
   }
 
   return res.status(400).set('Content-Type', 'application/json').json({

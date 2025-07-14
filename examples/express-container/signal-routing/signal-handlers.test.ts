@@ -1,43 +1,23 @@
-import { SetRequest } from '../interfaces/interfaces'
 import { SetPayload } from '../interfaces/interfaces'
 import { handleAccountDisabled, handleAccountPurged } from './signal-handlers'
-import { Response } from 'express'
 
 describe('Signal Handlers', () => {
-  const req = {} as SetRequest
-
-  it('handleAccountPurged should return status code 200', () => {
-    const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn()
-    } as Partial<Response> as Response
-
-    const statusSpy = jest.spyOn(res, 'status').mockReturnThis()
-    const jsonSpy = jest.spyOn(res, 'json').mockReturnThis()
-
+  it('handleAccountPurged should return success result', () => {
     const signalPayload: SetPayload = { sub: 'user0' }
 
-    handleAccountPurged(signalPayload, req, res)
-    expect(statusSpy).toHaveBeenCalledWith(200)
-    expect(jsonSpy).toHaveBeenCalledWith({
+    const result = handleAccountPurged(signalPayload)
+
+    expect(result).toEqual({
       success: true,
       message: 'Account purged.'
     })
   })
-
-  it('handleAccountDisabled should return status code 200', () => {
-    const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn()
-    } as Partial<Response> as Response
-    const statusSpy = jest.spyOn(res, 'status').mockReturnThis()
-    const jsonSpy = jest.spyOn(res, 'json').mockReturnThis()
+  it('handleAccountDisabled should return success result', () => {
     const signalPayload: SetPayload = { sub: 'user1' }
 
-    handleAccountDisabled(signalPayload, req, res)
+    const result = handleAccountDisabled(signalPayload)
 
-    expect(statusSpy).toHaveBeenCalledWith(200)
-    expect(jsonSpy).toHaveBeenCalledWith({
+    expect(result).toEqual({
       success: true,
       message: 'Account disabled.'
     })

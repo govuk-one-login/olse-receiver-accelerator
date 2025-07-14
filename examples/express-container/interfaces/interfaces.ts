@@ -19,3 +19,10 @@ export interface SetErrorResponse {
   error: string
   description: string
 }
+
+export interface SignalResult {
+  success: boolean
+  message?: string
+  errorCode?: string
+  description?: string
+}

@@ -1,22 +1,36 @@
 import express, { Request, Response } from 'express'
 import { handleSignalRouting } from './signal-routing/signal-route-handler'
+import { sendSignalResponse } from './utils/response-helper'
+import { SetErrorCode } from './enums/enums'
+import { SetPayload } from './interfaces/interfaces'
 
 export const app = express()
 app.use(express.json())
 const v1Router = express.Router()
 
-function signalEventHandler(req: Request, res: Response) {
+function signalEventHandler(req: Request, res: Response): void {
   try {
     // Auth handler
 
     // Validation handler
 
     // Routing handler
-    console.log('Received request:', req.body)
-    handleSignalRouting(req, res)
+    const signalPayload: SetPayload = req.body as SetPayload
+    const result = handleSignalRouting(signalPayload)
+
+    if (result.success) {
+      sendSignalResponse(res, true)
+    } else {
+      sendSignalResponse(res, false, result.errorCode, result.message)
+    }
   } catch (err) {
     console.error('Error processing request:', err)
-    res.status(500).json({ error: 'Internal server error:' })
+    sendSignalResponse(
+      res,
+      false,
+      SetErrorCode.FAILED_TO_PROCESS,
+      'Failed to process the request'
+    )
   }
 }
 

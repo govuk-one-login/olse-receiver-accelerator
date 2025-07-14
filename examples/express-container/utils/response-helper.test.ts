@@ -3,7 +3,7 @@ import { sendSignalResponse } from './response-helper'
 import { Response } from 'express'
 
 describe('sendSignalResponse', () => {
-  it('should send a 200 response for successful requests', () => {
+  it('should send a 202 response for successful requests', () => {
     const res = {
       status: jest.fn().mockReturnThis(),
       set: jest.fn().mockReturnThis(),
@@ -11,11 +11,9 @@ describe('sendSignalResponse', () => {
     } as Partial<Response> as Response
 
     const statusSpy = jest.spyOn(res, 'status').mockReturnThis()
-    const jsonSpy = jest.spyOn(res, 'json').mockReturnThis()
     sendSignalResponse(res, true)
 
-    expect(statusSpy).toHaveBeenCalledWith(200)
-    expect(jsonSpy).toHaveBeenCalledWith({ success: true })
+    expect(statusSpy).toHaveBeenCalledWith(202)
   })
 
   it('should send a 400 response for failed requests', () => {
