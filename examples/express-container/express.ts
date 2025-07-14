@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express'
 import { handleSignalRouting } from './signal-routing/signal-route-handler'
 import { sendSignalResponse } from './utils/response-helper'
-import { SetErrorCode } from './enums/enums'
+import { CustomSetErrorCode } from './enums/enums'
 import { SetPayload } from './interfaces/interfaces'
 
 export const app = express()
@@ -21,15 +21,16 @@ function signalEventHandler(req: Request, res: Response): void {
     if (result.success) {
       sendSignalResponse(res, true)
     } else {
-      sendSignalResponse(res, false, result.errorCode, result.message)
+      sendSignalResponse(res, false, result.errorCode, result.message, result.statusCode)
     }
   } catch (err) {
     console.error('Error processing request:', err)
     sendSignalResponse(
       res,
       false,
-      SetErrorCode.FAILED_TO_PROCESS,
-      'Failed to process the request'
+      CustomSetErrorCode.FAILED_TO_PROCESS,
+      'Failed to process the request',
+      500
     )
   }
 }

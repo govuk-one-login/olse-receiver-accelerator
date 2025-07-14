@@ -25,4 +25,5 @@ export interface SignalResult {
   message?: string
   errorCode?: string
   description?: string
+  statusCode?: number
 }

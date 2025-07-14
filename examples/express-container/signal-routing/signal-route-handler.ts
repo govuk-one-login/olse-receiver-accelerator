@@ -8,7 +8,8 @@ export function handleSignalRouting(signalPayload: SetPayload): SignalResult {
       return {
         success: false,
         errorCode: CustomSetErrorCode.MISSING_EVENTS,
-        description: 'Missing events in request body'
+        description: 'Missing events in request body',
+        statusCode: 400
       }
     }
     for (const [eventType] of Object.entries(signalPayload.events)) {
@@ -22,7 +23,8 @@ export function handleSignalRouting(signalPayload: SetPayload): SignalResult {
           return {
             success: false,
             errorCode: CustomSetErrorCode.UNSUPPORTED_EVENT_TYPE,
-            description: 'Unsupported event type'
+            description: 'Unsupported event type',
+            statusCode: 400
           }
       }
     }
@@ -32,7 +34,8 @@ export function handleSignalRouting(signalPayload: SetPayload): SignalResult {
     return {
       success: false,
       errorCode: CustomSetErrorCode.FAILED_TO_PROCESS,
-      description: 'Failed to process the request'
+      description: 'Failed to process the request',
+      statusCode: 500
     }
   }
 }

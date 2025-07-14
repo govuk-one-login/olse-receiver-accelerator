@@ -57,7 +57,8 @@ describe('handleSetRouting', () => {
     expect(result).toEqual({
       success: false,
       errorCode: CustomSetErrorCode.UNSUPPORTED_EVENT_TYPE,
-      description: 'Unsupported event type'
+      description: 'Unsupported event type',
+      statusCode: 400
     })
     expect(mockHandleAccountDisabled).not.toHaveBeenCalled()
     expect(mockHandleAccountPurged).not.toHaveBeenCalled()
