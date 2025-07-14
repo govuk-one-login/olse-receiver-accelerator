@@ -63,6 +63,24 @@ Implementation steps for handling new/additional signals
 2. Create handler: Implement the specific event handler function
 3. Add Route Case: Include the new case in the switch statement
 
+Signal Routing Process Output
+
+The signal routing process produces two standardized responses in accordance with RFC 8935:
+
+Success Response
+
+HTTP 202 Accepted
+`{}`
+
+Error Response
+
+HTTP 400 Bad Request
+`{
+  "success": false,
+  "errorCode": "UNSUPPORTED_EVENT_TYPE",
+  "message": "Unsupported event type"
+}`
+
 ## Verification Signal
 
 The container will have a basic cron job that will attempt to call the Signal Transmitter's Verification signal every 15 minutes. The payload for the `state` field will be a JWT so that when the receiver receives the verification signal sent by the transmitter, the recevier can verify the signal.
