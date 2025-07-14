@@ -1,7 +1,7 @@
 import { handleSignalRouting } from './signal-route-handler'
 import { SetPayload } from '../interfaces/interfaces'
 import { handleAccountDisabled, handleAccountPurged } from './signal-handlers'
-import { SetErrorCode } from '../enums/enums'
+import { CustomSetErrorCode } from '../enums/enums'
 
 jest.mock('../utils/response-helper')
 jest.mock('./signal-handlers')
@@ -56,7 +56,7 @@ describe('handleSetRouting', () => {
 
     expect(result).toEqual({
       success: false,
-      errorCode: SetErrorCode.UNSUPPORTED_EVENT_TYPE,
+      errorCode: CustomSetErrorCode.UNSUPPORTED_EVENT_TYPE,
       description: 'Unsupported event type'
     })
     expect(mockHandleAccountDisabled).not.toHaveBeenCalled()

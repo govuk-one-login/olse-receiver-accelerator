@@ -1,5 +1,5 @@
 import { SetPayload, SignalResult } from '../interfaces/interfaces'
-import { RiscEventType, SetErrorCode } from '../enums/enums'
+import { CustomSetErrorCode, RiscEventType } from '../enums/enums'
 import { handleAccountDisabled, handleAccountPurged } from './signal-handlers'
 
 export function handleSignalRouting(signalPayload: SetPayload): SignalResult {
@@ -7,7 +7,7 @@ export function handleSignalRouting(signalPayload: SetPayload): SignalResult {
     if (!signalPayload.events) {
       return {
         success: false,
-        errorCode: SetErrorCode.MISSING_EVENTS,
+        errorCode: CustomSetErrorCode.MISSING_EVENTS,
         description: 'Missing events in request body'
       }
     }
@@ -21,7 +21,7 @@ export function handleSignalRouting(signalPayload: SetPayload): SignalResult {
         default:
           return {
             success: false,
-            errorCode: SetErrorCode.UNSUPPORTED_EVENT_TYPE,
+            errorCode: CustomSetErrorCode.UNSUPPORTED_EVENT_TYPE,
             description: 'Unsupported event type'
           }
       }
@@ -31,7 +31,7 @@ export function handleSignalRouting(signalPayload: SetPayload): SignalResult {
     console.error('Error processing signal routing:', error)
     return {
       success: false,
-      errorCode: SetErrorCode.FAILED_TO_PROCESS,
+      errorCode: CustomSetErrorCode.FAILED_TO_PROCESS,
       description: 'Failed to process the request'
     }
   }
