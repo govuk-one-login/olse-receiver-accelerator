@@ -12,8 +12,9 @@
     "type-check": "tsc --noEmit",
     "container:build": "CONTAINER=true node esbuild.config.mjs",
     "container:watch:build": "npm run container:build -- --watch",
-    "container:serve": "nodemon -L -V dist/server.js",
+    "container:serve": "nodemon -L -V dist/examples/express-container/server.js",
     "container:dev": "concurrently \"npm:container:watch:build\" \"npm:container:serve\"",
+    "lambda:build": "AWS_LAMBDA_REFERENCE=true node esbuild.config.mjs",
     "test:vendor": "jest --config tests/vendor/unit/jest.config.mjs",
     "test:unit": "jest --config tests/implementor/unit/jest.config.mjs"
   },
@@ -28,6 +29,7 @@
   },
   "homepage": "https://github.com/govuk-one-login/olse-receiver-accelerator#readme",
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.150",
     "@eslint/js": "^9.30.1",
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
@@ -48,13 +50,12 @@
     "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
+    "yaml-cfn": "^0.3.2",
     "typescript-eslint": "^8.35.1"
   },
   "lint-staged": {
-    "**/*.ts": [
-      "npm run lint:fix",
-      "npm run format:fix"
-    ]
+    "*": "npm run format:fix",
+    "*.{js,ts}": "npm run lint:fix"
   },
   "engines": {
     "node": ">=22.0.0"
