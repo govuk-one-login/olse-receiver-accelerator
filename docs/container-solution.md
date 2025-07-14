@@ -37,17 +37,18 @@ At this point the signal is valid and can then be processed by your upstream pro
 2. Routes to appropriate handler based on event type within `signal-handlers.ts`
 3. Response: Returns success or failure status
 
-Supported Event Types
+### Supported Event Types
 
 Currently for example purposes the signal routing supports the following event types:
 
 - Account Disabled
 - Account Purged
 
-Signal Handlers
+### Signal Handlers
+
 There are two boiler plate examples of the signal handlers that can be found in `examples/express-container/signal-routing/signal-handlers.ts`. These currently return a `SignalResult` object, however the intention is for these to be used to fulfil the end to end use case integration for example taking immediate action in the event of `Account Disabled` or `Account Purged` etc. This may require external integrations for example but not limited to sending signals to HTTP APIs, an AWS Lambda Invocation or sending on to a message queue. This logic is intended for the RP to implement by themselves depending on their requirements.
 
-Error Handling
+### Error Handling
 
 The signal routing handles several error cases:
 
@@ -57,13 +58,13 @@ The signal routing handles several error cases:
 | UNSUPPORTED_EVENT_TYPE | Unknown event type received | Return 400 with error message |
 | Failed to process      | Handler execution failed    | Return 500 with error message |
 
-Implementation steps for handling new/additional signals
+### Implementation steps for handling new/additional signals
 
 1. Update Enums: Add new event type to `RiscEventType` enum within `examples/express-container/enums/enums.ts`
 2. Create handler: Implement the specific event handler function within `examples/express-container/signal-routing/signal-handlers.ts`
 3. Add Route Case: Include the new case in the switch statement within `examples/express-container/signal-routing/signal-route-handler.ts`
 
-Signal Routing Process Output
+### Signal Routing Process Output
 
 The signal routing process produces two standardized responses in accordance with RFC 8935:
 
