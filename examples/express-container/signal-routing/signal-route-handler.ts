@@ -4,11 +4,14 @@ import { handleAccountDisabled, handleAccountPurged } from './signal-handlers'
 
 export function handleSignalRouting(signalPayload: SetPayload): SignalResult {
   try {
-    if (!signalPayload.events) {
+    if (
+      !signalPayload.events ||
+      Object.keys(signalPayload.events).length === 0
+    ) {
       return {
         success: false,
         errorCode: CustomSetErrorCode.MISSING_EVENTS,
-        description: 'Missing events in request body',
+        description: 'Missing events in Set Payload',
         statusCode: 400
       }
     }
