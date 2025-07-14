@@ -1,5 +1,8 @@
 // esbuild.config.js
 import esbuild from 'esbuild'
+import { readFileSync } from 'fs'
+import { dirname, join } from 'path'
+import { yamlParse } from 'yaml-cfn'
 
 const baseEsBuildConfig = {
   bundle: true,
@@ -15,17 +18,56 @@ const baseEsBuildConfig = {
   logLevel: 'info'
 }
 
-if (process.env['CONTAINER'] === 'true') {
-  console.log('Running esbuild for container')
+async function main() {
+  if (process.env['CONTAINER'] === 'true') {
+    console.log('Running esbuild for container')
+    await buildForContainer()
+  } else if (process.env['AWS_LAMBDA_REFERENCE'] === 'true') {
+    console.log('Running esbuild for container')
+    await buildFor_AWS_LAMBDA_REFERENCE()
+  } else {
+    throw new Error('Invalid build target')
+  }
 }
 
-const finalConfig = {
-  ...baseEsBuildConfig,
-  entryPoints: ['examples/express-container/server.ts'],
-  outfile: 'dist/server.js'
+async function buildFor_AWS_LAMBDA_REFERENCE() {
+  const baseLambdaPath = 'examples/aws-lambda'
+  const lambdasPath = `${baseLambdaPath}/src/lambda`
+  const { Resources } = yamlParse(
+    readFileSync(join(dirname('.'), `${baseLambdaPath}/template.yaml`), 'utf-8')
+  )
+
+  const awsResources = Object.values(Resources)
+  const lambdas = awsResources.filter(
+    (resource) => resource.Type === 'AWS::Serverless::Function'
+  )
+
+  const entries = lambdas.reduce((entryPoints, lambda) => {
+    const lambdaName = lambda.Properties.CodeUri.split('/').pop()
+    if (!(lambdaName in entryPoints)) {
+      entryPoints.push(`./${lambdasPath}/${lambdaName}/handler.ts`)
+    }
+
+    return entryPoints
+  }, [])
+
+  console.log('entries')
+  console.log(entries)
+  const finalConfig = {
+    ...baseEsBuildConfig,
+    entryPoints: entries,
+    outdir: `dist/${lambdasPath}`
+  }
+  await esbuild.build(finalConfig)
 }
-// --- Build Script ---
-async function build() {
+
+async function buildForContainer() {
+  const basePath = 'examples/express-container'
+  const finalConfig = {
+    ...baseEsBuildConfig,
+    entryPoints: [`${basePath}/server.ts`],
+    outfile: `dist/${basePath}/server.js`
+  }
   try {
     const context = await esbuild.context(finalConfig)
 
@@ -46,4 +88,4 @@ async function build() {
 }
 
 // --- Run the build ---
-build().then(() => console.log('finished build'))
+main().then(() => console.log('finished build'))

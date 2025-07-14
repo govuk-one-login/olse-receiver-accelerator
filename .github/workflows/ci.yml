@@ -50,3 +50,23 @@ jobs:
       contents: read
     secrets: inherit
     uses: ./.github/workflows/implementor.yml
+
+  deploy-vendor-feature-branch-to-aws:
+    name: Feature Branch Deploy
+    if: startsWith(github.head_ref, 'feature')
+    needs: [Run-CI-Checks, Run-Vendor-Checks, Run-Implementor-Checks]
+    permissions:
+      id-token: write
+      contents: read
+    secrets: inherit
+    uses: ./.github/workflows/deploy-vendor-feature-branch-to-aws.yml
+
+  deploy-vendor-main-branch-to-aws:
+    name: Main Branch Deploy
+    if: startsWith(github.head_ref, 'main')
+    needs: [Run-CI-Checks, Run-Vendor-Checks, Run-Implementor-Checks]
+    permissions:
+      id-token: write
+      contents: read
+    secrets: inherit
+    uses: ./.github/workflows/deploy-vendor-main-branch-to-aws.yml
