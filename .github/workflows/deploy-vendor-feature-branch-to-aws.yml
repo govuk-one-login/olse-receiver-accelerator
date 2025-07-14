@@ -10,6 +10,7 @@ env:
 jobs:
   deploy-feature:
     name: Deploy Feature
+    if: startsWith(github.head_ref, 'feature')
     runs-on: ubuntu-latest
     steps:
       - name: Download build artifact
