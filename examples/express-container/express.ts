@@ -21,7 +21,13 @@ function signalEventHandler(req: Request, res: Response): void {
     if (result.success) {
       sendSignalResponse(res, true)
     } else {
-      sendSignalResponse(res, false, result.errorCode, result.message, result.statusCode)
+      sendSignalResponse(
+        res,
+        false,
+        result.errorCode,
+        result.message,
+        result.statusCode
+      )
     }
   } catch (err) {
     console.error('Error processing request:', err)
