@@ -15,23 +15,23 @@ export function handleSignalRouting(signalPayload: SetPayload): SignalResult {
         statusCode: 400
       }
     }
-    for (const [eventType] of Object.entries(signalPayload.events)) {
-      switch (eventType as RiscEventType) {
-        case RiscEventType.ACCOUNT_PURGED:
-          return handleAccountPurged(signalPayload)
-        case RiscEventType.ACCOUNT_DISABLED:
-          return handleAccountDisabled(signalPayload)
-        // Add or remove cases to be routed
-        default:
-          return {
-            success: false,
-            errorCode: CustomSetErrorCode.UNSUPPORTED_EVENT_TYPE,
-            description: 'Unsupported event type',
-            statusCode: 400
-          }
-      }
+    const event = Object.keys(signalPayload.events)
+    const eventTypeName = event[0]
+
+    switch (eventTypeName as RiscEventType) {
+      case RiscEventType.ACCOUNT_PURGED:
+        return handleAccountPurged(signalPayload)
+      case RiscEventType.ACCOUNT_DISABLED:
+        return handleAccountDisabled(signalPayload)
+      // Add or remove cases to be routed
+      default:
+        return {
+          success: false,
+          errorCode: CustomSetErrorCode.UNSUPPORTED_EVENT_TYPE,
+          description: 'Unsupported event type',
+          statusCode: 400
+        }
     }
-    return { success: true }
   } catch (error) {
     console.error('Error processing signal routing:', error)
     return {

@@ -1,6 +1,12 @@
 // import { app } from './express'
 // import request from 'supertest'
 
+describe('ExpressJS Application', () => {
+  it('empty test', () => {
+    // Placeholder for future tests
+    expect(true).toBe(true)
+  })
+})
 // describe('ExpressJS /v1/Events', () => {
 //   describe('Signal Auth handler', () => {
 //     // Placeholder

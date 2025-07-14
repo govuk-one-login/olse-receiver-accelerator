@@ -38,6 +38,27 @@ describe('handleSetRouting', () => {
     expect(mockHandleAccountDisabled).not.toHaveBeenCalled()
   })
 
+  it('should return success for valid account disabled event', () => {
+    const payload: SetPayload = {
+      iss: 'https://gds.com',
+      iat: 1622221,
+      events: {
+        'http://schemas.openid.net/secevent/risc/event/account_disabled': {
+          subject: {
+            subject_type: 'account',
+            account: { acct: 'user@gds.com' }
+          }
+        }
+      }
+    }
+
+    const result = handleSignalRouting(payload)
+
+    expect(result).toBe(undefined)
+    expect(mockHandleAccountDisabled).toHaveBeenCalledTimes(1)
+    expect(mockHandleAccountPurged).not.toHaveBeenCalled()
+  })
+
   it('should return error when events are missing', () => {
     const payload: SetPayload = {
       iss: 'https://gds.com',
