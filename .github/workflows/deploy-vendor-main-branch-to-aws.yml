@@ -10,6 +10,7 @@ env:
 jobs:
   deploy-main:
     name: Deploy Main
+    if: startsWith(github.head_ref, 'main')
     runs-on: ubuntu-latest
     steps:
       - name: Download build artifact
