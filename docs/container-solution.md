@@ -59,9 +59,9 @@ The signal routing handles several error cases:
 
 Implementation steps for handling new/additional signals
 
-1. Update Enums: Add new event type to `RiscEventType` enum
-2. Create handler: Implement the specific event handler function
-3. Add Route Case: Include the new case in the switch statement
+1. Update Enums: Add new event type to `RiscEventType` enum within `examples/express-container/enums/enums.ts`
+2. Create handler: Implement the specific event handler function within `examples/express-container/signal-routing/signal-handlers.ts`
+3. Add Route Case: Include the new case in the switch statement within `examples/express-container/signal-routing/signal-route-handler.ts`
 
 Signal Routing Process Output
 
