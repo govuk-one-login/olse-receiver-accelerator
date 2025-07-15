@@ -78,11 +78,3 @@ Resources:
       CodeUri: dist/examples/aws-lambda/src/lambda/hello
       FunctionName: !Sub ${AWS::StackName}-hello
       Handler: handler.handler
-
-  GoodbyeFunction:
-    Type: AWS::Serverless::Function
-    #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
-    Properties:
-      CodeUri: dist/examples/aws-lambda/src/lambda/goodbye
-      FunctionName: !Sub ${AWS::StackName}-goodbye
-      Handler: handler.handler
