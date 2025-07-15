@@ -78,3 +78,20 @@ Resources:
       CodeUri: dist/examples/aws-lambda/src/lambda/hello
       FunctionName: !Sub ${AWS::StackName}-hello
       Handler: handler.handler
+      Role: !GetAtt HelloFunctionRole.Arn
+
+  HelloFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${AWS::StackName}-get-jwks-function-role'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowLambdaToAssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
