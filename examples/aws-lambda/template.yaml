@@ -78,11 +78,20 @@ Resources:
       CodeUri: dist/examples/aws-lambda/src/lambda/hello
       FunctionName: !Sub ${AWS::StackName}-hello
       Handler: handler.handler
+      Role: !GetAtt HelloFunctionRole.Arn
 
-  GoodbyeFunction:
-    Type: AWS::Serverless::Function
-    #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
+  HelloFunctionRole:
+    Type: AWS::IAM::Role
     Properties:
-      CodeUri: dist/examples/aws-lambda/src/lambda/goodbye
-      FunctionName: !Sub ${AWS::StackName}-goodbye
-      Handler: handler.handler
+      RoleName: !Sub '${AWS::StackName}-get-jwks-function-role'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowLambdaToAssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
