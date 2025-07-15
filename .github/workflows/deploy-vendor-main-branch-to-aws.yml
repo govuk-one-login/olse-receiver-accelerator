@@ -10,7 +10,7 @@ env:
 jobs:
   deploy-main:
     name: Deploy Main
-    if: contains(github.head_ref, 'main')
+    # if: contains(github.head_ref, 'main')
     runs-on: ubuntu-latest
     steps:
       - name: Debug GitHub context
