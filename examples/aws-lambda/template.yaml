@@ -43,6 +43,7 @@ Mappings:
 
 Conditions:
   UseCodeSigning: !Not [!Equals [!Ref CodeSigningConfigArn, none]]
+  UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundary, none]]
 
 Globals:
   Function:
@@ -53,6 +54,8 @@ Globals:
     Runtime: nodejs22.x
     Timeout: 30
     MemorySize: 256
+    PermissionsBoundary:
+      !If [UsePermissionsBoundary, !Ref PermissionsBoundary, !Ref AWS::NoValue]
     Layers:
       - !Sub
         - '{{resolve:secretsmanager:${SecretArn}:SecretString:NODEJS_LAYER}}'
