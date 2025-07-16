@@ -1,6 +1,5 @@
 // esbuild.config.js
 import esbuild from 'esbuild'
-
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
 import { yamlParse } from 'yaml-cfn'
@@ -28,14 +27,6 @@ async function main() {
     await buildFor_AWS_LAMBDA_REFERENCE()
   } else {
     throw new Error('Invalid build target')
-  }
-}
-
-async function buildForContainer() {
-  const finalConfig = {
-    ...baseEsBuildConfig,
-    entryPoints: ['examples/express-container/server.ts'],
-    outfile: 'dist/examples/express-container/server.js'
   }
 }
 
@@ -80,16 +71,10 @@ async function buildForContainer() {
   try {
     const context = await esbuild.context(finalConfig)
 
-    if (process.argv.includes('--watch')) {
-      // Watch mode
-      await context.watch()
-      console.log('Watching for changes...')
-    } else {
-      // Single build
-      await context.rebuild()
-      console.log('Build complete!')
-      await context.dispose()
-    }
+    // Single build
+    await context.rebuild()
+    console.log('Build complete!')
+    await context.dispose()
   } catch (error) {
     console.error('Build failed:', error)
     process.exit(1)
