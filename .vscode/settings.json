@@ -4,7 +4,6 @@
     {
       "name": "Vendor Test",
       "jestCommandLine": "npm run test:vendor --"
-
     },
     {
       "name": "Unit Test",

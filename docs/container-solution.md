@@ -42,4 +42,3 @@ At this point the signal is valid and can then be processed by your upstream pro
 ## Verification Signal
 
 The container will have a basic cron job that will attempt to call the Signal Transmitter's Verification endpoint every 15 minutes. The payload for the `state` field will be a JWT so that when the receiver receives the [verification signal](https://openid.net/specs/openid-sharedsignals-framework-1_0.html#name-verification) sent by the transmitter, the recevier can verify the signal.
-

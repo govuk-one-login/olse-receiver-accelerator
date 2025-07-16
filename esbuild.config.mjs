@@ -23,6 +23,11 @@ async function main() {
   if (process.env['CONTAINER'] === 'true') {
     console.log('Running esbuild for container')
     await buildForContainer()
+  } else if (process.env['AWS_LAMBDA_REFERENCE'] === 'true') {
+    console.log('Running esbuild for container')
+    await buildFor_AWS_LAMBDA_REFERENCE()
+  } else {
+    throw new Error('Invalid build target')
   }
 }
 
@@ -31,11 +36,6 @@ async function buildForContainer() {
     ...baseEsBuildConfig,
     entryPoints: ['examples/express-container/server.ts'],
     outfile: 'dist/examples/express-container/server.js'
-  } else if (process.env['AWS_LAMBDA_REFERENCE'] === 'true') {
-    console.log('Running esbuild for container')
-    await buildFor_AWS_LAMBDA_REFERENCE()
-  } else {
-    throw new Error('Invalid build target')
   }
 }
 
