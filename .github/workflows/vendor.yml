@@ -22,4 +22,28 @@ jobs:
         run: npm ci
 
       - name: Run vendor unit tests
-        run: npm run vendor:test
+        run: npm run test:vendor
+
+      - name: Validate SAM template
+        run: |
+          sam validate --lint --template examples/aws-lambda/template.yaml
+
+      - name: Run checkov against SAM template
+        uses: bridgecrewio/checkov-action@a56708f128cd2585d16f86fc984698f09f18e6d6 # v12.3032.0
+        with:
+          file: 'examples/aws-lambda/template.yaml'
+          framework: cloudformation
+          skip_check: 'CKV_AWS_116'
+
+      - name: Build Lambda
+        run: npm run lambda:build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: sam-build
+          path: |
+            dist/
+            examples/aws-lambda/samconfig.toml
+            examples/aws-lambda/template.yaml
+          retention-days: 7

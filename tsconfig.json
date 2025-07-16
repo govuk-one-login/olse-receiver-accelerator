@@ -19,8 +19,8 @@
     "noImplicitOverride": true /* Ensure overriding members in derived classes are marked with an override modifier. */,
 
     // transpiling
-    "module": "commonjs" /* Specify what module code is generated. */,
-    "moduleResolution": "node" /* Specify how TypeScript looks up a file from a given module specifier. */,
+    "module": "ES2022" /* Specify what module code is generated. */,
+    "moduleResolution": "bundler" /* Specify how TypeScript looks up a file from a given module specifier. */,
     "outDir": "./dist/" /* Specify an output folder for all emitted files. */,
     "lib": [
       "ES2022"
@@ -35,16 +35,19 @@
     "noFallthroughCasesInSwitch": true /* Enable error reporting for fallthrough cases in switch statements. */,
     "noPropertyAccessFromIndexSignature": true /* Enforces using indexed accessors for keys declared using an indexed type. */,
     "allowUnusedLabels": false /* Disable error reporting for unused labels. */,
-    "allowUnreachableCode": false /* Disable error reporting for unreachable code. */
+    "allowUnreachableCode": false /* Disable error reporting for unreachable code. */,
+    "allowImportingTsExtensions": true,
+    "noEmit": true
   },
   "include": [
     "**/*.ts",
     "**/*.test.ts",
     "**/*.spec.ts",
-    "tests/vendor/jest.config.ts",
+    "tests/vendor/unit/jest.config.mjs",
+    "tests/implementor/unit/jest.config.mjs",
     "esbuild.config.mjs",
     "eslint.config.mjs",
-    "src/auth/jwt.ts"
+    "src/vendor/auth/jwt.ts"
   ],
   "exclude": ["node_modules", "dist", "coverage"]
 }

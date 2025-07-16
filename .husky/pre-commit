@@ -1,1 +1,11 @@
+#!/bin/sh
 npx lint-staged
+
+git diff --cached --name-only | if grep --quiet examples/aws-lambda/template.yaml
+then
+  echo "\nRunning Checkov hook for vendor template...\n"
+  checkov -f examples/aws-lambda/template.yaml --framework cloudformation --quiet --skip-check CKV_AWS_116
+
+  echo "\nRunning sam validate --lint  \n"
+  sam validate --lint --template examples/aws-lambda/template.yaml
+fi
