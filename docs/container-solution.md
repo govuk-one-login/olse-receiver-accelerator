@@ -33,7 +33,7 @@ The payload in the HTTP request body will be a Security Event Token (SET). A SET
 
 ## Signal Validation
 
-After the request body has been decoded and validated as a JWT, you will have the Seurity Event Token (SET) which can then be validated furtger. The Signal Exchange Team can provide json schemas to make validation simpler. the `schemas` directory contains an example schema for the [verification signal](https://openid.net/specs/openid-sharedsignals-framework-1_0.html#name-verification).
+After the request body has been decoded and validated as a JWT, you will have the Seurity Event Token (SET) which can then be validated further. The Signal Exchange Team can provide json schemas to make validation simpler. the `schemas` directory contains an example schema for the [verification signal](https://openid.net/specs/openid-sharedsignals-framework-1_0.html#name-verification).
 
 ## Signal routing
 
