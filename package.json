@@ -14,6 +14,7 @@
     "container:dev": "nodemon --exec tsx examples/express-container/server.ts",
     "lambda:build": "AWS_LAMBDA_REFERENCE=true node esbuild.config.mjs",
     "test:vendor": "jest --config tests/vendor/unit/jest.config.mjs",
+    "test:vendor:build": "jest --config tests/implementor/build/build.jest.config.mjs",
     "test:unit": "jest --config tests/implementor/unit/jest.config.mjs",
     "tsFile": "tsx"
   },
