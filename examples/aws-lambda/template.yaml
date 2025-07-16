@@ -87,6 +87,10 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       RoleName: !Sub '${AWS::StackName}-hello'
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -112,6 +116,10 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       RoleName: !Sub '${AWS::StackName}-goodbye'
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
