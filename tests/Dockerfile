@@ -27,7 +27,6 @@ COPY tests/run-tests.sh /
 COPY package.json package-lock.json tsconfig.json ./
 
 COPY tests ./tests
-COPY common ./common
 COPY src ./src
 COPY examples ./examples
 
