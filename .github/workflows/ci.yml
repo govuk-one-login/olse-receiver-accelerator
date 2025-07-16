@@ -61,7 +61,7 @@ jobs:
     uses: ./.github/workflows/deploy-vendor-feature-branch-to-aws.yml
 
   deploy-vendor-testing-image-to-aws:
-    name: Main Branch Deploy
+    name: Main Branch testing
     needs: [Run-CI-Checks, Run-Vendor-Checks, Run-Implementor-Checks]
     permissions:
       id-token: write
