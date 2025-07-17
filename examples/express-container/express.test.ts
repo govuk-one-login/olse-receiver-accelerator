@@ -42,6 +42,9 @@ describe('Express server /v1 endpoint', () => {
     jest.resetAllMocks()
     jest.clearAllMocks()
     jest.useFakeTimers()
+
+    jest.spyOn(console, 'error')
+
     process.env = { ...originalEnv }
     process.env['CLIENT_ID'] = 'test_client'
     process.env['CLIENT_SECRET'] = 'test_secret'
@@ -272,12 +275,15 @@ describe('Express server /v1 endpoint', () => {
       .send(jwt)
 
     expect(response.status).toBe(400)
-
     expect(response.body).toStrictEqual({
       err: 'invalid_key',
       description:
         'One or more keys used to encrypt or sign the SET is invalid or otherwise unacceptable to the SET Recipient (expired, revoked, failed certificate validation, etc.).'
     })
+
+    expect(console.error).toHaveBeenCalledWith(
+      'failed to validate JWT with remote key'
+    )
   })
 
   it('should return 401 for expired auth token', async () => {

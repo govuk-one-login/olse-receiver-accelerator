@@ -66,6 +66,7 @@ v1Router.post(
       const jwt = req.body
       verifiedJwtBody = await validateJWTWithRemoteKey(jwt as string, publicKey)
     } catch (error) {
+      console.error('failed to validate JWT with remote key')
       console.error(error)
       res.status(400).json(httpErrorResponseMessages.invalid_key)
     }
@@ -100,6 +101,7 @@ v1Router.post(
       res.status(202).send()
       return
     } else {
+      console.error('failed to route signal')
       res
         .type('json')
         .status(400)
