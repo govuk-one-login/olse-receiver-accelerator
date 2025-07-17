@@ -5,6 +5,7 @@ import * as jose from 'jose'
 import request from 'supertest'
 import { generateJWT } from '../../src/vendor/auth/jwt'
 import { getPublicKeyFromRemote } from '../../src/vendor/getPublicKey'
+import { app } from './express'
 
 jest.mock('../../src/vendor/getPublicKey', () => ({
   getPublicKeyFromRemote: jest.fn()

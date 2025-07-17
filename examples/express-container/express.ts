@@ -127,3 +127,4 @@ v1Router.post(
 )
 
 app.use('/v1', v1Router)
+export { app }
