@@ -9,7 +9,10 @@ import {
   validateJWTWithRemoteKey
 } from '../../src/vendor/jwt/validateJWT'
 import { validateSignalAgainstSchemas } from '../../src/vendor/validateSchema'
+import { handleSignalRouting } from './signalRouting/signalRouter'
+import { httpErrorResponseMessages } from './constants'
 
+// app.use(express.json())
 const app = express()
 const v1Router = express()
 
@@ -38,12 +41,11 @@ v1Router.post(
       typeof auth_header === 'undefined'
     ) {
       res.status(401).json({ error: 'Unauthorised access' })
+      return
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const auth_header_typed = auth_header!
     try {
-      const accessToken = auth_header_typed.substring(7)
+      const accessToken = auth_header.substring(7)
       const publicKeyString = readFileSync('./keys/authPublic.key', {
         encoding: 'utf8'
       })
@@ -53,6 +55,7 @@ v1Router.post(
       await validateJWT(accessToken, key)
     } catch {
       res.status(401).json({ error: 'Unauthorised access' })
+      return
     }
 
     const publicKey = getPublicKeyFromRemote('wwww.example.com')
@@ -63,31 +66,50 @@ v1Router.post(
       const jwt = req.body
       verifiedJwtBody = await validateJWTWithRemoteKey(jwt as string, publicKey)
     } catch (error) {
+      console.error('failed to validate JWT with remote key')
       console.error(error)
-      res.status(400).json({
-        err: 'invalid_key',
-        description:
-          'One or more keys used to encrypt or sign the SET is invalid or otherwise unacceptable to the SET Recipient (expired, revoked, failed certificate validation, etc.).'
-      })
+      res.status(400).json(httpErrorResponseMessages.invalid_key)
     }
 
-    const schemsIsValid = await validateSignalAgainstSchemas(
-      verifiedJwtBody?.payload
-    )
+    const jwtPayload = verifiedJwtBody?.payload
 
-    if (schemsIsValid.valid) {
-      res.status(202).send()
-    } else {
-      console.error('Invalid signal, no schema matches found.')
+    if (typeof jwtPayload === 'undefined') {
       res.type('json').status(400).json({
         err: 'invalid_request',
         description:
           "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
       })
+      return
+    }
+
+    const schemaValidationResult =
+      await validateSignalAgainstSchemas(jwtPayload)
+
+    if (!schemaValidationResult.valid) {
+      res
+        .type('json')
+        .status(400)
+        .json(httpErrorResponseMessages.invalid_request)
+      return
+    }
+
+    const result = handleSignalRouting(
+      jwtPayload,
+      schemaValidationResult.schema
+    )
+    if (result.valid) {
+      res.status(202).send()
+      return
+    } else {
+      console.error('failed to route signal')
+      res
+        .type('json')
+        .status(400)
+        .json(httpErrorResponseMessages.invalid_request)
+      return
     }
   }
 )
 
 app.use('/v1', v1Router)
-
 export { app }

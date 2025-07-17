@@ -14,7 +14,7 @@ if [ "$TEST_ENVIRONMENT" == "build" ]; then
   npm run test:vendor:build
   TESTS_EXIT_CODE=$?
 elif [ "$TEST_ENVIRONMENT" == "staging" ]; then
-  npm run test:staging
+  npm run test:vendor:staging
   TESTS_EXIT_CODE=$?
 else
   echo "No Test Environment Set"

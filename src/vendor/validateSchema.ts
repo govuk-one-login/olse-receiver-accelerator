@@ -7,17 +7,19 @@ const ajv = new Ajv()
 addFormats(ajv)
 
 interface ValidResponse {
-  valid: boolean
+  valid: true
   schema: string
 }
 interface InvalidResponse {
-  valid: boolean
+  valid: false
   message: string
 }
 
+type Result = ValidResponse | InvalidResponse
+
 export async function validateSignalAgainstSchemas(
   signalSet: unknown
-): Promise<ValidResponse | InvalidResponse> {
+): Promise<Result> {
   const absoluteSchemaPath = './schemas'
   const schemaList = await readdir(absoluteSchemaPath)
   for (const schemaName of schemaList) {

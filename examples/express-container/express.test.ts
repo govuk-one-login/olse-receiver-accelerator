@@ -6,10 +6,30 @@ import request from 'supertest'
 import { generateJWT } from '../../src/vendor/auth/jwt'
 import { getPublicKeyFromRemote } from '../../src/vendor/getPublicKey'
 import { app } from './express'
+import * as signalRouting from './signalRouting/signalRouter'
 
 jest.mock('../../src/vendor/getPublicKey', () => ({
   getPublicKeyFromRemote: jest.fn()
 }))
+
+const sampleVerificationEvent = {
+  alg: 'PS256',
+  audience: 'https://aud.example.com',
+  issuer: 'https://issuer.example.com',
+  jti: '123456',
+  useExpClaim: false,
+  payload: {
+    sub_id: {
+      format: 'opaque',
+      id: 'f67e39a0a4d34d56b3aa1bc4cff0069f'
+    },
+    events: {
+      'https://schemas.openid.net/secevent/ssf/event-type/verification': {
+        state: 'VGhpcyBpcyBhbiBleGFtcGxlIHN0YXRlIHZhbHVlLgo='
+      }
+    }
+  }
+}
 
 let publicKeyString
 let publicKeyJson
@@ -22,6 +42,9 @@ describe('Express server /v1 endpoint', () => {
     jest.resetAllMocks()
     jest.clearAllMocks()
     jest.useFakeTimers()
+
+    jest.spyOn(console, 'error')
+
     process.env = { ...originalEnv }
     process.env['CLIENT_ID'] = 'test_client'
     process.env['CLIENT_SECRET'] = 'test_secret'
@@ -117,24 +140,7 @@ describe('Express server /v1 endpoint', () => {
   it('should return 202 for when sent a SET with a valid JWT and payload', async () => {
     // @ts-expect-error ignore type errors
     when(getPublicKeyFromRemote).mockReturnValue(key)
-    const jwt = await generateJWT({
-      alg: 'PS256',
-      audience: 'https://aud.example.com',
-      issuer: 'https://issuer.example.com',
-      jti: '123456',
-      useExpClaim: false,
-      payload: {
-        sub_id: {
-          format: 'opaque',
-          id: 'f67e39a0a4d34d56b3aa1bc4cff0069f'
-        },
-        events: {
-          'https://schemas.openid.net/secevent/ssf/event-type/verification': {
-            state: 'VGhpcyBpcyBhbiBleGFtcGxlIHN0YXRlIHZhbHVlLgo='
-          }
-        }
-      }
-    })
+    const jwt = await generateJWT(sampleVerificationEvent)
 
     const tokenResponse = await request(app).post('/v1/token').query({
       client_id: 'test_client',
@@ -156,6 +162,44 @@ describe('Express server /v1 endpoint', () => {
       .send(jwt)
 
     expect(response.status).toBe(202)
+  })
+
+  it('should return 400 for when sent signal routing has failed', async () => {
+    // @ts-expect-error ignore type errors
+    when(getPublicKeyFromRemote).mockReturnValue(key)
+
+    const routeSpy = jest.spyOn(signalRouting, 'handleSignalRouting')
+    when(routeSpy).mockReturnValue({ valid: false })
+
+    const jwt = await generateJWT(sampleVerificationEvent)
+
+    const tokenResponse = await request(app).post('/v1/token').query({
+      client_id: 'test_client',
+      client_secret: 'test_secret',
+      grant_type: 'client_credentials'
+    })
+
+    expect(tokenResponse.status).toBe(200)
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const accessToken = tokenResponse.body
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const token = accessToken.access_token as string
+
+    const response = await request(app)
+      .post('/v1/Events')
+      .set('content-type', 'application/secevent+jwt')
+      .set('Authorization', `Bearer ${token}`)
+      .send(jwt)
+
+    expect(response.status).toBe(400)
+    expect(response.body).toStrictEqual({
+      err: 'invalid_request',
+      description:
+        "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
+    })
+
+    expect(console.error).toHaveBeenCalledWith('failed to route signal')
   })
 
   it('should return 400 and invalid signal for when sent a SET with an invalid SET payload', async () => {
@@ -231,35 +275,21 @@ describe('Express server /v1 endpoint', () => {
       .send(jwt)
 
     expect(response.status).toBe(400)
-
     expect(response.body).toStrictEqual({
       err: 'invalid_key',
       description:
         'One or more keys used to encrypt or sign the SET is invalid or otherwise unacceptable to the SET Recipient (expired, revoked, failed certificate validation, etc.).'
     })
+
+    expect(console.error).toHaveBeenCalledWith(
+      'failed to validate JWT with remote key'
+    )
   })
 
   it('should return 401 for expired auth token', async () => {
     // @ts-expect-error ignore type errors
     when(getPublicKeyFromRemote).mockReturnValue(key)
-    const jwt = await generateJWT({
-      alg: 'PS256',
-      audience: 'https://aud.example.com',
-      issuer: 'https://issuer.example.com',
-      jti: '123456',
-      useExpClaim: false,
-      payload: {
-        sub_id: {
-          format: 'opaque',
-          id: 'f67e39a0a4d34d56b3aa1bc4cff0069f'
-        },
-        events: {
-          'https://schemas.openid.net/secevent/ssf/event-type/verification': {
-            state: 'VGhpcyBpcyBhbiBleGFtcGxlIHN0YXRlIHZhbHVlLgo='
-          }
-        }
-      }
-    })
+    const jwt = await generateJWT(sampleVerificationEvent)
 
     const tokenResponse = await request(app).post('/v1/token').query({
       client_id: 'test_client',
