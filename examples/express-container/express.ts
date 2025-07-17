@@ -9,47 +9,11 @@ import {
   validateJWTWithRemoteKey
 } from '../../src/vendor/jwt/validateJWT'
 import { validateSignalAgainstSchemas } from '../../src/vendor/validateSchema'
-import { CustomSetErrorCode } from './enums/enums'
-import { SetPayload } from './interfaces/interfaces'
-import { handleSignalRouting } from './signal-routing/signal-route-handler'
-import { sendSignalResponse } from './utils/response-helper'
+import { handleSignalRouting } from './signalRouting/signalRouter'
 
 // app.use(express.json())
 const app = express()
 const v1Router = express()
-
-function signalEventHandler(req: Request, res: Response): void {
-  try {
-    // Auth handler
-
-    // Validation handler
-
-    // Routing handler
-    const signalPayload: SetPayload = req.body as SetPayload
-    const result = handleSignalRouting(signalPayload)
-
-    if (result.success) {
-      sendSignalResponse(res, true)
-    } else {
-      sendSignalResponse(
-        res,
-        false,
-        result.errorCode,
-        result.message,
-        result.statusCode
-      )
-    }
-  } catch (err) {
-    console.error('Error processing request:', err)
-    sendSignalResponse(
-      res,
-      false,
-      CustomSetErrorCode.FAILED_TO_PROCESS,
-      'Failed to process the request',
-      500
-    )
-  }
-}
 
 v1Router.post(
   '/token',
@@ -131,14 +95,22 @@ v1Router.post(
       })
       return
     }
+
+    const result = handleSignalRouting(
+      jwtPayload,
+      schemaValidationResult.schema
+    )
+    if (result.valid) {
       res.status(202).send()
+      return
     } else {
-      console.error('Invalid signal, no schema matches found.')
+      console.error(result.errorMessage)
       res.type('json').status(400).json({
         err: 'invalid_request',
         description:
           "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
       })
+      return
     }
   }
 )
