@@ -3,9 +3,10 @@
  */
 export const baseJestConfig = {
   preset: 'ts-jest/presets/default-esm',
+  verbose: true,
   extensionsToTreatAsEsm: ['.ts'],
   testEnvironment: 'node',
-  setupFilesAfterEnv: ['<rootDir>/tests/vendor/setup.mjs'],
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.mjs'],
   transform: {
     '^.+\\.ts$': [
       'ts-jest',

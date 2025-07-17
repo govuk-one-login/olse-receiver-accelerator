@@ -5,8 +5,8 @@ import { baseJestConfig } from '../../baseJestUnitConfig.mjs'
  */
 const config = {
   ...baseJestConfig,
-  verbose: true,
   rootDir: '../../../',
+  testPathIgnorePatterns: ['<rootDir>/tests/'],
   testMatch: [
     `<rootDir>/examples/express-container/**/*.test.ts`,
     `<rootDir>/**/vendor/**/*.test.ts`
@@ -17,6 +17,8 @@ const config = {
     // Exclude test files from coverage
     `!examples/express-container/**/*.test.ts`,
     `!**/vendor/**/*.test.ts`,
+    // Exclude tests directory from coverage
+    `!tests/**/*`,
     // exclude jest config files
     '!**/*/jest.config.{ts,mts,mjs}',
     // exclude server.ts
