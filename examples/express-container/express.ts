@@ -76,12 +76,11 @@ v1Router.post(
       typeof auth_header === 'undefined'
     ) {
       res.status(401).json({ error: 'Unauthorised access' })
+      return
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const auth_header_typed = auth_header!
     try {
-      const accessToken = auth_header_typed.substring(7)
+      const accessToken = auth_header.substring(7)
       const publicKeyString = readFileSync('./keys/authPublic.key', {
         encoding: 'utf8'
       })
@@ -91,6 +90,7 @@ v1Router.post(
       await validateJWT(accessToken, key)
     } catch {
       res.status(401).json({ error: 'Unauthorised access' })
+      return
     }
 
     const publicKey = getPublicKeyFromRemote('wwww.example.com')
