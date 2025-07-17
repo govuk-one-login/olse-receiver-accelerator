@@ -1,5 +1,5 @@
 import { verificationSignalWithState } from '../../../tests/testConstants'
-import { SignalSchema } from '../enums/enums'
+import { SignalSchema } from '../constants'
 import { handleSignalRouting } from './signalRouter'
 
 describe('handleSetRouting', () => {

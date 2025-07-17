@@ -10,6 +10,7 @@ import {
 } from '../../src/vendor/jwt/validateJWT'
 import { validateSignalAgainstSchemas } from '../../src/vendor/validateSchema'
 import { handleSignalRouting } from './signalRouting/signalRouter'
+import { httpErrorResponseMessages } from './constants'
 
 // app.use(express.json())
 const app = express()
@@ -66,11 +67,7 @@ v1Router.post(
       verifiedJwtBody = await validateJWTWithRemoteKey(jwt as string, publicKey)
     } catch (error) {
       console.error(error)
-      res.status(400).json({
-        err: 'invalid_key',
-        description:
-          'One or more keys used to encrypt or sign the SET is invalid or otherwise unacceptable to the SET Recipient (expired, revoked, failed certificate validation, etc.).'
-      })
+      res.status(400).json(httpErrorResponseMessages.invalid_key)
     }
 
     const jwtPayload = verifiedJwtBody?.payload
@@ -88,11 +85,10 @@ v1Router.post(
       await validateSignalAgainstSchemas(jwtPayload)
 
     if (!schemaValidationResult.valid) {
-      res.type('json').status(400).json({
-        err: 'invalid_request',
-        description:
-          "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
-      })
+      res
+        .type('json')
+        .status(400)
+        .json(httpErrorResponseMessages.invalid_request)
       return
     }
 
@@ -105,11 +101,10 @@ v1Router.post(
       return
     } else {
       console.error(result.errorMessage)
-      res.type('json').status(400).json({
-        err: 'invalid_request',
-        description:
-          "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
-      })
+      res
+        .type('json')
+        .status(400)
+        .json(httpErrorResponseMessages.invalid_request)
       return
     }
   }

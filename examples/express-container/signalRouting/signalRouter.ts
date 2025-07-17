@@ -1,4 +1,4 @@
-import { SignalSchema } from '../enums/enums'
+import { SignalSchema } from '../constants'
 import { handleVerificationSignal } from './signalHandlers'
 
 interface validResponse {
@@ -8,7 +8,6 @@ interface validResponse {
 
 interface invalidResponse {
   valid: false
-  errorMessage: string
 }
 export function handleSignalRouting(
   signalPayload: Record<string, unknown>,
@@ -28,15 +27,10 @@ export function handleSignalRouting(
 
     default:
       return {
-        valid: false,
-        errorMessage: 'unsupportedEventType'
+        valid: false
       }
   }
   return {
-    valid: false,
-    errorMessage: 'unsupportedEventType'
-    // errorCode: CustomSetErrorCode.UNSUPPORTED_EVENT_TYPE,
-    // description: 'Unsupported event type',
-    // statusCode: 400
+    valid: false
   }
 }
