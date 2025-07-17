@@ -11,6 +11,25 @@ jest.mock('../../src/vendor/getPublicKey', () => ({
   getPublicKeyFromRemote: jest.fn()
 }))
 
+const sampleVerificationEvent = {
+  alg: 'PS256',
+  audience: 'https://aud.example.com',
+  issuer: 'https://issuer.example.com',
+  jti: '123456',
+  useExpClaim: false,
+  payload: {
+    sub_id: {
+      format: 'opaque',
+      id: 'f67e39a0a4d34d56b3aa1bc4cff0069f'
+    },
+    events: {
+      'https://schemas.openid.net/secevent/ssf/event-type/verification': {
+        state: 'VGhpcyBpcyBhbiBleGFtcGxlIHN0YXRlIHZhbHVlLgo='
+      }
+    }
+  }
+}
+
 let publicKeyString
 let publicKeyJson
 let key: webcrypto.CryptoKey | Uint8Array
@@ -117,24 +136,7 @@ describe('Express server /v1 endpoint', () => {
   it('should return 202 for when sent a SET with a valid JWT and payload', async () => {
     // @ts-expect-error ignore type errors
     when(getPublicKeyFromRemote).mockReturnValue(key)
-    const jwt = await generateJWT({
-      alg: 'PS256',
-      audience: 'https://aud.example.com',
-      issuer: 'https://issuer.example.com',
-      jti: '123456',
-      useExpClaim: false,
-      payload: {
-        sub_id: {
-          format: 'opaque',
-          id: 'f67e39a0a4d34d56b3aa1bc4cff0069f'
-        },
-        events: {
-          'https://schemas.openid.net/secevent/ssf/event-type/verification': {
-            state: 'VGhpcyBpcyBhbiBleGFtcGxlIHN0YXRlIHZhbHVlLgo='
-          }
-        }
-      }
-    })
+    const jwt = await generateJWT(sampleVerificationEvent)
 
     const tokenResponse = await request(app).post('/v1/token').query({
       client_id: 'test_client',
@@ -242,24 +244,7 @@ describe('Express server /v1 endpoint', () => {
   it('should return 401 for expired auth token', async () => {
     // @ts-expect-error ignore type errors
     when(getPublicKeyFromRemote).mockReturnValue(key)
-    const jwt = await generateJWT({
-      alg: 'PS256',
-      audience: 'https://aud.example.com',
-      issuer: 'https://issuer.example.com',
-      jti: '123456',
-      useExpClaim: false,
-      payload: {
-        sub_id: {
-          format: 'opaque',
-          id: 'f67e39a0a4d34d56b3aa1bc4cff0069f'
-        },
-        events: {
-          'https://schemas.openid.net/secevent/ssf/event-type/verification': {
-            state: 'VGhpcyBpcyBhbiBleGFtcGxlIHN0YXRlIHZhbHVlLgo='
-          }
-        }
-      }
-    })
+    const jwt = await generateJWT(sampleVerificationEvent)
 
     const tokenResponse = await request(app).post('/v1/token').query({
       client_id: 'test_client',
