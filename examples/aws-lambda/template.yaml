@@ -74,19 +74,76 @@ Globals:
         - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdC
 
 Resources:
-  HelloFunction:
+  #########################
+  # API Gateway Resources #
+  #########################
+
+  SharedSignalsApi:
+    #checkov:skip=CKV_AWS_120:We explicitly don't want caching because we are making POST requests
+    Type: AWS::Serverless::Api
+    Properties:
+      AccessLogSetting:
+        DestinationArn: !GetAtt SharedSignalsApiAccessLogGroup.Arn
+        Format: >-
+          {
+          "requestId": "$context.requestId",
+          "ip": "$context.identity.sourceIp",
+          "requestTime": "$context.requestTime",
+          "httpMethod": "$context.httpMethod",
+          "path": "$context.path",
+          "routeKey": "$context.routeKey",
+          "status": "$context.status",
+          "protocol": "$context.protocol",
+          "responseLatency": "$context.responseLatency",
+          "responseLength": "$context.responseLength"
+          }
+      Description: Shared Signals Receiver API Endpoint
+      DisableExecuteApiEndpoint: false
+      EndpointConfiguration:
+        Type: REGIONAL
+      Name: !Sub ${AWS::StackName}-shared-signals-receiver-api-endpoint
+      TracingEnabled: true
+      StageName: !Ref Environment
+      OpenApiVersion: '3.0.1'
+      DefinitionBody:
+        'Fn::Transform':
+          Name: 'AWS::Include'
+          Parameters:
+            Location: examples/aws-lambda/open-api-specification.yaml
+      # Auth:
+      #   Authorizers:
+      #     CognitoAuthorizer:
+      #       UserPoolArn: !GetAtt SSRUserPool.Arn
+      #       Identity:
+      #         Header: Authorization
+      MethodSettings:
+        - ResourcePath: '/*'
+          HttpMethod: '*'
+          MetricsEnabled: true
+          ThrottlingBurstLimit: 500
+          ThrottlingRateLimit: 500
+      MinimumCompressionSize: 0
+
+  SharedSignalsApiAccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
+      LogGroupName: !Sub /aws/apigateway/${AWS::StackName}-endpoint-access-logs
+      RetentionInDays: 30
+
+  ReceiverFunction:
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: dist/examples/aws-lambda/src/lambda/hello
-      FunctionName: !Sub ${AWS::StackName}-hello
+      CodeUri: dist/examples/aws-lambda/src/lambda/receiver
+      FunctionName: !Sub ${AWS::StackName}-receiver
       Handler: handler.handler
-      Role: !GetAtt HelloFunctionRole.Arn
+      Role: !GetAtt ReceiverFunctionRole.Arn
 
-  HelloFunctionRole:
+  ReceiverFunctionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub '${AWS::StackName}-hello'
+      RoleName: !Sub '${AWS::StackName}-receiver-role'
       PermissionsBoundary: !If
         - UsePermissionsBoundary
         - !Ref PermissionsBoundary
@@ -102,6 +159,14 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+
+  PermissionforAPItoCallGetUserFunction:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref ReceiverFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SharedSignalsApi}/*/*/*'
 
   GoodbyeFunction:
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits

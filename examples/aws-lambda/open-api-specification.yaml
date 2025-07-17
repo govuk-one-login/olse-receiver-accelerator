@@ -1,0 +1,32 @@
+openapi: '3.0.1'
+info:
+  version: '1.0.0'
+  title: 'Shared Signals Receiver API Specification'
+  description: An Open API specification that will be used by API gateway to provision API endpoints
+
+securityDefinitions:
+  CognitoAuthorizer:
+    type: apiKey,
+    name: Authorization,
+    in: header,
+    x-amazon-apigateway-authtype: cognito_user_pools,
+    x-amazon-apigateway-authorizer:
+      type: cognito_user_pools,
+      providerARNs:
+        - Fn::Sub: '${SSRUserPool.Arn}'
+
+paths:
+  /api/v1/Events:
+    post:
+      summary: 'Endpoint to Receive signals'
+    x-amazon-apigateway-integration:
+      type: 'aws_proxy'
+      httpMethod: 'POST'
+      uri:
+        Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ReceiverFunction.Arn}:live/invocations'
+      responses:
+        default:
+          statusCode: '200'
+          responseTemplates:
+            application/json: |
+              {}
