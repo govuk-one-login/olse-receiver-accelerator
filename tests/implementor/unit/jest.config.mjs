@@ -5,7 +5,6 @@ import { baseJestConfig } from '../../baseJestUnitConfig.mjs'
  */
 const config = {
   ...baseJestConfig,
-  verbose: true,
   rootDir: '../../../',
   testMatch: [`<rootDir>/src/**/*.test.ts`],
   collectCoverageFrom: [

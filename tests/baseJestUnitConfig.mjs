@@ -3,6 +3,7 @@
  */
 export const baseJestConfig = {
   preset: 'ts-jest/presets/default-esm',
+  verbose: true,
   extensionsToTreatAsEsm: ['.ts'],
   testEnvironment: 'node',
   setupFilesAfterEnv: ['<rootDir>/tests/setup.mjs'],
