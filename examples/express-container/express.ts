@@ -100,7 +100,6 @@ v1Router.post(
       res.status(202).send()
       return
     } else {
-      console.error(result.errorMessage)
       res
         .type('json')
         .status(400)
