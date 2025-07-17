@@ -6,6 +6,7 @@ import request from 'supertest'
 import { generateJWT } from '../../src/vendor/auth/jwt'
 import { getPublicKeyFromRemote } from '../../src/vendor/getPublicKey'
 import { app } from './express'
+import * as signalRouting from './signalRouting/signalRouter'
 
 jest.mock('../../src/vendor/getPublicKey', () => ({
   getPublicKeyFromRemote: jest.fn()
@@ -158,6 +159,44 @@ describe('Express server /v1 endpoint', () => {
       .send(jwt)
 
     expect(response.status).toBe(202)
+  })
+
+  it('should return 400 for when sent signal routing has failed', async () => {
+    // @ts-expect-error ignore type errors
+    when(getPublicKeyFromRemote).mockReturnValue(key)
+
+    const routeSpy = jest.spyOn(signalRouting, 'handleSignalRouting')
+    when(routeSpy).mockReturnValue({ valid: false })
+
+    const jwt = await generateJWT(sampleVerificationEvent)
+
+    const tokenResponse = await request(app).post('/v1/token').query({
+      client_id: 'test_client',
+      client_secret: 'test_secret',
+      grant_type: 'client_credentials'
+    })
+
+    expect(tokenResponse.status).toBe(200)
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const accessToken = tokenResponse.body
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const token = accessToken.access_token as string
+
+    const response = await request(app)
+      .post('/v1/Events')
+      .set('content-type', 'application/secevent+jwt')
+      .set('Authorization', `Bearer ${token}`)
+      .send(jwt)
+
+    expect(response.status).toBe(400)
+    expect(response.body).toStrictEqual({
+      err: 'invalid_request',
+      description:
+        "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
+    })
+
+    expect(console.error).toHaveBeenCalledWith('failed to route signal')
   })
 
   it('should return 400 and invalid signal for when sent a SET with an invalid SET payload', async () => {
