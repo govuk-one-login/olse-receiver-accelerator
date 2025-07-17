@@ -109,11 +109,28 @@ v1Router.post(
       })
     }
 
-    const schemsIsValid = await validateSignalAgainstSchemas(
-      verifiedJwtBody?.payload
-    )
+    const jwtPayload = verifiedJwtBody?.payload
 
-    if (schemsIsValid.valid) {
+    if (typeof jwtPayload === 'undefined') {
+      res.type('json').status(400).json({
+        err: 'invalid_request',
+        description:
+          "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
+      })
+      return
+    }
+
+    const schemaValidationResult =
+      await validateSignalAgainstSchemas(jwtPayload)
+
+    if (!schemaValidationResult.valid) {
+      res.type('json').status(400).json({
+        err: 'invalid_request',
+        description:
+          "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
+      })
+      return
+    }
       res.status(202).send()
     } else {
       console.error('Invalid signal, no schema matches found.')
