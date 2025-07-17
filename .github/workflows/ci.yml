@@ -53,7 +53,6 @@ jobs:
 
   deploy-vendor-feature-branch-to-aws:
     name: Feature Branch Deploy
-    if: startsWith(github.head_ref, 'feature')
     needs: [Run-CI-Checks, Run-Vendor-Checks, Run-Implementor-Checks]
     permissions:
       id-token: write
@@ -61,10 +60,18 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/deploy-vendor-feature-branch-to-aws.yml
 
+  deploy-vendor-testing-image-to-aws:
+    name: Main Branch testing
+    needs: [Run-CI-Checks, Run-Vendor-Checks, Run-Implementor-Checks]
+    permissions:
+      id-token: write
+      contents: read
+    secrets: inherit
+    uses: ./.github/workflows/upload-vendor-testing-image-to-ecr.yaml
+
   deploy-vendor-main-branch-to-aws:
     name: Main Branch Deploy
-    if: startsWith(github.head_ref, 'main')
-    needs: [Run-CI-Checks, Run-Vendor-Checks, Run-Implementor-Checks]
+    needs: [deploy-vendor-testing-image-to-aws]
     permissions:
       id-token: write
       contents: read

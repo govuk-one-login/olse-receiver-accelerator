@@ -71,16 +71,10 @@ async function buildForContainer() {
   try {
     const context = await esbuild.context(finalConfig)
 
-    if (process.argv.includes('--watch')) {
-      // Watch mode
-      await context.watch()
-      console.log('Watching for changes...')
-    } else {
-      // Single build
-      await context.rebuild()
-      console.log('Build complete!')
-      await context.dispose()
-    }
+    // Single build
+    await context.rebuild()
+    console.log('Build complete!')
+    await context.dispose()
   } catch (error) {
     console.error('Build failed:', error)
     process.exit(1)

@@ -3,7 +3,7 @@
   "jest.virtualFolders": [
     {
       "name": "Vendor Test",
-      "jestCommandLine": "npm run vendor:test --"
+      "jestCommandLine": "npm run test:vendor --"
     },
     {
       "name": "Unit Test",
