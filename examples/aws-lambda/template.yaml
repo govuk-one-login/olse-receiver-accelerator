@@ -74,6 +74,29 @@ Globals:
         - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdC
 
 Resources:
+  #####################
+  # Cognito Resources #
+  #####################
+
+  SSRUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub ${AWS::StackName}-ssr-user-pool
+
+  SSRUserPoolIdParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: SSRUserPoolId
+      Type: String
+      Value: !Ref SSRUserPool
+
+  SSrUserPoolArnParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: SSRUserPoolArn
+      Type: String
+      Value: !GetAtt SSRUserPool.Arn
+
   #########################
   # API Gateway Resources #
   #########################
