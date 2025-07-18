@@ -104,8 +104,6 @@ Resources:
   SharedSignalsApi:
     #checkov:skip=CKV_AWS_120:We explicitly don't want caching because we are making POST requests
     Type: AWS::Serverless::Api
-    DependsOn:
-      - ReceiverFunction
     Properties:
       AccessLogSetting:
         DestinationArn: !GetAtt SharedSignalsApiAccessLogGroup.Arn
@@ -135,13 +133,6 @@ Resources:
             UserPoolArn: !GetAtt SSRUserPool.Arn
             Identity:
               Header: Authorization
-      MethodSettings:
-        - ResourcePath: '/*'
-          HttpMethod: '*'
-          MetricsEnabled: true
-          ThrottlingBurstLimit: 500
-          ThrottlingRateLimit: 500
-      MinimumCompressionSize: 0
 
   SharedSignalsApiAccessLogGroup:
     Type: AWS::Logs::LogGroup
@@ -158,6 +149,15 @@ Resources:
       FunctionName: !Sub ${AWS::StackName}-receiver
       Handler: handler.handler
       Role: !GetAtt ReceiverFunctionRole.Arn
+      Events:
+        ReceiverAPI:
+          Type: Api
+          Properties:
+            Path: /Events
+            Method: post
+            RestApiId: !Ref SharedSignalsApi
+            Auth:
+              Authorizer: CognitoAuthorizer
 
   ReceiverFunctionRole:
     Type: AWS::IAM::Role
