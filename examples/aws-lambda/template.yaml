@@ -127,6 +127,8 @@ Resources:
       Name: !Sub ${AWS::StackName}-shared-signals-receiver-api-endpoint
       TracingEnabled: true
       StageName: !Ref Environment
+      # OpenApiVersion is needed to prevent the deployment of a default stage: https://github.com/aws/serverless-application-model/issues/191#issuecomment-516724809
+      OpenApiVersion: 3.0.1
       Auth:
         Authorizers:
           CognitoAuthorizer:
@@ -153,7 +155,7 @@ Resources:
         ReceiverAPI:
           Type: Api
           Properties:
-            Path: /Events
+            Path: /api/v1/Events
             Method: post
             RestApiId: !Ref SharedSignalsApi
             Auth:
@@ -179,13 +181,13 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
 
-  PermissionforAPItoCallReceiverFunction:
-    Type: AWS::Lambda::Permission
-    Properties:
-      FunctionName: !Ref ReceiverFunction
-      Action: lambda:InvokeFunction
-      Principal: apigateway.amazonaws.com
-      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SharedSignalsApi}/*/*/*'
+  # PermissionforAPItoCallReceiverFunction:
+  #   Type: AWS::Lambda::Permission
+  #   Properties:
+  #     FunctionName: !Ref ReceiverFunction
+  #     Action: lambda:InvokeFunction
+  #     Principal: apigateway.amazonaws.com
+  #     SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SharedSignalsApi}/*/*/*'
 
   GoodbyeFunction:
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
