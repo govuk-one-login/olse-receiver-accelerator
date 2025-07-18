@@ -129,12 +129,6 @@ Resources:
       Name: !Sub ${AWS::StackName}-shared-signals-receiver-api-endpoint
       TracingEnabled: true
       StageName: !Ref Environment
-      OpenApiVersion: '3.0.1'
-      DefinitionBody:
-        'Fn::Transform':
-          Name: 'AWS::Include'
-          Parameters:
-            Location: examples/aws-lambda/open-api-specification.yaml
       Auth:
         Authorizers:
           CognitoAuthorizer:
@@ -185,7 +179,7 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
 
-  PermissionforAPItoCallGetUserFunction:
+  PermissionforAPItoCallReceiverFunction:
     Type: AWS::Lambda::Permission
     Properties:
       FunctionName: !Ref ReceiverFunction
