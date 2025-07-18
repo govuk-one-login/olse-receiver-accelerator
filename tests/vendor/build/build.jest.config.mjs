@@ -7,7 +7,7 @@ const config = {
   ...baseJestConfig,
   rootDir: '../../../',
   testMatch: [
-    `<rootDir>/tests/implementor/build/**/*.spec.ts`,
+    `<rootDir>/tests/vendor/build/**/*.spec.ts`,
   ]
 }
 
