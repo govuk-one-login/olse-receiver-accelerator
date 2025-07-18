@@ -104,6 +104,8 @@ Resources:
   SharedSignalsApi:
     #checkov:skip=CKV_AWS_120:We explicitly don't want caching because we are making POST requests
     Type: AWS::Serverless::Api
+    DependsOn:
+      - ReceiverFunction
     Properties:
       AccessLogSetting:
         DestinationArn: !GetAtt SharedSignalsApiAccessLogGroup.Arn
