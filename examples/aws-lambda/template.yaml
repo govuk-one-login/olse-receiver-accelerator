@@ -135,12 +135,12 @@ Resources:
           Name: 'AWS::Include'
           Parameters:
             Location: examples/aws-lambda/open-api-specification.yaml
-      # Auth:
-      #   Authorizers:
-      #     CognitoAuthorizer:
-      #       UserPoolArn: !GetAtt SSRUserPool.Arn
-      #       Identity:
-      #         Header: Authorization
+      Auth:
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt SSRUserPool.Arn
+            Identity:
+              Header: Authorization
       MethodSettings:
         - ResourcePath: '/*'
           HttpMethod: '*'
