@@ -12,7 +12,8 @@ import { validateSignalAgainstSchemas } from '../../src/vendor/validateSchema'
 import { handleSignalRouting } from './signalRouting/signalRouter'
 import { httpErrorResponseMessages } from './constants'
 import { startVerificationSignals } from './verification/scheduler'
-import { handleVerificationEvent } from './verification/verification-jwt'
+import { handleVerificationEvent } from './verification/verification-handler'
+import { VerificationPayload } from './interfaces/interfaces'
 
 // app.use(express.json())
 const app = express()
@@ -95,14 +96,17 @@ v1Router.post(
       return
     }
 
-    const verificationResult = await handleVerificationEvent(jwtPayload);
-    if (!verificationResult.valid) {
-      console.error('Verification event state validation failed')
-      res.type('json').status(400).json({
-        err: verificationResult.error ?? 'invalid_state',
-        description: 'State value in verification event is invalid or expired'
-      })
-      return
+    const isVerificationEvent = (jwtPayload as any).events?.['https://schemas.openid.net/secevent/ssf/event-type/verification'];
+    if (isVerificationEvent) {
+      const verificationResult = await handleVerificationEvent(jwtPayload as unknown as VerificationPayload);
+      if (!verificationResult.valid) {
+        console.error('Verification event state validation failed')
+        res.type('json').status(400).json({
+          err: verificationResult.error ?? 'invalid_state',
+          description: 'State value in verification event is invalid or expired'
+        })
+        return
+      }
     }
 
     const result = handleSignalRouting(

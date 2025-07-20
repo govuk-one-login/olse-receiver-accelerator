@@ -1,5 +1,6 @@
 import { verifyStateJwt } from "./verify-state";
 import { handleVerificationEvent } from "./verification-handler";
+import { StatePayload, VerificationPayload } from "../interfaces/interfaces";
 
 
 jest.mock('./verify-state')
@@ -16,36 +17,6 @@ describe('handleVerificationEvent', () => {
         jest.clearAllMocks();
     })
 
-    it('returns valid for events without verification event type', async () => {
-
-        const jwtPayload = {
-            sub_id: { format: 'email', email: 'user@gds.co.uk' },
-            events: {
-                'https//schemas.openid.net/secevent/ssf/event-type/access-denied': {
-                    subject: {
-                        user: { format: 'email', email: 'user@gds.co.uk' }
-                    }
-                }
-            }
-        }
-
-        const result = await handleVerificationEvent(jwtPayload);
-
-        expect(result).toEqual({ valid: true });
-        expect(consoleSpy.log).not.toHaveBeenCalled();
-        expect(consoleSpy.error).not.toHaveBeenCalled()
-    })
-
-    it('return valid for events without events property', async () => {
-        const jwtPayload = {
-            sub_id: { format: 'opaque', id: 'stream-id-001' }
-        };
-
-        const result = await handleVerificationEvent(jwtPayload);
-
-        expect(result).toEqual({ valid: true });
-    })
-
     it('returns valid for verification event without state', async () => {
         const jwtPayload = {
             sub_id: { format: 'opaque', id: 'steam-id-001' },
@@ -54,10 +25,10 @@ describe('handleVerificationEvent', () => {
             }
         };
 
-        const result = await handleVerificationEvent(jwtPayload);
+        const result = await handleVerificationEvent(jwtPayload as unknown as VerificationPayload);
 
         expect(result).toEqual({ valid: true });
-        expect(consoleSpy.log).toHaveBeenCalledWith('Verification event received');
+        expect(consoleSpy.log).toHaveBeenCalledWith('Verification event without state received');
     })
 
     it('returns false for verification event state exceeds max age', async () => {
@@ -65,7 +36,7 @@ describe('handleVerificationEvent', () => {
         const mockStatePayload = {
             requested_at: currentTime - (100 * 60)
         };
-        mockVerifyStateJwt.mockResolvedValue(mockStatePayload)
+        mockVerifyStateJwt.mockResolvedValue(mockStatePayload as StatePayload)
         const jwtPayload = {
             sub_id: { format: 'opaque' },
             events: {
@@ -75,7 +46,7 @@ describe('handleVerificationEvent', () => {
             }
         };
 
-        const result = await handleVerificationEvent(jwtPayload);
+        const result = await handleVerificationEvent(jwtPayload as unknown as VerificationPayload);
 
         expect(result).toEqual({ valid: false, error: 'invalid_state' });
     })
