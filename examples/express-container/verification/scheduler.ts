@@ -1,24 +1,16 @@
 import { sendVerificationSignal } from "./send-verification"
 import { config } from "../config/config"
-import cron from 'node-cron';
 
 
 export function startVerificationSignals(): boolean {
 
-    if (!cron.validate(config.CRON_SCHEDULE)) {
-        console.error(`Invalid cron schedule`)
-        return false
-    }
-
+    const intervalMs = config.VERIFICATION_INTERVAL * 60 * 1000
     try {
-        cron.schedule(config.CRON_SCHEDULE, async () => {
-            console.log('Sending scheduled verification signal');
+
+        setInterval(async () => {
             await sendVerificationSignal(config.RELYING_PARTY_URL, config.STREAM_ID)
-        }, {
-            timezone: "UTC"
-        }
-        )
-        console.log('Verification signals scheduled successfully');
+        }, intervalMs)
+        console.log('Verification signals scheduled sucessfully')
         return true;
     } catch (error) {
         console.error('Error scheduling verification signals:', error)

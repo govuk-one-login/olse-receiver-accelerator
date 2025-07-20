@@ -29,8 +29,7 @@ export interface VerificationPayload {
 export interface VerificationTxConfig {
   JWT_SECRET: string
   ISSUER: string
-  PORT: number
-  CRON_SCHEDULE: string
+  VERIFICATION_INTERVAL: number
   RELYING_PARTY_URL: string
   STREAM_ID: string
 }
