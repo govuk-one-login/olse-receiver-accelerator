@@ -4,14 +4,11 @@ import { generateJWT } from '../../../src/vendor/auth/jwt';
 import { generateJWTPayload } from '../../../src/vendor/types';
 
 
-export async function createStateJwt(streamId: string, relyingPartyUrl: string): Promise<string> {
+export async function createStateJwt(stream_id: string, relyingPartyUrl: string): Promise<string> {
     try {
-        const verification_request_id = 'id'
         const statePayload: StatePayload = {
-            stream_id: streamId,
-            verification_request_id: verification_request_id,
             requested_at: Math.floor(Date.now() / 1000),
-            relying_party_url: relyingPartyUrl
+            stream_id: stream_id,
         };
         const jwtPayload: generateJWTPayload = {
             payload: statePayload,
@@ -39,14 +36,8 @@ export async function createVerificationJwt(relyingPartyUrl: string, streamId: s
         let stateValue: string | StatePayload | undefined;
 
         if (options?.generateStatePayload) {
-            const verificationRequestId = `vref-${Date.now()}`
 
-            stateValue = {
-                stream_id: streamId,
-                verification_request_id: verificationRequestId,
-                requested_at: Math.floor(Date.now() / 1000),
-                relying_party_url: relyingPartyUrl
-            }
+            stateValue = await createStateJwt(streamId, relyingPartyUrl)
         } else if (options?.state) {
             stateValue = options.state;
         }
