@@ -11,6 +11,8 @@ import {
 import { validateSignalAgainstSchemas } from '../../src/vendor/validateSchema'
 import { handleSignalRouting } from './signalRouting/signalRouter'
 import { httpErrorResponseMessages } from './constants'
+import { startVerificationSignals } from './verification/scheduler'
+import { handleVerificationEvent } from './verification/verification-jwt'
 
 // app.use(express.json())
 const app = express()
@@ -93,6 +95,16 @@ v1Router.post(
       return
     }
 
+    const verificationResult = await handleVerificationEvent(jwtPayload);
+    if (!verificationResult.valid) {
+      console.error('Verification event state validation failed')
+      res.type('json').status(400).json({
+        err: verificationResult.error ?? 'invalid_state',
+        description: 'State value in verification event is invalid or expired'
+      })
+      return
+    }
+
     const result = handleSignalRouting(
       jwtPayload,
       schemaValidationResult.schema
@@ -112,4 +124,6 @@ v1Router.post(
 )
 
 app.use('/v1', v1Router)
-export { app }
+startVerificationSignals()
+
+export { app };
