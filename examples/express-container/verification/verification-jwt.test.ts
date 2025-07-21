@@ -14,7 +14,6 @@ describe('createVerificationJwt', () => {
     jest.clearAllMocks()
     process.env = { ...originalEnv }
     process.env['JWT_ISSUER'] = 'issuer'
-
     ;(generateJWT as jest.MockedFunction<typeof generateJWT>).mockResolvedValue(
       'mock.jwt.token'
     )
