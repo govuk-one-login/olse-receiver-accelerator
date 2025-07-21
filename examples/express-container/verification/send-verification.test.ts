@@ -1,67 +1,73 @@
-import { sendVerificationSignal } from "./send-verification";
-import { createVerificationJwt } from './verification-jwt';
-import { SignJWT } from 'jose';
+import { sendVerificationSignal } from './send-verification'
+import { createVerificationJwt } from './verification-jwt'
+import { SignJWT } from 'jose'
 
-
-jest.mock('./verification-jwt');
+jest.mock('./verification-jwt')
 jest.mock('../config/config', () => ({
-    config: {
-        JWT_SECRET: 'test-secret',
-        ISSUER: 'https://gds.co.uk'
-    }
+  config: {
+    JWT_SECRET: 'test-secret',
+    ISSUER: 'https://gds.co.uk'
+  }
 }))
 jest.mock('jose')
 jest.mock('crypto')
 
-
 const signJwtChain = {
-    setProtectedHeaders: jest.fn().mockReturnThis(),
-    setExpirationTime: jest.fn().mockReturnThis(),
-    sign: jest.fn().mockResolvedValue('signed-token')
-};
+  setProtectedHeaders: jest.fn().mockReturnThis(),
+  setExpirationTime: jest.fn().mockReturnThis(),
+  sign: jest.fn().mockResolvedValue('signed-token')
+}
 
-(SignJWT as unknown as jest.Mock).mockImplementation(() => signJwtChain);
+;(SignJWT as unknown as jest.Mock).mockImplementation(() => signJwtChain)
 
-const mockedCreateVerificationJwt = createVerificationJwt as unknown as jest.Mock;
+const mockedCreateVerificationJwt =
+  createVerificationJwt as unknown as jest.Mock
 describe('sendVerificationSignal', () => {
-    const mockRelyingPartyUrl = 'https://gds.co.uk';
-    const mockStreamId = 'test-stream-id-1';
+  const mockRelyingPartyUrl = 'https://gds.co.uk'
+  const mockStreamId = 'test-stream-id-1'
 
-    beforeEach(() => {
-        jest.clearAllMocks()
+  beforeEach(() => {
+    jest.clearAllMocks()
 
-        mockedCreateVerificationJwt.mockResolvedValue('state-jwt')
+    mockedCreateVerificationJwt.mockResolvedValue('state-jwt')
+  })
+
+  it('returns true when response.ok is true', async () => {
+    global.fetch = jest.fn().mockResolvedValue({ ok: true } as Response)
+
+    const result = await sendVerificationSignal(
+      mockRelyingPartyUrl,
+      mockStreamId
+    )
+
+    expect(result).toBe(true)
+    expect(global.fetch).toHaveBeenCalledWith(mockRelyingPartyUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/secevent+jwt',
+        Accept: 'application/json'
+      },
+      body: 'state-jwt'
     })
+  })
 
-    it('returns true when response.ok is true', async () => {
-        global.fetch = jest.fn().mockResolvedValue({ ok: true } as Response)
+  it('returns false when response.ok is false', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      status: 400,
+      statusText: 'Bad Request'
+    } as Response)
 
-        const result = await sendVerificationSignal(mockRelyingPartyUrl, mockStreamId);
+    await expect(
+      sendVerificationSignal(mockRelyingPartyUrl, mockStreamId)
+    ).resolves.toBe(false)
+  })
 
-        expect(result).toBe(true);
-        expect(global.fetch).toHaveBeenCalledWith(
-            mockRelyingPartyUrl,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/secevent+jwt',
-                    Accept: 'application/json'
-                },
-                body: 'state-jwt'
-            }
-        )
+  it('returns false when an error is thrown', async () => {
+    global.fetch = jest.fn().mockRejectedValue(new Error('some error'))
 
-    })
-
-    it('returns false when response.ok is false', async () => {
-        global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 400, statusText: 'Bad Request' } as Response)
-
-        await expect(sendVerificationSignal(mockRelyingPartyUrl, mockStreamId)).resolves.toBe(false);
-    })
-
-    it('returns false when an error is thrown', async () => {
-        global.fetch = jest.fn().mockRejectedValue(new Error('some error'))
-
-        await expect(sendVerificationSignal(mockRelyingPartyUrl, mockStreamId)).resolves.toBe(false)
-    })
+    await expect(
+      sendVerificationSignal(mockRelyingPartyUrl, mockStreamId)
+    ).resolves.toBe(false)
+  })
 })
