@@ -44,10 +44,11 @@ export async function createVerificationJwt(
     } else if (options?.state) {
       stateValue = options.state
     }
-    const verificationEvent: Record<string, { state?: string | StatePayload }> =
-      {
-        'https://schemas.openid.net/secevent/ssf/event-type/verification': {}
+    const verificationEvent = {
+      'https://schemas.openid.net/secevent/ssf/event-type/verification': {} as {
+        state?: string | StatePayload
       }
+    }
 
     if (stateValue) {
       verificationEvent[
