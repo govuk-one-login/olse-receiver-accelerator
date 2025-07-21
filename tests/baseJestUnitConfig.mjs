@@ -2,6 +2,7 @@
  * @type {import('ts-jest').JestConfigWithTsJest}
  */
 export const baseJestConfig = {
+  detectOpenHandles: true,
   preset: 'ts-jest/presets/default-esm',
   verbose: true,
   extensionsToTreatAsEsm: ['.ts'],
