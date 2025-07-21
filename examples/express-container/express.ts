@@ -13,7 +13,17 @@ import { handleSignalRouting } from './signalRouting/signalRouter'
 import { httpErrorResponseMessages } from './constants'
 import { startVerificationSignals } from './verification/scheduler'
 import { handleVerificationEvent } from './verification/verification-handler'
-import { VerificationPayload } from './interfaces/interfaces'
+import { SetPayload, VerificationPayload } from './interfaces/interfaces'
+
+function isVerificationPayload(
+  payload: SetPayload
+): payload is VerificationPayload {
+  const VERIFICATION_EVENT_TYPE =
+    'https://schemas.openid.net/secevent/ssf/event-type/verification'
+  return (
+    payload.events !== undefined && VERIFICATION_EVENT_TYPE in payload.events
+  )
+}
 
 // app.use(express.json())
 const app = express()
@@ -96,15 +106,20 @@ v1Router.post(
       return
     }
 
-    const isVerificationEvent = (jwtPayload as any).events?.['https://schemas.openid.net/secevent/ssf/event-type/verification'];
-    if (isVerificationEvent) {
-      const verificationResult = await handleVerificationEvent(jwtPayload as unknown as VerificationPayload);
+    if (isVerificationPayload(jwtPayload as SetPayload)) {
+      const verificationResult = await handleVerificationEvent(
+        jwtPayload as unknown as VerificationPayload
+      )
       if (!verificationResult.valid) {
         console.error('Verification event state validation failed')
-        res.type('json').status(400).json({
-          err: verificationResult.error ?? 'invalid_state',
-          description: 'State value in verification event is invalid or expired'
-        })
+        res
+          .type('json')
+          .status(400)
+          .json({
+            err: verificationResult.error ?? 'invalid_state',
+            description:
+              'State value in verification event is invalid or expired'
+          })
         return
       }
     }
@@ -130,4 +145,4 @@ v1Router.post(
 app.use('/v1', v1Router)
 startVerificationSignals()
 
-export { app };
+export { app }
