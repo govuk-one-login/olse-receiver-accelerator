@@ -1,4 +1,3 @@
-
 export interface SetPayload {
   iss?: string
   aud?: string | string[]
@@ -11,10 +10,10 @@ export interface SetPayload {
 }
 
 export interface VerificationPayload {
-  iss: string,
-  jti: string,
+  iss: string
+  jti: string
   aud: string
-  iat: number,
+  iat: number
   sub_id: {
     format: 'opaque'
     id: string
@@ -35,8 +34,8 @@ export interface VerificationTxConfig {
 }
 
 export interface StatePayload {
-  requested_at: number;
-  stream_id: string;
+  requested_at: number
+  stream_id: string
   // eslint-disable-next-line
-  [key: string]: any;
+  [key: string]: any
 }
