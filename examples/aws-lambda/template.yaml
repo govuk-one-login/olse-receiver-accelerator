@@ -65,13 +65,13 @@ Globals:
               !Ref Environment,
               dynatraceSecretArn
             ]
-    VpcConfig:
-      SecurityGroupIds:
-        - Fn::ImportValue: !Sub ${VpcStackName}-AWSServicesEndpointSecurityGroupId
-      SubnetIds:
-        - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdA
-        - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdB
-        - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdC
+    # VpcConfig:
+    #   SecurityGroupIds:
+    #     - Fn::ImportValue: !Sub ${VpcStackName}-AWSServicesEndpointSecurityGroupId
+    #   SubnetIds:
+    #     - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdA
+    #     - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdB
+    #     - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdC
 
 Resources:
   #####################
@@ -96,6 +96,16 @@ Resources:
       Name: SSRUserPoolArn
       Type: String
       Value: !GetAtt SSRUserPool.Arn
+
+  SSrSignalResourceServer:
+    Type: AWS::Cognito::UserPoolResourceServer
+    Properties:
+      UserPoolId: !Ref SSrUserPool
+      Identifier: 'signal'
+      Name: !Sub '${AWS::StackName}-signal-resource-server'
+      Scopes:
+        - ScopeDescription: 'Allows user to post to Events endpoint'
+          ScopeName: 'post'
 
   #########################
   # API Gateway Resources #
