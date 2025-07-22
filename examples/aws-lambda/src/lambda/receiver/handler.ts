@@ -14,7 +14,6 @@ export const handler = async (
 ): Promise<APIGatewayProxyResult> => {
   try {
     console.log(event)
-    console.log('Change for lambda deploy')
     // Process the request
     const response = {
       message: 'hello',

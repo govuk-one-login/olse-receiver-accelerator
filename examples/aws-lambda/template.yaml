@@ -181,13 +181,13 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
 
-  # PermissionforAPItoCallReceiverFunction:
-  #   Type: AWS::Lambda::Permission
-  #   Properties:
-  #     FunctionName: !Ref ReceiverFunction
-  #     Action: lambda:InvokeFunction
-  #     Principal: apigateway.amazonaws.com
-  #     SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SharedSignalsApi}/*/*/*'
+  PermissionforAPItoCallReceiverFunction:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref ReceiverFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SharedSignalsApi}/*/*/*'
 
   GoodbyeFunction:
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
