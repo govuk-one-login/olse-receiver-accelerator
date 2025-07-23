@@ -32,10 +32,3 @@ export interface VerificationTxConfig {
   RELYING_PARTY_URL: string
   STREAM_ID: string
 }
-
-export interface StatePayload {
-  requested_at: number
-  stream_id: string
-  // eslint-disable-next-line
-  [key: string]: any
-}

@@ -33,11 +33,6 @@ export async function handleVerificationSignal(
       console.error('Invalid state JWT')
       return { valid: false, errorMessage: 'invalid_state' }
     }
-    const maxAge = 15 * 60
-    const currentTime = Math.floor(Date.now() / 1000)
-    if (currentTime - statePayload.requested_at > maxAge) {
-      return { valid: false, errorMessage: 'invalid_state' }
-    }
   }
   console.log('Verification signal with state payload validated successfully')
   return { valid: true }
