@@ -1,8 +1,8 @@
-import { sendVerificationSignal } from './send-verification'
+import { sendVerificationSignal } from './sendVerification'
 import { config } from '../config/config'
 
 let verificationTimer: NodeJS.Timeout | undefined
-export function startVerificationSignals(): boolean {
+export function startHealthCheck(): boolean {
   if (verificationTimer) {
     return true
   }

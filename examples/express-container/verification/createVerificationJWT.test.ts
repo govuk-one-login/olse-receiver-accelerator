@@ -1,11 +1,9 @@
-import { createStateJwt, createVerificationJwt } from './verification-jwt'
+import { createVerificationJwt } from './createVerificationJWT'
 import { generateJWT } from '../../../src/vendor/auth/jwt'
 
 jest.mock('../../../src/vendor/auth/jwt', () => ({
   generateJWT: jest.fn()
 }))
-
-const mockGenerateJWT = generateJWT as jest.MockedFunction<typeof generateJWT>
 
 const originalEnv = process.env
 
@@ -22,23 +20,12 @@ describe('createVerificationJwt', () => {
   it('creates JWT with correct structure and state', async () => {
     const relyingPartyUrl = 'https://rp.co.uk/verify'
     const streamId = 'stream-1'
-    const state = 'default-state'
 
-    const result = await createVerificationJwt(relyingPartyUrl, streamId, {
-      state
-    })
+    const result = await createVerificationJwt(relyingPartyUrl, streamId)
 
     expect(generateJWT).toHaveBeenCalledWith({
       payload: {
-        sub_id: {
-          format: 'opaque',
-          id: streamId
-        },
-        events: {
-          'https://schemas.openid.net/secevent/ssf/event-type/verification': {
-            state: state
-          }
-        }
+        streamId: streamId
       },
       alg: 'PS256',
       issuer: 'https://gds.com',
@@ -58,18 +45,12 @@ describe('createVerificationJwt', () => {
 
     expect(generateJWT).toHaveBeenCalledWith({
       payload: {
-        sub_id: {
-          format: 'opaque',
-          id: streamId
-        },
-        events: {
-          'https://schemas.openid.net/secevent/ssf/event-type/verification': {}
-        }
+        streamId: streamId
       },
       alg: 'PS256',
       issuer: 'https://gds.com',
       // eslint-disable-next-line
-      jti: expect.stringContaining('verification-'),
+      jti: expect.stringMatching(/^verification-\d+$/),
       audience: relyingPartyUrl,
       useExpClaim: true
     })
@@ -97,23 +78,5 @@ describe('createVerificationJwt', () => {
       'Error creating verification JWT:',
       error
     )
-  })
-})
-
-describe('createStateJwt', () => {
-  beforeEach(() => {
-    jest.clearAllMocks()
-    process.env['JWT_ISSUER'] = 'test-issuer'
-    mockGenerateJWT.mockResolvedValue('header.payload.signature')
-  })
-
-  it('creates state JWT with correct payload', async () => {
-    const streamId = 'test-stream-001'
-    const relyingPartyUrl = 'https://gds.co.uk/verify'
-
-    const result = await createStateJwt(streamId, relyingPartyUrl)
-
-    expect(mockGenerateJWT)
-    expect(result).toBe('header.payload.signature')
   })
 })

@@ -8,8 +8,8 @@ describe('handleSetRouting', () => {
     jest.clearAllMocks()
   })
 
-  it('should return success for valid verififcationSignal', () => {
-    const result = handleSignalRouting(
+  it('should return success for valid verificationSignal', async () => {
+    const result = await handleSignalRouting(
       verificationSignalWithState,
       SignalSchema.VERIFICATION_SIGNAL
     )

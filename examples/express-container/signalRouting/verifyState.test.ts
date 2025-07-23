@@ -1,7 +1,7 @@
 import { CryptoKey, JWTVerifyResult } from 'jose'
 import { getPublicKeyFromJWK } from '../../../src/vendor/getPublicKey'
 import { validateJWT } from '../../../src/vendor/jwt/validateJWT'
-import { verifyStateJwt } from './verify-state'
+import { verifyStateJwt } from '../signalRouting/verifyState'
 import { readFileSync } from 'fs'
 
 jest.mock('../../../src/vendor/jwt/validateJWT')

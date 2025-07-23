@@ -1,7 +1,7 @@
-import { startVerificationSignals } from './scheduler'
-import { sendVerificationSignal } from './send-verification'
+import { startHealthCheck } from './startHealthCheck'
+import { sendVerificationSignal } from './sendVerification'
 
-jest.mock('./send-verification', () => ({
+jest.mock('./sendVerification', () => ({
   sendVerificationSignal: jest.fn()
 }))
 jest.mock('../config/config', () => ({
@@ -15,7 +15,7 @@ jest.mock('../config/config', () => ({
 const consoleLogSpy = jest.spyOn(console, 'log')
 jest.useFakeTimers()
 
-describe('startVerificationSignals', () => {
+describe('startHealthCheck', () => {
   const mockSendVerificationSignal =
     sendVerificationSignal as jest.MockedFunction<typeof sendVerificationSignal>
   mockSendVerificationSignal.mockResolvedValue(true)
@@ -28,7 +28,7 @@ describe('startVerificationSignals', () => {
   })
 
   it('returns true when scheduling succeeds', () => {
-    const result = startVerificationSignals()
+    const result = startHealthCheck()
 
     expect(result).toBe(true)
     expect(consoleLogSpy).toHaveBeenCalledWith(

@@ -9,28 +9,26 @@ interface validResponse {
 interface invalidResponse {
   valid: false
 }
-export function handleSignalRouting(
+export async function handleSignalRouting(
   signalPayload: Record<string, unknown>,
   schema: string
-): validResponse | invalidResponse {
+): Promise<validResponse | invalidResponse> {
   switch (schema) {
     case SignalSchema.VERIFICATION_SIGNAL: {
-      const handleResponse = handleVerificationSignal(signalPayload)
-      if (handleResponse.valid) {
+      const handleResponse = await handleVerificationSignal(signalPayload)
+      if (!handleResponse.valid) {
         return {
-          valid: true,
-          schema: schema
+          valid: false
         }
       }
-      break
+      return {
+        valid: true,
+        schema: schema
+      }
     }
-
     default:
       return {
         valid: false
       }
-  }
-  return {
-    valid: false
   }
 }

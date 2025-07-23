@@ -1,19 +1,19 @@
-import { createVerificationJwt } from './verification-jwt.ts'
+import { createVerificationJwt } from './createVerificationJWT.ts'
 
 export async function sendVerificationSignal(
   relyingPartyUrl: string,
-  streamId: string,
-  options?: {
-    state?: string
-    generateStatePayload?: boolean
-  }
+  streamId: string
 ): Promise<boolean> {
   try {
     const verificationJwt = await createVerificationJwt(
       relyingPartyUrl,
-      streamId,
-      options
+      streamId
     )
+
+    const requestBody = {
+      stream_id: streamId,
+      state: verificationJwt
+    }
 
     const response = await fetch(relyingPartyUrl, {
       method: 'POST',
@@ -21,7 +21,7 @@ export async function sendVerificationSignal(
         'Content-Type': 'application/secevent+jwt',
         Accept: 'application/json'
       },
-      body: verificationJwt
+      body: JSON.stringify(requestBody)
     })
     if (response.ok) {
       console.log(
