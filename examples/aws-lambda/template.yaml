@@ -88,14 +88,14 @@ Resources:
     Properties:
       Name: SSrUserPoolId
       Type: String
-      Value: !Ref SSRUserPool
+      Value: !Ref SSrUserPool
 
   SSrUserPoolArnParameter:
     Type: AWS::SSM::Parameter
     Properties:
       Name: SSrUserPoolArn
       Type: String
-      Value: !GetAtt SSRUserPool.Arn
+      Value: !GetAtt SSrUserPool.Arn
 
   SSrSignalResourceServer:
     Type: AWS::Cognito::UserPoolResourceServer
@@ -142,7 +142,7 @@ Resources:
       Auth:
         Authorizers:
           CognitoAuthorizer:
-            UserPoolArn: !GetAtt SSRUserPool.Arn
+            UserPoolArn: !GetAtt SSrUserPool.Arn
             Identity:
               Header: Authorization
 
