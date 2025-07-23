@@ -1,11 +1,10 @@
 import { getPublicKeyFromJWK } from '../../../src/vendor/getPublicKey'
 import { validateJWT } from '../../../src/vendor/jwt/validateJWT'
-import { StatePayload } from '../interfaces/interfaces'
 import * as fs from 'fs'
 
 export async function verifyStateJwt(
   stateJwt: string
-): Promise<StatePayload | null> {
+): Promise<Record<string, unknown> | null> {
   try {
     const publicKeyString = fs.readFileSync('./keys/authPublic.key', {
       encoding: 'utf8'
@@ -18,7 +17,7 @@ export async function verifyStateJwt(
 
     const result = await validateJWT(stateJwt, publicKey)
 
-    return result.payload as unknown as StatePayload
+    return result.payload
   } catch (error) {
     console.error('Failed to verify state JWT:', error)
     return null

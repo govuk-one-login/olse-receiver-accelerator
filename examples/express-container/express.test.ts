@@ -171,7 +171,7 @@ describe('Express server /v1 endpoint', () => {
     when(getPublicKeyFromRemote).mockReturnValue(key)
 
     const routeSpy = jest.spyOn(signalRouting, 'handleSignalRouting')
-    when(routeSpy).mockReturnValue({ valid: false })
+    when(routeSpy).mockResolvedValue({ valid: false })
 
     const jwt = await generateJWT(sampleVerificationEvent)
 
