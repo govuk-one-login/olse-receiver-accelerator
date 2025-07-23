@@ -11,6 +11,7 @@ import {
 import { validateSignalAgainstSchemas } from '../../src/vendor/validateSchema'
 import { handleSignalRouting } from './signalRouting/signalRouter'
 import { httpErrorResponseMessages } from './constants'
+import { startHealthCheck } from './verification/startHealthCheck'
 
 // app.use(express.json())
 const app = express()
@@ -93,7 +94,7 @@ v1Router.post(
       return
     }
 
-    const result = handleSignalRouting(
+    const result = await handleSignalRouting(
       jwtPayload,
       schemaValidationResult.schema
     )
@@ -112,4 +113,6 @@ v1Router.post(
 )
 
 app.use('/v1', v1Router)
+startHealthCheck()
+
 export { app }

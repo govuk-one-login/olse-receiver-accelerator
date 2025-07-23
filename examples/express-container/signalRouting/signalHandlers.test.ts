@@ -1,13 +1,30 @@
 import { handleVerificationSignal } from './signalHandlers'
 
-describe('Signal Handlers', () => {
-  it('handleVerificationSignal should return success result', () => {
-    const signalPayload = { sub: 'user0' }
+jest.mock('./verifyState')
 
-    const result = handleVerificationSignal(signalPayload)
+const consoleSpy = {
+  log: jest.spyOn(console, 'log').mockImplementation(),
+  error: jest.spyOn(console, 'error').mockImplementation()
+}
 
-    expect(result).toEqual({
-      valid: true
-    })
+describe('handleVerificationSignal', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('returns valid for verification signal without state', async () => {
+    const jwtPayload = {
+      sub_id: { format: 'opaque', id: 'steam-id-001' },
+      events: {
+        'https://schemas.openid.net/secevent/ssf/event-type/verification': {}
+      }
+    }
+
+    const result = await handleVerificationSignal(jwtPayload)
+
+    expect(result).toEqual({ valid: true })
+    expect(consoleSpy.log).toHaveBeenCalledWith(
+      'Verification signal without state received'
+    )
   })
 })

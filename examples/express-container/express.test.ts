@@ -7,6 +7,7 @@ import { generateJWT } from '../../src/vendor/auth/jwt'
 import { getPublicKeyFromRemote } from '../../src/vendor/getPublicKey'
 import { app } from './express'
 import * as signalRouting from './signalRouting/signalRouter'
+import { stopVerificationSignals } from './verification/startHealthCheck'
 
 jest.mock('../../src/vendor/getPublicKey', () => ({
   getPublicKeyFromRemote: jest.fn()
@@ -59,6 +60,7 @@ describe('Express server /v1 endpoint', () => {
 
   afterEach(() => {
     process.env = originalEnv
+    stopVerificationSignals()
     jest.useRealTimers()
   })
 
@@ -169,7 +171,7 @@ describe('Express server /v1 endpoint', () => {
     when(getPublicKeyFromRemote).mockReturnValue(key)
 
     const routeSpy = jest.spyOn(signalRouting, 'handleSignalRouting')
-    when(routeSpy).mockReturnValue({ valid: false })
+    when(routeSpy).mockResolvedValue({ valid: false })
 
     const jwt = await generateJWT(sampleVerificationEvent)
 
