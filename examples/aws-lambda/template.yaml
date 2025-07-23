@@ -100,7 +100,7 @@ Resources:
   SSrSignalResourceServer:
     Type: AWS::Cognito::UserPoolResourceServer
     Properties:
-      UserPoolId: !Ref SSrUserPool
+      UserPoolId: !Ref SSrUserPoolId
       Identifier: 'signal'
       Name: !Sub '${AWS::StackName}-signal-resource-server'
       Scopes:
