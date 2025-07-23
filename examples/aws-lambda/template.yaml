@@ -78,34 +78,34 @@ Resources:
   # Cognito Resources #
   #####################
 
-  # SSrUserPool:
-  #   Type: AWS::Cognito::UserPool
-  #   Properties:
-  #     UserPoolName: !Sub ${AWS::StackName}-ssr-user-pool
+  SSrUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub ${AWS::StackName}-ssr-user-pool
 
-  # SSrUserPoolIdParameter:
-  #   Type: AWS::SSM::Parameter
-  #   Properties:
-  #     Name: SSrUserPoolId
-  #     Type: String
-  #     Value: !Ref SSrUserPool
+  SSrUserPoolIdParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: SSrUserPoolId
+      Type: String
+      Value: !Ref SSrUserPool
 
-  # SSrUserPoolArnParameter:
-  #   Type: AWS::SSM::Parameter
-  #   Properties:
-  #     Name: SSrUserPoolArn
-  #     Type: String
-  #     Value: !GetAtt SSrUserPool.Arn
+  SSrUserPoolArnParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: SSrUserPoolArn
+      Type: String
+      Value: !GetAtt SSrUserPool.Arn
 
-  # SSrSignalResourceServer:
-  #   Type: AWS::Cognito::UserPoolResourceServer
-  #   Properties:
-  #     UserPoolId: !Ref SSrUserPool
-  #     Identifier: 'signal'
-  #     Name: !Sub '${AWS::StackName}-signal-resource-server'
-  #     Scopes:
-  #       - ScopeDescription: 'Allows user to post to Events endpoint'
-  #         ScopeName: 'post'
+  SSrSignalResourceServer:
+    Type: AWS::Cognito::UserPoolResourceServer
+    Properties:
+      UserPoolId: !Ref SSrUserPool
+      Identifier: 'signal'
+      Name: !Sub '${AWS::StackName}-signal-resource-server'
+      Scopes:
+        - ScopeDescription: 'Allows user to post to Events endpoint'
+          ScopeName: 'post'
 
   #########################
   # API Gateway Resources #
