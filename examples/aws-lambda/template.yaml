@@ -78,22 +78,22 @@ Resources:
   # Cognito Resources #
   #####################
 
-  SSRUserPool:
+  SSrUserPool:
     Type: AWS::Cognito::UserPool
     Properties:
       UserPoolName: !Sub ${AWS::StackName}-ssr-user-pool
 
-  SSRUserPoolIdParameter:
+  SSrUserPoolIdParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: SSRUserPoolId
+      Name: SSrUserPoolId
       Type: String
       Value: !Ref SSRUserPool
 
   SSrUserPoolArnParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: SSRUserPoolArn
+      Name: SSrUserPoolArn
       Type: String
       Value: !GetAtt SSRUserPool.Arn
 
