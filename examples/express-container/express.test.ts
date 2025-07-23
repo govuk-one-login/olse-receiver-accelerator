@@ -7,7 +7,7 @@ import { generateJWT } from '../../src/vendor/auth/jwt'
 import { getPublicKeyFromRemote } from '../../src/vendor/getPublicKey'
 import { app } from './express'
 import * as signalRouting from './signalRouting/signalRouter'
-import { stopVerificationSignals } from './verification/scheduler'
+import { stopVerificationSignals } from './verification/startHealthCheck'
 
 jest.mock('../../src/vendor/getPublicKey', () => ({
   getPublicKeyFromRemote: jest.fn()

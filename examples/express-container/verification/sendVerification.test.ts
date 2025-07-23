@@ -1,8 +1,8 @@
-import { sendVerificationSignal } from './send-verification'
-import { createVerificationJwt } from './verification-jwt'
+import { sendVerificationSignal } from './sendVerification'
+import { createVerificationJwt } from './createVerificationJWT'
 import { SignJWT } from 'jose'
 
-jest.mock('./verification-jwt')
+jest.mock('./createVerificationJWT')
 jest.mock('../config/config', () => ({
   config: {
     JWT_SECRET: 'test-secret',
@@ -47,7 +47,7 @@ describe('sendVerificationSignal', () => {
         'Content-Type': 'application/secevent+jwt',
         Accept: 'application/json'
       },
-      body: 'state-jwt'
+      body: JSON.stringify({ stream_id: mockStreamId, state: 'state-jwt' })
     })
   })
 
