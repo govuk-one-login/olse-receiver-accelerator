@@ -83,19 +83,18 @@ Resources:
     Properties:
       UserPoolName: !Sub ${AWS::StackName}-ssr-user-pool
 
-  SSrUserPoolIdParameter:
-    Type: AWS::SSM::Parameter
+  SSrSecret:
+    Type: AWS::SecretsManager::Secret
     Properties:
-      Name: SSrUserPoolId
-      Type: String
-      Value: !Ref SSrUserPool
-
-  SSrUserPoolArnParameter:
-    Type: AWS::SSM::Parameter
-    Properties:
-      Name: SSrUserPoolArn
-      Type: String
-      Value: !GetAtt SSrUserPool.Arn
+      Name: !Sub '${AWS::StackName}-ssr-secrets'
+      Description: 'Secrets for Signal Exchange Receiver'
+      SecretString: !Sub |
+        {
+          "userPoolId": "${SSrUserPool}",
+          "userPoolArn": "${SSrUserPool.Arn}",
+          "userPoolClientId": "${SSrUserPoolClient}",
+          "userPoolClientSecret": "${SSrUserPoolClient.ClientSecret}"
+        }
 
   SSrSignalResourceServer:
     Type: AWS::Cognito::UserPoolResourceServer
@@ -176,6 +175,9 @@ Resources:
       FunctionName: !Sub ${AWS::StackName}-receiver
       Handler: handler.handler
       Role: !GetAtt ReceiverFunctionRole.Arn
+      Environment:
+        Variables:
+          SECRET_ARN: !Ref SSrSecret
       Events:
         ReceiverAPI:
           Type: Api
@@ -207,6 +209,15 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+      Policies:
+        - PolicyName: SecretsManagerAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource: !Ref SSrSecret
 
   PermissionforAPItoCallReceiverFunction:
     Type: AWS::Lambda::Permission

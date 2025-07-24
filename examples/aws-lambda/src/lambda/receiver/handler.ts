@@ -13,7 +13,6 @@ export const handler = async (
   _context: Context
 ): Promise<APIGatewayProxyResult> => {
   try {
-    console.log('Got this far')
     console.log(event)
     // Process the request
     const response = {
