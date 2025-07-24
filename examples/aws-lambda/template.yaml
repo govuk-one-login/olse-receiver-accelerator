@@ -143,6 +143,8 @@ Resources:
         Authorizers:
           CognitoAuthorizer:
             UserPoolArn: !GetAtt SSrUserPool.Arn
+            AuthorizationScopes:
+              - 'signal/post'
             Identity:
               Header: Authorization
 
@@ -170,7 +172,8 @@ Resources:
             RestApiId: !Ref SharedSignalsApi
             Auth:
               Authorizer: CognitoAuthorizer
-              AuthorizationScopes: ['stream/post']
+              AuthorizationScopes: 
+                - 'stream/post'
 
   ReceiverFunctionRole:
     Type: AWS::IAM::Role
