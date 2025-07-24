@@ -84,10 +84,12 @@ Resources:
       UserPoolName: !Sub ${AWS::StackName}-ssr-user-pool
 
   SSrSecret:
+    #checkov:skip=CKV_AWS_149:Using KMS encryption for Secrets Manager
     Type: AWS::SecretsManager::Secret
     Properties:
       Name: !Sub '${AWS::StackName}-ssr-secrets'
       Description: 'Secrets for Signal Exchange Receiver'
+      KmsKeyId: '{{resolve:ssm:SecretsKmsKeyArn}}'
       SecretString: !Sub |
         {
           "userPoolId": "${SSrUserPool}",
@@ -175,6 +177,7 @@ Resources:
       FunctionName: !Sub ${AWS::StackName}-receiver
       Handler: handler.handler
       Role: !GetAtt ReceiverFunctionRole.Arn
+      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Environment:
         Variables:
           SECRET_ARN: !Ref SSrSecret
