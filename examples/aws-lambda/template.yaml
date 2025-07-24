@@ -170,6 +170,7 @@ Resources:
             RestApiId: !Ref SharedSignalsApi
             Auth:
               Authorizer: CognitoAuthorizer
+              AuthorizationScopes: ['stream/post']
 
   ReceiverFunctionRole:
     Type: AWS::IAM::Role
