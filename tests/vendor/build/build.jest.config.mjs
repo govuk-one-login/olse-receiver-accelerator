@@ -8,7 +8,8 @@ const config = {
   rootDir: '../../../',
   testMatch: [
     `<rootDir>/tests/vendor/build/**/*.spec.ts`,
-  ]
+  ],
+  testPathIgnorePatterns: []
 }
 
 export default config

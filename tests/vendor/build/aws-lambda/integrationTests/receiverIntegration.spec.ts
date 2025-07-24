@@ -1,4 +1,4 @@
-import { getTokenFromCognito } from './getTokenFromCognito'
+import { getTokenFromCognito } from '../../../../../examples/aws-lambda/src/lambda/receiver/getTokenFromCognito'
 
 describe('handler V1', () => {
   it('handler returns 200 when a valid access token is provided', async () => {
