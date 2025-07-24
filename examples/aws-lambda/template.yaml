@@ -172,7 +172,7 @@ Resources:
             RestApiId: !Ref SharedSignalsApi
             Auth:
               Authorizer: CognitoAuthorizer
-              AuthorizationScopes: 
+              AuthorizationScopes:
                 - 'stream/post'
 
   ReceiverFunctionRole:
