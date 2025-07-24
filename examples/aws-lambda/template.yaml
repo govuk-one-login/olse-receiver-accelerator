@@ -107,6 +107,19 @@ Resources:
         - ScopeDescription: 'Allows user to post to Events endpoint'
           ScopeName: 'post'
 
+  SSrUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    DependsOn: SSrSignalResourceServer
+    Properties:
+      UserPoolId: !Ref SSrUserPool
+      ClientName: !Sub '${AWS::StackName}-app-client'
+      GenerateSecret: true
+      AllowedOAuthFlows:
+        - client_credentials
+      AllowedOAuthScopes:
+        - 'signal/post'
+      AllowedOAuthFlowsUserPoolClient: true
+
   #########################
   # API Gateway Resources #
   #########################
@@ -173,7 +186,7 @@ Resources:
             Auth:
               Authorizer: CognitoAuthorizer
               AuthorizationScopes:
-                - 'stream/post'
+                - 'signal/post'
 
   ReceiverFunctionRole:
     Type: AWS::IAM::Role
