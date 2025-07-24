@@ -3,6 +3,8 @@ import { getPublicKeyFromJWK } from '../../../src/vendor/getPublicKey'
 import { validateJWT } from '../../../src/vendor/jwt/validateJWT'
 import { verifyStateJwt } from '../signalRouting/verifyState'
 import { readFileSync } from 'fs'
+import { ConfigurationKeys } from '../config/ConfigurationKeys'
+import { config } from '../config/EnvironmentalVariableConfigurationProvider'
 
 jest.mock('../../../src/vendor/jwt/validateJWT')
 jest.mock('../../../src/vendor/getPublicKey')
@@ -15,7 +17,7 @@ const mockReadFileSync = readFileSync as jest.MockedFunction<
 describe('verifyStateJwt', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    process.env['JWT_ISSUER'] = 'test-issuer'
+    config.set(ConfigurationKeys.ISSUER, 'test-issuer')
     mockReadFileSync.mockReturnValue('{"someKey":"someKeyValue"}')
     ;(
       getPublicKeyFromJWK as jest.MockedFunction<typeof getPublicKeyFromJWK>

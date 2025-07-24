@@ -1,6 +1,8 @@
 import { Request } from 'express'
 import { generateJWT } from './jwt'
 import { getAuthInput } from './getAuthInput'
+import { config } from '../../../examples/express-container/config/EnvironmentalVariableConfigurationProvider'
+import { ConfigurationKeys } from '../../../examples/express-container/config/ConfigurationKeys'
 
 interface ValidResponse {
   valid: true
@@ -23,9 +25,10 @@ export const auth = async (req: Request): Promise<Result> => {
   if (grant_type !== 'client_credentials') {
     return { valid: false, error: 'invalid_grant', response_code: 400 }
   }
+  console.log(config.get(ConfigurationKeys.CLIENT_ID))
   if (
-    client_id === process.env['CLIENT_ID'] &&
-    client_secret === process.env['CLIENT_SECRET']
+    client_id === config.get(ConfigurationKeys.CLIENT_ID) &&
+    client_secret === config.get(ConfigurationKeys.CLIENT_SECRET)
   ) {
     try {
       const token = await generateJWT({

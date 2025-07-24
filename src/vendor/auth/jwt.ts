@@ -1,8 +1,13 @@
 import { SignJWT, importJWK, JWK } from 'jose'
 import * as fs from 'fs'
 import { generateJWTPayload } from '../types'
+import { config } from '../../../examples/express-container/config/EnvironmentalVariableConfigurationProvider'
+import { ConfigurationKeys } from '../../../examples/express-container/config/ConfigurationKeys'
 
-const PRIVATE_KEY_PATH = './keys/authPrivate.key'
+const PRIVATE_KEY_PATH = config.getOrDefault(
+  ConfigurationKeys.PRIVATE_KEY_PATH,
+  './keys/authPrivate.key'
+)
 
 const getPrivateKey = async () => {
   const privateKeyJwk = JSON.parse(

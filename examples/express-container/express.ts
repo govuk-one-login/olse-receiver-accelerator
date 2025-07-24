@@ -12,6 +12,8 @@ import { validateSignalAgainstSchemas } from '../../src/vendor/validateSchema'
 import { handleSignalRouting } from './signalRouting/signalRouter'
 import { httpErrorResponseMessages } from './constants'
 import { startHealthCheck } from './verification/startHealthCheck'
+import { ConfigurationKeys } from './config/ConfigurationKeys'
+import { config } from './config/EnvironmentalVariableConfigurationProvider'
 
 // app.use(express.json())
 const app = express()
@@ -47,7 +49,11 @@ v1Router.post(
 
     try {
       const accessToken = auth_header.substring(7)
-      const publicKeyString = readFileSync('./keys/authPublic.key', {
+      const PUBLIC_KEY_PATH = config.getOrDefault(
+        ConfigurationKeys.PUBLIC_KEY_PATH,
+        './keys/authPublic.key'
+      )
+      const publicKeyString = readFileSync(PUBLIC_KEY_PATH, {
         encoding: 'utf8'
       })
       // eslint-disable-next-line

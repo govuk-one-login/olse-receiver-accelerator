@@ -1,12 +1,18 @@
 import { getPublicKeyFromJWK } from '../../../src/vendor/getPublicKey'
 import { validateJWT } from '../../../src/vendor/jwt/validateJWT'
 import * as fs from 'fs'
+import { config } from '../config/EnvironmentalVariableConfigurationProvider'
+import { ConfigurationKeys } from '../config/ConfigurationKeys'
 
 export async function verifyStateJwt(
   stateJwt: string
 ): Promise<Record<string, unknown> | null> {
   try {
-    const publicKeyString = fs.readFileSync('./keys/authPublic.key', {
+    const PUBLIC_KEY_PATH = config.getOrDefault(
+      ConfigurationKeys.PUBLIC_KEY_PATH,
+      './keys/authPublic.key'
+    )
+    const publicKeyString = fs.readFileSync(PUBLIC_KEY_PATH, {
       encoding: 'utf8'
     })
 

@@ -1,19 +1,18 @@
 import { startHealthCheck } from './startHealthCheck'
 import { sendVerificationSignal } from './sendVerification'
+import { config } from '../config/EnvironmentalVariableConfigurationProvider'
+import { ConfigurationKeys } from '../config/ConfigurationKeys'
 
 jest.mock('./sendVerification', () => ({
   sendVerificationSignal: jest.fn()
 }))
-jest.mock('../config/config', () => ({
-  config: {
-    VERIFICATION_INTERVAL_MINUTES: '15',
-    RELYING_PARTY_URL: 'https.//gds.co.uk/rp',
-    STREAM_ID: 'streamId'
-  }
-}))
 
 const consoleLogSpy = jest.spyOn(console, 'log')
 jest.useFakeTimers()
+
+config.set(ConfigurationKeys.VERIFICATION_INTERVAL, '15')
+config.set(ConfigurationKeys.RELYING_PARTY_URL, 'https://gds.co.uk/verify')
+config.set(ConfigurationKeys.STREAM_ID, 'streamId')
 
 describe('startHealthCheck', () => {
   const mockSendVerificationSignal =

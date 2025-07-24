@@ -8,6 +8,8 @@ import { getPublicKeyFromRemote } from '../../src/vendor/getPublicKey'
 import { app } from './express'
 import * as signalRouting from './signalRouting/signalRouter'
 import { stopVerificationSignals } from './verification/startHealthCheck'
+import { config } from './config/EnvironmentalVariableConfigurationProvider'
+import { ConfigurationKeys } from './config/ConfigurationKeys'
 
 jest.mock('../../src/vendor/getPublicKey', () => ({
   getPublicKeyFromRemote: jest.fn()
@@ -37,8 +39,6 @@ let publicKeyJson
 let key: webcrypto.CryptoKey | Uint8Array
 
 describe('Express server /v1 endpoint', () => {
-  const originalEnv = process.env
-
   beforeEach(async () => {
     jest.resetAllMocks()
     jest.clearAllMocks()
@@ -46,9 +46,8 @@ describe('Express server /v1 endpoint', () => {
 
     jest.spyOn(console, 'error')
 
-    process.env = { ...originalEnv }
-    process.env['CLIENT_ID'] = 'test_client'
-    process.env['CLIENT_SECRET'] = 'test_secret'
+    config.set(ConfigurationKeys.CLIENT_ID, 'test_client')
+    config.set(ConfigurationKeys.CLIENT_SECRET, 'test_secret')
 
     publicKeyString = readFileSync('./keys/authPublic.key', {
       encoding: 'utf8'
@@ -59,7 +58,6 @@ describe('Express server /v1 endpoint', () => {
   })
 
   afterEach(() => {
-    process.env = originalEnv
     stopVerificationSignals()
     jest.useRealTimers()
   })
