@@ -84,7 +84,6 @@ Resources:
       UserPoolName: !Sub ${AWS::StackName}-ssr-user-pool
 
   SSrSecret:
-    #checkov:skip=CKV_AWS_149:Using KMS encryption for Secrets Manager
     Type: AWS::SecretsManager::Secret
     Properties:
       Name: !Sub '${AWS::StackName}-ssr-secrets'
