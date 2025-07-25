@@ -131,3 +131,15 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+  GoodByeScheduledTrigger:
+    Type: AWS::Scheduler::Schedule
+    Properties:
+      Description: Periodically trigger the GoodbyeFunction Lambda Function
+      FlexibleTimeWindow:
+        Mode: FLEXIBLE
+        MaximumWindowInMinutes: 5
+      ScheduleExpression: 'rate(15 minutes)'
+      State: ENABLED
+      Target:
+        Arn: !GetAtt GoodbyeFunctionRole.Arn
+        RoleArn: !GetAtt GoodbyeFunctionRole.Arn
