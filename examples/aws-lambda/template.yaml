@@ -141,7 +141,7 @@ Resources:
       ScheduleExpression: 'rate(15 minutes)'
       State: ENABLED
       Target:
-        Arn: !GetAtt GoodbyeFunctionRole.Arn
+        Arn: !GetAtt GoodbyeFunction.Arn
         RoleArn: !GetAtt GoodByeScheduledTriggerRole.Arn
   GoodByeScheduledTriggerRole:
     Type: AWS::IAM::Role
