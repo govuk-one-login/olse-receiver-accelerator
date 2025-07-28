@@ -32,8 +32,8 @@ describe('sendVerificationSignal', () => {
     mockedCreateVerificationJwt.mockResolvedValue('state-jwt')
   })
 
-  it('returns true when response.ok is true', async () => {
-    global.fetch = jest.fn().mockResolvedValue({ ok: true } as Response)
+  it('returns true when response.status is 204', async () => {
+    global.fetch = jest.fn().mockResolvedValue({ status: 204 } as Response)
 
     const result = await sendVerificationSignal(
       mockRelyingPartyUrl,

@@ -23,7 +23,7 @@ export async function sendVerificationSignal(
       },
       body: JSON.stringify(requestBody)
     })
-    if (response.ok) {
+    if (response.status === 204) {
       console.log(
         'Verification signal sent successfully to : ',
         relyingPartyUrl
