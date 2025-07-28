@@ -142,4 +142,20 @@ Resources:
       State: ENABLED
       Target:
         Arn: !GetAtt GoodbyeFunctionRole.Arn
-        RoleArn: !GetAtt GoodbyeFunctionRole.Arn
+        RoleArn: !GetAtt GoodByeScheduledTriggerRole.Arn
+  GoodByeScheduledTriggerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - scheduler.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
