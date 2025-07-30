@@ -82,6 +82,7 @@ Resources:
     Type: AWS::Cognito::UserPool
     Properties:
       UserPoolName: !Sub ${AWS::StackName}-ssr-user-pool
+      Domain: !Sub '${AWS::StackName}-ssr-${Environment}-${AWS::AccountId}'
 
   SSrSecret:
     Type: AWS::SecretsManager::Secret
@@ -95,6 +96,7 @@ Resources:
           "userPoolArn": "${SSrUserPool.Arn}",
           "userPoolClientId": "${SSrUserPoolClient}",
           "userPoolClientSecret": "${SSrUserPoolClient.ClientSecret}"
+          "domain": "${SSrUserPoolDomain}"
         }
 
   SSrSignalResourceServer:
@@ -257,3 +259,10 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+
+Outputs:
+  SharedSignalsApiUrl:
+    Description: API Gateway endpoint URL
+    Value: !Sub 'https://${SharedSignalsApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Environment}'
+    Export:
+      Name: !Sub '${AWS::StackName}-SharedSignalsApiUrl'

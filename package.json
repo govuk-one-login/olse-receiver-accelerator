@@ -68,6 +68,7 @@
     "node": ">=22.0.0"
   },
   "dependencies": {
+    "@aws-sdk/client-cloudformation": "^3.856.0",
     "aws-jwt-verify": "^5.1.0",
     "express": "^5.1.0",
     "jose": "^6.0.11"
