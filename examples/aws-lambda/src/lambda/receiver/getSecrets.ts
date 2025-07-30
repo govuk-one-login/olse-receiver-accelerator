@@ -8,6 +8,7 @@ interface Secrets {
   userPoolClientId: string
   userPoolClientSecret: string
   userPoolArn: string
+  domain: string
 }
 
 const client = new SecretsManagerClient({ region: 'eu-west-2' })
