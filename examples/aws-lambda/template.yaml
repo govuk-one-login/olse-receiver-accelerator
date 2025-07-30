@@ -83,12 +83,6 @@ Resources:
     Properties:
       UserPoolName: !Sub ${AWS::StackName}-ssr-user-pool
 
-  SSrUserPoolDomain:
-    Type: AWS::Cognito::UserPoolDomain
-    Properties:
-      UserPoolId: !Ref SSrUserPool
-      Domain: !Sub '${AWS::StackName}-ssr-${Environment}'
-
   SSrSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -126,6 +120,12 @@ Resources:
       AllowedOAuthScopes:
         - 'signal/post'
       AllowedOAuthFlowsUserPoolClient: true
+
+  SSrUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      UserPoolId: !Ref SSrUserPool
+      Domain: !Sub '${AWS::StackName}-ssr-${Environment}'
 
   #########################
   # API Gateway Resources #
