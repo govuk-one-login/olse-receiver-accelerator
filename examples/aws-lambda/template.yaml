@@ -86,7 +86,6 @@ Resources:
   SSrUserPoolDomain:
     Type: AWS::Cognito::UserPoolDomain
     DependsOn:
-      - SSrUserPool
       - SSrSignalResourceServer
       - SSrUserPoolClient
     Properties:
