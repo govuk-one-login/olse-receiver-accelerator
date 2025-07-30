@@ -85,12 +85,9 @@ Resources:
 
   SSrUserPoolDomain:
     Type: AWS::Cognito::UserPoolDomain
-    DependsOn:
-      - SSrSignalResourceServer
-      - SSrUserPoolClient
     Properties:
       UserPoolId: !Ref SSrUserPool
-      Domain: !Sub '${AWS::StackName}-ssr-${Environment}-${AWS::AccountId}'
+      Domain: !Sub '${AWS::StackName}-ssr-${Environment}'
 
   SSrSecret:
     Type: AWS::SecretsManager::Secret
