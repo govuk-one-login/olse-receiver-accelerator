@@ -82,6 +82,11 @@ Resources:
     Type: AWS::Cognito::UserPool
     Properties:
       UserPoolName: !Sub ${AWS::StackName}-ssr-user-pool
+
+  SSrUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      UserPoolId: { Ref: !SSrUserPool  }
       Domain: !Sub '${AWS::StackName}-ssr-${Environment}-${AWS::AccountId}'
 
   SSrSecret:
