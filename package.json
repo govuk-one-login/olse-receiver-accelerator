@@ -30,6 +30,8 @@
   },
   "homepage": "https://github.com/govuk-one-login/olse-receiver-accelerator#readme",
   "devDependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.848.0",
+    "@aws-sdk/client-secrets-manager": "^3.848.0",
     "@types/aws-lambda": "^8.10.152",
     "@eslint/js": "^9.32.0",
     "@types/express": "^5.0.3",
