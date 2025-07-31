@@ -128,7 +128,7 @@ Resources:
       AllowedOAuthFlowsUserPoolClient: true
 
   #########################
-  # API Gateway Resources #
+  # API Gateway Resources  #
   #########################
 
   SharedSignalsApi:
