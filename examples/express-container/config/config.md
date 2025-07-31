@@ -2,7 +2,7 @@ The configuration provider is an abstracted system to require minimal implementa
 
 - ConfigurationKeys - List of config keys used by app
 - AbstractConfigurationProvider
-  - Holds a a config data map of tyype Map<string,string>
+  - Holds a a config data map of type Map<string,string>
   - A single abstract method of getall()
   - Utility accessors for the map
   - initialise used to populate config data map
