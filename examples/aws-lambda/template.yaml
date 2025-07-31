@@ -100,7 +100,7 @@ Resources:
           "userPoolId": "${SSrUserPool}",
           "userPoolArn": "${SSrUserPool.Arn}",
           "userPoolClientId": "${SSrUserPoolClient}",
-          "userPoolClientSecret": "${SSrUserPoolClient.ClientSecret}"
+          "userPoolClientSecret": "${SSrUserPoolClient.ClientSecret}",
           "domain": "${SSrUserPoolDomain}"
         }
 
