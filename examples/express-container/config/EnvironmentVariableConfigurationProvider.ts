@@ -1,10 +1,6 @@
 import { AbstractConfigurationProvider } from './AbstractConfigurationProvider'
 
 export class EnvironmentVariableConfigurationProvider extends AbstractConfigurationProvider {
-  constructor() {
-    super()
-  }
-
   async getAll(): Promise<Map<string, string>> {
     const keys = this.getAllKeys()
     const envVariables = new Map<string, string>()
@@ -16,7 +12,7 @@ export class EnvironmentVariableConfigurationProvider extends AbstractConfigurat
         envVariables.set(key, value)
       }
     }
-    return envVariables
+    return Promise.resolve(envVariables)
   }
 }
 
