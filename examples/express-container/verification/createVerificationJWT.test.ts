@@ -12,9 +12,9 @@ describe('createVerificationJwt', () => {
     jest.clearAllMocks()
     process.env[ConfigurationKeys.ISSUER] = 'https://gds.co.uk'
     await config.initialise()
-      ; (generateJWT as jest.MockedFunction<typeof generateJWT>).mockResolvedValue(
-        'mock.jwt.token'
-      )
+    ;(generateJWT as jest.MockedFunction<typeof generateJWT>).mockResolvedValue(
+      'mock.jwt.token'
+    )
   })
 
   it('creates JWT with correct structure and state', async () => {
@@ -61,9 +61,9 @@ describe('createVerificationJwt', () => {
   it('handles generateJWT errors', async () => {
     const error = new Error('Error')
 
-      ; (generateJWT as jest.MockedFunction<typeof generateJWT>).mockRejectedValue(
-        error
-      )
+    ;(generateJWT as jest.MockedFunction<typeof generateJWT>).mockRejectedValue(
+      error
+    )
 
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
 
