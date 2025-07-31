@@ -64,6 +64,7 @@ This will be the main signal processing function that handles incoming signal ev
 #### Environment Variables:
 
 - `SECRET_ARN`: ARN of the Secrets Manager secret containing Cognito credentials
+- `API_GATEWAY_URL`: URL for the API Gateway
 
 #### IAM Permissions:
 
@@ -84,11 +85,14 @@ Currently the lambdas are deployed into a VPC and the permissions dont exist to 
 ## Local Development
 
 ```bash
-# You will need to manually set the SECRET_ARN variable in order to run intergration tests locally
-export SECRET_ARN=$(aws cloudformation describe-stacks --stack-name your-stack-name --query 'Stacks[0].Outputs[?OutputKey==`SecretArn`].OutputValue' --output text)
 
-# Or log into shared-signals-dev account and get it manually from AWS Secrets Manager, under (branch-name)-ssr-secrets
+# You will need to manually set the SECRET_ARN and API_GATEWAY_URL environment variablea in order to run intergration tests locally
+
+# Log into shared-signals-dev account and get it manually from AWS Secrets Manager, under (branch-name)-ssr-secrets
 export SECRET_ARN='insert secret ARN here'
+
+# Log into shared-signals-dev account and get it manually from AWS API Gateway for your branch, under (branch-name-shared-signals-receiver-api-endpoint, go to stages, expand down to the function, then its the invoke url
+export API_GATEWAY_URL='insert api gateway url here'
 ```
 
 ## Security Features
@@ -125,5 +129,5 @@ SAM deployment configuration with environment-specific parameters.
 Integration tests are located in `src/lambda/receiver/handler.test.ts` and can be run with:
 
 ```bash
-npm run test:unit
+npm run test:vendor:build
 ```
