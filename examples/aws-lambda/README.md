@@ -92,7 +92,7 @@ Currently the lambdas are deployed into a VPC and the permissions dont exist to 
 export SECRET_ARN='insert secret ARN here'
 
 # Log into shared-signals-dev account and get it manually from AWS API Gateway for your branch, under (branch-name-shared-signals-receiver-api-endpoint, go to stages, expand down to the function, then its the invoke url
-export API_GATEWAY_URL='insert api gateway url here'
+export API_GATEWAY_URL='insert api gateway url here NOT including the /api/v1/Events'
 ```
 
 ## Security Features
