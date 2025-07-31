@@ -8,11 +8,11 @@ export async function verifyStateJwt(
   stateJwt: string
 ): Promise<Record<string, unknown> | null> {
   try {
-    const PUBLIC_KEY_PATH = await config.getOrDefault(
+    const PUBLIC_KEY_PATH = config.getOrDefault(
       ConfigurationKeys.PUBLIC_KEY_PATH,
       './keys/authPublic.key'
     )
-    const publicKeyString = fs.readFileSync(PUBLIC_KEY_PATH as fs.PathOrFileDescriptor, {
+    const publicKeyString = fs.readFileSync(PUBLIC_KEY_PATH as string, {
       encoding: 'utf8'
     })
 

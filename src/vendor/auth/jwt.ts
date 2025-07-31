@@ -2,12 +2,17 @@ import { SignJWT, importJWK, JWK } from 'jose'
 import * as fs from 'fs'
 import { generateJWTPayload } from '../types'
 import { ConfigurationKeys } from '../../../examples/express-container/config/ConfigurationKeys'
+import { config } from '../../../examples/express-container/config/globalConfig'
 
 
 const getPrivateKey = async () => {
+  const privateKey = config.getOrDefault(ConfigurationKeys.PRIVATE_KEY_PATH, './keys/authPrivate.key')
   const privateKeyJwk = JSON.parse(
-    fs.readFileSync(ConfigurationKeys.PRIVATE_KEY_PATH, 'utf8')
+    fs.readFileSync(privateKey as string, 'utf8')
   ) as JWK
+  // const privateKeyJwk = JSON.parse(
+  //   fs.readFileSync('./keys/authPrivate.key', 'utf8')
+  // ) as JWK
   return await importJWK(privateKeyJwk, 'PS256')
 }
 

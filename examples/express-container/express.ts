@@ -1,6 +1,6 @@
 import bodyParser from 'body-parser'
 import express, { Request, Response } from 'express'
-import { PathOrFileDescriptor, readFileSync } from 'fs'
+import { readFileSync } from 'fs'
 import * as jose from 'jose'
 import { auth } from '../../src/vendor/auth/auth'
 import { getPublicKeyFromRemote } from '../../src/vendor/getPublicKey'
@@ -12,7 +12,6 @@ import { validateSignalAgainstSchemas } from '../../src/vendor/validateSchema'
 import { handleSignalRouting } from './signalRouting/signalRouter'
 import { httpErrorResponseMessages } from './constants'
 import { startHealthCheck } from './verification/startHealthCheck'
-import { ConfigurationKeys } from './config/ConfigurationKeys'
 import { config } from './config/globalConfig'
 
 
@@ -21,6 +20,7 @@ import { config } from './config/globalConfig'
 // app.use(express.json())
 const app = express()
 const v1Router = express()
+await config.initialise()
 
 v1Router.post(
   '/token',
@@ -52,7 +52,7 @@ v1Router.post(
 
     try {
       const accessToken = auth_header.substring(7)
-      const publicKeyString = readFileSync(await config.get(ConfigurationKeys.PUBLIC_KEY_PATH) as PathOrFileDescriptor, {
+      const publicKeyString = readFileSync('./keys/authPublic.key', {
         encoding: 'utf8'
       })
       // eslint-disable-next-line

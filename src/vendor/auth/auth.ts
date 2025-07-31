@@ -25,11 +25,10 @@ export const auth = async (req: Request): Promise<Result> => {
   if (grant_type !== 'client_credentials') {
     return { valid: false, error: 'invalid_grant', response_code: 400 }
   }
-  const log = await config.get(ConfigurationKeys.CLIENT_ID)
-  console.log(await config.get(ConfigurationKeys.CLIENT_ID))
+
   if (
-    client_id === await config.get(ConfigurationKeys.CLIENT_ID) &&
-    client_secret === await config.get(ConfigurationKeys.CLIENT_SECRET)
+    client_id === config.get(ConfigurationKeys.CLIENT_ID) &&
+    client_secret === config.get(ConfigurationKeys.CLIENT_SECRET)
   ) {
     try {
       const token = await generateJWT({
