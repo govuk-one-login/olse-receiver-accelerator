@@ -4,6 +4,6 @@ import { EnvironmentVariableConfigurationProvider } from './EnvironmentalVariabl
 export const config = new EnvironmentVariableConfigurationProvider();
 //export const = new AWSSecretsMangerConfig()
 
-(async () => {
+void (async () => {
     await config.initialise()
 })

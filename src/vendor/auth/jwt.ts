@@ -10,7 +10,7 @@ const getPrivateKey = async () => {
     './keys/authPrivate.key'
   )
   const privateKeyJwk = JSON.parse(
-    fs.readFileSync(privateKey as string, 'utf8')
+    fs.readFileSync(privateKey, 'utf8')
   ) as JWK
   // const privateKeyJwk = JSON.parse(
   //   fs.readFileSync('./keys/authPrivate.key', 'utf8')
