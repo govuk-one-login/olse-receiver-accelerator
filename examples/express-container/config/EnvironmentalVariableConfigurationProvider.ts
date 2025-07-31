@@ -1,26 +1,28 @@
-import { AbstractConfigurationProvider } from './AbstractConfigurationProvider'
+import { AbstractConfigurationProvider } from './AbstractConfigurationProvider';
+
 
 export class EnvironmentVariableConfigurationProvider extends AbstractConfigurationProvider {
-  get(key: string): string | undefined {
-    return process.env[key]
-  }
 
-  getOrDefault(key: string, defaultValue: string): string {
-    const value = process.env[key]
-    return value ?? defaultValue
-  }
+    constructor() {
+        super()
+    }
 
-  set(key: string, value: string) {
-    process.env[key] = value
-  }
+    async getAll(): Promise<Map<string, string>> {
+        const keys = await this.getAllKeys()
+        const envVariables = new Map<string, string>()
 
-  getAllKeys(): string[] {
-    return Object.keys(process.env)
-  }
+        for (const key of keys) {
+            const value = process.env[key]
 
-  initialize(): void {
-    console.log('Environment variable config provider initialised')
-  }
+
+            if (value) {
+                envVariables.set(key, value)
+            }
+        }
+        return envVariables
+
+    }
+
 }
 
-export const config = new EnvironmentVariableConfigurationProvider()
+export const envVariableConfig = new EnvironmentVariableConfigurationProvider()

@@ -1,4 +1,4 @@
-import { config } from '../config/EnvironmentalVariableConfigurationProvider'
+import { config } from '../config/globalConfig'
 import { generateJWT } from '../../../src/vendor/auth/jwt'
 import { generateJWTPayload } from '../../../src/vendor/types'
 import { ConfigurationKeys } from '../config/ConfigurationKeys'
@@ -8,7 +8,7 @@ export async function createVerificationJwt(
   streamId: string
 ): Promise<string> {
   try {
-    const ISSUER = config.getOrDefault(
+    const ISSUER = await config.getOrDefault(
       ConfigurationKeys.ISSUER,
       'default-issuer'
     )

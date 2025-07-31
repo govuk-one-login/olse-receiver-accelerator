@@ -74,7 +74,113 @@ Globals:
         - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdC
 
 Resources:
+<<<<<<< Updated upstream
   HelloFunction:
+=======
+  #####################
+  # Cognito Resources #
+  #####################
+
+  SSrUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub ${AWS::StackName}-ssr-user-pool
+
+  SSrUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      UserPoolId: !Ref SSrUserPool
+      Domain: !Sub '${AWS::StackName}-ssr-${Environment}'
+
+  SSrSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub '${AWS::StackName}-ssr-secrets'
+      Description: 'Secrets for Signal Exchange Receiver'
+      KmsKeyId: '{{resolve:ssm:SecretsKmsKeyArn}}'
+      SecretString: !Sub |
+        {
+          "userPoolId": "${SSrUserPool}",
+          "userPoolArn": "${SSrUserPool.Arn}",
+          "userPoolClientId": "${SSrUserPoolClient}",
+          "userPoolClientSecret": "${SSrUserPoolClient.ClientSecret}"
+          "domain": "${SSrUserPoolDomain}"
+        }
+
+
+  SSrSignalResourceServer:
+    Type: AWS::Cognito::UserPoolResourceServer
+    Properties:
+      UserPoolId: !Ref SSrUserPool
+      Identifier: 'signal'
+      Name: !Sub '${AWS::StackName}-signal-resource-server'
+      Scopes:
+        - ScopeDescription: 'Allows user to post to Events endpoint'
+          ScopeName: 'post'
+
+  SSrUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    DependsOn: SSrSignalResourceServer
+    Properties:
+      UserPoolId: !Ref SSrUserPool
+      ClientName: !Sub '${AWS::StackName}-app-client'
+      GenerateSecret: true
+      AllowedOAuthFlows:
+        - client_credentials
+      AllowedOAuthScopes:
+        - 'signal/post'
+      AllowedOAuthFlowsUserPoolClient: true
+
+  #########################
+  # API Gateway Resources #
+  #########################
+
+  SharedSignalsApi:
+    #checkov:skip=CKV_AWS_120:We explicitly don't want caching because we are making POST requests
+    Type: AWS::Serverless::Api
+    Properties:
+      AccessLogSetting:
+        DestinationArn: !GetAtt SharedSignalsApiAccessLogGroup.Arn
+        Format: >-
+          {
+          "requestId": "$context.requestId",
+          "ip": "$context.identity.sourceIp",
+          "requestTime": "$context.requestTime",
+          "httpMethod": "$context.httpMethod",
+          "path": "$context.path",
+          "routeKey": "$context.routeKey",
+          "status": "$context.status",
+          "protocol": "$context.protocol",
+          "responseLatency": "$context.responseLatency",
+          "responseLength": "$context.responseLength"
+          }
+      Description: Shared Signals Receiver API Endpoint
+      DisableExecuteApiEndpoint: false
+      EndpointConfiguration:
+        Type: REGIONAL
+      Name: !Sub ${AWS::StackName}-shared-signals-receiver-api-endpoint
+      TracingEnabled: true
+      StageName: !Ref Environment
+      # OpenApiVersion is needed to prevent the deployment of a default stage: https://github.com/aws/serverless-application-model/issues/191#issuecomment-516724809
+      OpenApiVersion: 3.0.1
+      Auth:
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt SSrUserPool.Arn
+            AuthorizationScopes:
+              - 'signal/post'
+            Identity:
+              Header: Authorization
+
+  SharedSignalsApiAccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
+      LogGroupName: !Sub /aws/apigateway/${AWS::StackName}-endpoint-access-logs
+      RetentionInDays: 30
+
+  ReceiverFunction:
+>>>>>>> Stashed changes
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
     Type: AWS::Serverless::Function
     Properties:

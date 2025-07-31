@@ -2,8 +2,8 @@ import { Request } from 'express'
 import { auth } from './auth'
 import { generateJWT } from './jwt'
 import { getAuthInput } from './getAuthInput'
-import { config } from '../../../examples/express-container/config/EnvironmentalVariableConfigurationProvider'
 import { ConfigurationKeys } from '../../../examples/express-container/config/ConfigurationKeys'
+import { config } from '../../../examples/express-container/config/globalConfig'
 
 jest.mock('./jwt')
 jest.mock('./getAuthInput')
@@ -20,8 +20,9 @@ describe('auth', () => {
   beforeEach(() => {
     mockReq = {}
     consoleSpy = jest.spyOn(console, 'log').mockImplementation()
-    config.set(ConfigurationKeys.CLIENT_ID, 'test_client_id')
-    config.set(ConfigurationKeys.CLIENT_SECRET, 'test_client_secret')
+    process.env[ConfigurationKeys.CLIENT_ID] = 'test_client_id'
+    process.env[ConfigurationKeys.CLIENT_SECRET] = 'test_client_secret'
+    config.initialise()
   })
 
   afterEach(() => {

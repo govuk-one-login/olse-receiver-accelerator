@@ -4,7 +4,7 @@ import { validateJWT } from '../../../src/vendor/jwt/validateJWT'
 import { verifyStateJwt } from '../signalRouting/verifyState'
 import { readFileSync } from 'fs'
 import { ConfigurationKeys } from '../config/ConfigurationKeys'
-import { config } from '../config/EnvironmentalVariableConfigurationProvider'
+import { config } from '../config/globalConfig'
 
 jest.mock('../../../src/vendor/jwt/validateJWT')
 jest.mock('../../../src/vendor/getPublicKey')
@@ -17,11 +17,12 @@ const mockReadFileSync = readFileSync as jest.MockedFunction<
 describe('verifyStateJwt', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    config.set(ConfigurationKeys.ISSUER, 'test-issuer')
+    process.env[ConfigurationKeys.ISSUER] = 'test-issuer'
+    config.initialise()
     mockReadFileSync.mockReturnValue('{"someKey":"someKeyValue"}')
-    ;(
-      getPublicKeyFromJWK as jest.MockedFunction<typeof getPublicKeyFromJWK>
-    ).mockResolvedValue('mock-public-key' as unknown as CryptoKey)
+      ; (
+        getPublicKeyFromJWK as jest.MockedFunction<typeof getPublicKeyFromJWK>
+      ).mockResolvedValue('mock-public-key' as unknown as CryptoKey)
   })
 
   it('verifies valid JWT and return payload', async () => {
@@ -29,9 +30,9 @@ describe('verifyStateJwt', () => {
       requested_at: Math.floor(Date.now() / 1000)
     }
 
-    ;(validateJWT as jest.MockedFunction<typeof validateJWT>).mockResolvedValue(
-      { payload: mockPayload } as unknown as JWTVerifyResult
-    )
+      ; (validateJWT as jest.MockedFunction<typeof validateJWT>).mockResolvedValue(
+        { payload: mockPayload } as unknown as JWTVerifyResult
+      )
 
     const result = await verifyStateJwt('header.payload.signature')
 
@@ -39,7 +40,7 @@ describe('verifyStateJwt', () => {
   })
 
   it('returns null for invalid JWT', async () => {
-    ;(validateJWT as jest.MockedFunction<typeof validateJWT>).mockRejectedValue(
+    ; (validateJWT as jest.MockedFunction<typeof validateJWT>).mockRejectedValue(
       new Error('Error')
     )
 

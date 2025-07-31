@@ -1,7 +1,8 @@
 import { createVerificationJwt } from './createVerificationJWT'
 import { generateJWT } from '../../../src/vendor/auth/jwt'
-import { config } from '../config/EnvironmentalVariableConfigurationProvider'
 import { ConfigurationKeys } from '../config/ConfigurationKeys'
+import { config } from '../config/globalConfig'
+
 
 jest.mock('../../../src/vendor/auth/jwt', () => ({
   generateJWT: jest.fn()
@@ -10,10 +11,12 @@ jest.mock('../../../src/vendor/auth/jwt', () => ({
 describe('createVerificationJwt', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    config.set(ConfigurationKeys.ISSUER, 'https://gds.co.uk')
-    ;(generateJWT as jest.MockedFunction<typeof generateJWT>).mockResolvedValue(
-      'mock.jwt.token'
-    )
+    process.env[ConfigurationKeys.ISSUER] = 'https://gds.co.uk'
+    config.initialise()
+
+      ; (generateJWT as jest.MockedFunction<typeof generateJWT>).mockResolvedValue(
+        'mock.jwt.token'
+      )
   })
 
   it('creates JWT with correct structure and state', async () => {
@@ -60,9 +63,9 @@ describe('createVerificationJwt', () => {
   it('handles generateJWT errors', async () => {
     const error = new Error('Error')
 
-    ;(generateJWT as jest.MockedFunction<typeof generateJWT>).mockRejectedValue(
-      error
-    )
+      ; (generateJWT as jest.MockedFunction<typeof generateJWT>).mockRejectedValue(
+        error
+      )
 
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
 

@@ -1,6 +1,6 @@
 import bodyParser from 'body-parser'
 import express, { Request, Response } from 'express'
-import { readFileSync } from 'fs'
+import { PathOrFileDescriptor, readFileSync } from 'fs'
 import * as jose from 'jose'
 import { auth } from '../../src/vendor/auth/auth'
 import { getPublicKeyFromRemote } from '../../src/vendor/getPublicKey'
@@ -13,7 +13,10 @@ import { handleSignalRouting } from './signalRouting/signalRouter'
 import { httpErrorResponseMessages } from './constants'
 import { startHealthCheck } from './verification/startHealthCheck'
 import { ConfigurationKeys } from './config/ConfigurationKeys'
-import { config } from './config/EnvironmentalVariableConfigurationProvider'
+import { config } from './config/globalConfig'
+
+
+
 
 // app.use(express.json())
 const app = express()
@@ -49,11 +52,7 @@ v1Router.post(
 
     try {
       const accessToken = auth_header.substring(7)
-      const PUBLIC_KEY_PATH = config.getOrDefault(
-        ConfigurationKeys.PUBLIC_KEY_PATH,
-        './keys/authPublic.key'
-      )
-      const publicKeyString = readFileSync(PUBLIC_KEY_PATH, {
+      const publicKeyString = readFileSync(await config.get(ConfigurationKeys.PUBLIC_KEY_PATH) as PathOrFileDescriptor, {
         encoding: 'utf8'
       })
       // eslint-disable-next-line

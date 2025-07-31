@@ -8,7 +8,7 @@ import { getPublicKeyFromRemote } from '../../src/vendor/getPublicKey'
 import { app } from './express'
 import * as signalRouting from './signalRouting/signalRouter'
 import { stopVerificationSignals } from './verification/startHealthCheck'
-import { config } from './config/EnvironmentalVariableConfigurationProvider'
+import { config } from './config/globalConfig'
 import { ConfigurationKeys } from './config/ConfigurationKeys'
 
 jest.mock('../../src/vendor/getPublicKey', () => ({
@@ -46,8 +46,9 @@ describe('Express server /v1 endpoint', () => {
 
     jest.spyOn(console, 'error')
 
-    config.set(ConfigurationKeys.CLIENT_ID, 'test_client')
-    config.set(ConfigurationKeys.CLIENT_SECRET, 'test_secret')
+    process.env[ConfigurationKeys.CLIENT_ID] = 'test_client'
+    process.env[ConfigurationKeys.CLIENT_SECRET] = 'test_secret'
+    config.initialise()
 
     publicKeyString = readFileSync('./keys/authPublic.key', {
       encoding: 'utf8'

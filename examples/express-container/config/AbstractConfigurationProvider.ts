@@ -1,19 +1,34 @@
+import { ConfigurationKeys } from "./ConfigurationKeys";
+
 export abstract class AbstractConfigurationProvider {
-  abstract get(key: string): string | undefined
-  abstract set(key: string, value: string): void
+    private configMap: Map<string, string> = new Map();
 
-  abstract getAllKeys(): string[]
+    abstract getAll(): Promise<Map<string, string>>
 
-  setMultipleKeys(configs: Record<string, string>): void {
-    Object.entries(configs).forEach(([key, value]) => {
-      this.set(key, value)
-    })
-  }
+    async get(key: string): Promise<string | undefined> {
+        return this.configMap.get(key)
+    }
 
-  abstract initialize(): void
+    async getAllKeys(): Promise<string[]> {
+        return Object.values(ConfigurationKeys);
+    }
 
-  getNumber(key: string): number | undefined {
-    const value = this.get(key)
-    return value ? parseInt(value, 10) : undefined
-  }
+    async getNumber(key: string): Promise<number | null> {
+        const value = await this.get(key);
+        if (value === undefined) {
+            return null;
+        }
+        const result = parseInt(value, 10);
+        return result ?? null
+    }
+
+    async getOrDefault(key: string, defaultValue: string): Promise<string | undefined> {
+        const value = await this.get(key)
+        return value ?? defaultValue
+    }
+
+    async initialise(): Promise<void> {
+        const allSecrets = await this.getAll()
+        this.configMap = allSecrets;
+    }
 }
