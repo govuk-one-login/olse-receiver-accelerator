@@ -25,8 +25,8 @@ describe('startHealthCheck', () => {
     jest.clearAllTimers()
   })
 
-  it('returns true when scheduling succeeds', async () => {
-    const result = await startHealthCheck()
+  it('returns true when scheduling succeeds', () => {
+    const result = startHealthCheck()
 
     expect(result).toBe(true)
     expect(consoleLogSpy).toHaveBeenCalledWith(

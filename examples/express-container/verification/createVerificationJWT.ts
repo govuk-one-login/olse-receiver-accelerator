@@ -8,7 +8,7 @@ export async function createVerificationJwt(
   streamId: string
 ): Promise<string> {
   try {
-    const ISSUER = await config.getOrDefault(
+    const ISSUER = config.getOrDefault(
       ConfigurationKeys.ISSUER,
       'default-issuer'
     )
