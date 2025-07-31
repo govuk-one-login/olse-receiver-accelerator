@@ -17,12 +17,12 @@ describe('auth', () => {
   let mockReq: Partial<Request> // to fix
   let consoleSpy: jest.SpyInstance
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mockReq = {}
     consoleSpy = jest.spyOn(console, 'log').mockImplementation()
     process.env[ConfigurationKeys.CLIENT_ID] = 'test_client_id'
     process.env[ConfigurationKeys.CLIENT_SECRET] = 'test_client_secret'
-    config.initialise()
+    await config.initialise()
   })
 
   afterEach(() => {
