@@ -12,15 +12,10 @@ import { validateSignalAgainstSchemas } from '../../src/vendor/validateSchema'
 import { handleSignalRouting } from './signalRouting/signalRouter'
 import { httpErrorResponseMessages } from './constants'
 import { startHealthCheck } from './verification/startHealthCheck'
-import { config } from './config/globalConfig'
-
-
-
 
 // app.use(express.json())
 const app = express()
 const v1Router = express()
-await config.initialise()
 
 v1Router.post(
   '/token',
