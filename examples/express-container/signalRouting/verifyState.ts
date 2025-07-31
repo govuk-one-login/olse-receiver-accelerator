@@ -12,7 +12,7 @@ export async function verifyStateJwt(
       ConfigurationKeys.PUBLIC_KEY_PATH,
       './keys/authPublic.key'
     )
-    const publicKeyString = fs.readFileSync(PUBLIC_KEY_PATH as string, {
+    const publicKeyString = fs.readFileSync(PUBLIC_KEY_PATH, {
       encoding: 'utf8'
     })
 

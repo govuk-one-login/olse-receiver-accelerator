@@ -3,17 +3,15 @@ import { generateJWT } from '../../../src/vendor/auth/jwt'
 import { ConfigurationKeys } from '../config/ConfigurationKeys'
 import { config } from '../config/globalConfig'
 
-
 jest.mock('../../../src/vendor/auth/jwt', () => ({
   generateJWT: jest.fn()
 }))
 
 describe('createVerificationJwt', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks()
     process.env[ConfigurationKeys.ISSUER] = 'https://gds.co.uk'
-    config.initialise()
-
+    await config.initialise()
       ; (generateJWT as jest.MockedFunction<typeof generateJWT>).mockResolvedValue(
         'mock.jwt.token'
       )

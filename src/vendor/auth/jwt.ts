@@ -4,9 +4,11 @@ import { generateJWTPayload } from '../types'
 import { ConfigurationKeys } from '../../../examples/express-container/config/ConfigurationKeys'
 import { config } from '../../../examples/express-container/config/globalConfig'
 
-
 const getPrivateKey = async () => {
-  const privateKey = config.getOrDefault(ConfigurationKeys.PRIVATE_KEY_PATH, './keys/authPrivate.key')
+  const privateKey = config.getOrDefault(
+    ConfigurationKeys.PRIVATE_KEY_PATH,
+    './keys/authPrivate.key'
+  )
   const privateKeyJwk = JSON.parse(
     fs.readFileSync(privateKey as string, 'utf8')
   ) as JWK
