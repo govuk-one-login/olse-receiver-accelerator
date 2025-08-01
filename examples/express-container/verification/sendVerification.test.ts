@@ -3,12 +3,6 @@ import { createVerificationJwt } from './createVerificationJWT'
 import { SignJWT } from 'jose'
 
 jest.mock('./createVerificationJWT')
-jest.mock('../config/config', () => ({
-  config: {
-    JWT_SECRET: 'test-secret',
-    ISSUER: 'https://gds.co.uk'
-  }
-}))
 jest.mock('jose')
 jest.mock('crypto')
 

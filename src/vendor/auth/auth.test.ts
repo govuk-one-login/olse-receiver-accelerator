@@ -2,6 +2,8 @@ import { Request } from 'express'
 import { auth } from './auth'
 import { generateJWT } from './jwt'
 import { getAuthInput } from './getAuthInput'
+import { ConfigurationKeys } from '../../../examples/express-container/config/ConfigurationKeys'
+import { config } from '../../../examples/express-container/config/globalConfig'
 
 jest.mock('./jwt')
 jest.mock('./getAuthInput')
@@ -15,11 +17,12 @@ describe('auth', () => {
   let mockReq: Partial<Request> // to fix
   let consoleSpy: jest.SpyInstance
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mockReq = {}
     consoleSpy = jest.spyOn(console, 'log').mockImplementation()
-    process.env['CLIENT_ID'] = 'test_client_id'
-    process.env['CLIENT_SECRET'] = 'test_client_secret'
+    process.env[ConfigurationKeys.CLIENT_ID] = 'test_client_id'
+    process.env[ConfigurationKeys.CLIENT_SECRET] = 'test_client_secret'
+    await config.initialise()
   })
 
   afterEach(() => {
@@ -34,7 +37,6 @@ describe('auth', () => {
       grant_type: 'client_credentials'
     })
     mockGenerateJWT.mockRejectedValue(new Error('invalid_request'))
-
     const result = await auth(mockReq as Request)
 
     expect(consoleSpy).toHaveBeenCalledWith(
