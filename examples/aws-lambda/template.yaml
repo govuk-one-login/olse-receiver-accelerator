@@ -178,19 +178,19 @@ Resources:
   # Receiver Function Scheduler #
   #########################
 
-  ReceiverFunctionScheduledTrigger:
+  HealthCheckScheduledTrigger:
     Type: AWS::Scheduler::Schedule
     Properties:
-      Description: Periodically trigger the ReceiverFunction Lambda Function
+      Description: Periodically trigger the HealthCheck Lambda Function
       FlexibleTimeWindow:
         Mode: FLEXIBLE
         MaximumWindowInMinutes: 5
       ScheduleExpression: 'rate(15 minutes)'
       State: ENABLED
       Target:
-        Arn: !GetAtt ReceiverFunction.Arn
-        RoleArn: !GetAtt ReceiverFunctionScheduledTriggerRole.Arn
-  ReceiverFunctionScheduledTriggerRole:
+        Arn: !GetAtt HealthCheckFunction.Arn
+        RoleArn: !GetAtt HealthCheckFunctionScheduledTriggerRole.Arn
+  HealthCheckFunctionScheduledTriggerRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -267,6 +267,35 @@ Resources:
       Action: lambda:InvokeFunction
       Principal: apigateway.amazonaws.com
       SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SharedSignalsApi}/*/*/*'
+
+  HealthCheckFunction:
+    #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/examples/aws-lambda/src/lambda/healthCheck
+      FunctionName: !Sub ${AWS::StackName}-healthCheck
+      Handler: handler.handler
+      Role: !GetAtt HealthCheckFunctionRole.Arn
+
+  HealthCheckFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${AWS::StackName}-healthCheck'
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowLambdaToAssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
 
   GoodbyeFunction:
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
