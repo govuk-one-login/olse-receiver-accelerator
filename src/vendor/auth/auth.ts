@@ -2,7 +2,7 @@ import { Request } from 'express'
 import { generateJWT } from './jwt'
 import { getAuthInput } from './getAuthInput'
 import { config } from '../../../examples/express-container/config/globalConfig'
-import { ConfigurationKeys } from '../../../examples/express-container/config/ConfigurationKeys'
+import { ConfigurationKeys } from '../config/ConfigurationKeys'
 
 interface ValidResponse {
   valid: true
