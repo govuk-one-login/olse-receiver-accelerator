@@ -21,7 +21,8 @@ export const handler = async (
       }
     }
 
-    const publicKey = getPublicKeyFromRemote(process.env.JWKS_URL!)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const publicKey = getPublicKeyFromRemote(process.env['JWKS_URL']!)
 
     let verifiedJwtBody
     try {

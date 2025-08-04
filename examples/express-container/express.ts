@@ -59,7 +59,12 @@ v1Router.post(
       return
     }
 
-    const publicKey = getPublicKeyFromRemote('wwww.example.com')
+    const jwksUrl = process.env['JWKS_URL']
+    if (!jwksUrl) {
+      res.status(500).json({ error: 'JWKS_URL environment variable is required' })
+      return
+    }
+    const publicKey = getPublicKeyFromRemote(jwksUrl)
 
     let verifiedJwtBody
     try {
