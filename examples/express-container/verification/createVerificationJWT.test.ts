@@ -1,17 +1,17 @@
 import { createVerificationJwt } from './createVerificationJWT'
 import { generateJWT } from '../../../src/vendor/auth/jwt'
+import { ConfigurationKeys } from '../config/ConfigurationKeys'
+import { config } from '../config/globalConfig'
 
 jest.mock('../../../src/vendor/auth/jwt', () => ({
   generateJWT: jest.fn()
 }))
 
-const originalEnv = process.env
-
 describe('createVerificationJwt', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks()
-    process.env = { ...originalEnv }
-    process.env['JWT_ISSUER'] = 'issuer'
+    process.env[ConfigurationKeys.ISSUER] = 'https://gds.co.uk'
+    await config.initialise()
     ;(generateJWT as jest.MockedFunction<typeof generateJWT>).mockResolvedValue(
       'mock.jwt.token'
     )
@@ -28,7 +28,7 @@ describe('createVerificationJwt', () => {
         streamId: streamId
       },
       alg: 'PS256',
-      issuer: 'https://gds.com',
+      issuer: 'https://gds.co.uk',
       // eslint-disable-next-line
       jti: expect.stringMatching(/^verification-\d+$/),
       audience: relyingPartyUrl,
@@ -38,7 +38,7 @@ describe('createVerificationJwt', () => {
   })
 
   it('creates JWT without state when not provided', async () => {
-    const relyingPartyUrl = 'https://rp.com/verify'
+    const relyingPartyUrl = 'https://rp.co.uk/verify'
     const streamId = 'test-stream-id-001'
 
     const result = await createVerificationJwt(relyingPartyUrl, streamId)
@@ -48,7 +48,7 @@ describe('createVerificationJwt', () => {
         streamId: streamId
       },
       alg: 'PS256',
-      issuer: 'https://gds.com',
+      issuer: 'https://gds.co.uk',
       // eslint-disable-next-line
       jti: expect.stringMatching(/^verification-\d+$/),
       audience: relyingPartyUrl,
