@@ -1,7 +1,9 @@
 import { app } from './express'
+import { config } from './config/globalConfig'
+import { ConfigurationKeys } from './config/ConfigurationKeys'
 
-const port = process.env['PORT'] ?? 3000
+const port = config.getOrDefault(ConfigurationKeys.PORT, '3000')
 
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port.toString()}`)
+  console.log(`Server running at http://localhost:${port}`)
 })

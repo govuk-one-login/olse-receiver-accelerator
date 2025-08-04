@@ -10,9 +10,16 @@ env:
 jobs:
   deploy-feature:
     name: Deploy Feature
-    if: startsWith(github.head_ref, 'feature')
+    if: startsWith(github.ref_name, 'feature')
     runs-on: ubuntu-latest
     steps:
+      - name: Debug GitHub context
+        run: |
+          echo "Event name: ${{ github.event_name }}"
+          echo "Ref: ${{ github.ref }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Head ref: ${{ github.head_ref }}"
+          echo "Base ref: ${{ github.base_ref }}"
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
@@ -40,7 +47,7 @@ jobs:
           role-to-assume: ${{ secrets.GH_ACTIONS_DEV_DEPLOY_ROLE_ARN }}
       - name: Deploy to feature stack in the dev account
         env:
-          FEATURE_BRANCH_NAME: ${{ github.head_ref }}
+          FEATURE_BRANCH_NAME: ${{ github.ref_name }}
         run: |
           # copy cloudformation files to root as SAM deploy cannot find the path
           cp ./examples/aws-lambda/samconfig.toml samconfig.toml
