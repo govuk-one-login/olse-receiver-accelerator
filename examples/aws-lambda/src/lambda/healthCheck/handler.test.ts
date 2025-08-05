@@ -27,7 +27,7 @@ const mockSendVerificationSignal =
 
 describe('handler', () => {
   it('returns 200 and response body when sendVerificationSignal resolves', async () => {
-    const fakeResponse = { ok: true }
+    const fakeResponse = true
     mockSendVerificationSignal.mockResolvedValue(fakeResponse)
     const result = await handler(createDefaultApiRequest(), mockLambdaContext)
     expect(result.statusCode).toBe(200)
