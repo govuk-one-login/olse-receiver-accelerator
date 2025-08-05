@@ -37,4 +37,12 @@ describe('handler', () => {
       'default-stream-id'
     )
   })
+
+  it('returns 500 if the config entry is missing', async () => {
+    const fakeResponse = { error: 'Internal server error' }
+    mockSendVerificationSignal.mockRejectedValue(fakeResponse)
+    const result = await handler(createDefaultApiRequest(), mockLambdaContext)
+    expect(result.statusCode).toBe(500)
+    expect(result.body).toBe(JSON.stringify({ error: 'Internal server error' }))
+  })
 })
