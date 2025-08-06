@@ -34,10 +34,17 @@ describe('createVerificationJwt', () => {
 
     const result = await createVerificationJwt(relyingPartyUrl, streamId)
 
-    const args = (
+    const mock = (
       generateJWT as jest.MockedFunction<typeof generateJWT>
-    ).mockResolvedValue('mock.jwt.token').mock.calls[0][0]
-
+    ).mockResolvedValue('mock.jwt.token').mock
+    if (mock.calls.length === 0) {
+      throw new Error('generateJWT was not called')
+    }
+    const firstCallArg = mock.calls[0]
+    if (!firstCallArg) {
+      throw new Error('generateJWT was not called')
+    }
+    const args = firstCallArg[0]
     expect(args.alg).toBe('PS256')
     expect(args.issuer).toBe('default-issuer')
     expect(args.jti).toMatch(/^verification-\d+$/)
@@ -53,18 +60,23 @@ describe('createVerificationJwt', () => {
 
     const result = await createVerificationJwt(relyingPartyUrl, streamId)
 
-    const args = (
+    const mock = (
       generateJWT as jest.MockedFunction<typeof generateJWT>
-    ).mockResolvedValue('mock.jwt.token').mock.calls[0][0]
-
+    ).mockResolvedValue('mock.jwt.token').mock
+    if (mock.calls.length === 0) {
+      throw new Error('generateJWT was not called')
+    }
+    const firstCallArg = mock.calls[0]
+    if (!firstCallArg) {
+      throw new Error('generateJWT was not called')
+    }
+    const args = firstCallArg[0]
     expect(args.alg).toBe('PS256')
     expect(args.issuer).toBe('default-issuer')
     expect(args.jti).toMatch(/^verification-\d+$/)
     expect(args.audience).toBe(relyingPartyUrl)
     expect(args.payload).toEqual({ streamId: streamId })
     expect(args.useExpClaim).toBe(true)
-    expect(result).toBe('mock.jwt.token')
-
     expect(result).toBe('mock.jwt.token')
   })
 
@@ -74,7 +86,6 @@ describe('createVerificationJwt', () => {
     ;(generateJWT as jest.MockedFunction<typeof generateJWT>).mockRejectedValue(
       error
     )
-
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
 
     const relyingPartyUrl = 'https://rp.co.uk/verification'
