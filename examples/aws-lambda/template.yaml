@@ -274,9 +274,11 @@ Resources:
       CodeUri: dist/examples/aws-lambda/src/lambda/receiver
       Handler: handler.handler
       FunctionName: !Sub ${AWS::StackName}-get-jwks-function
+      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Environment:
         Variables:
-          JWKS_URL: !FindInMap [EnvironmentConfiguration, !Ref Environment, jwksUrl]
+          JWKS_URL:
+            !FindInMap [EnvironmentConfiguration, !Ref Environment, jwksUrl]
       Role: !GetAtt GetJwksFunctionRole.Arn
 
   GetJwksFunctionRole:

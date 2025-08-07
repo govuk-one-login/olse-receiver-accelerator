@@ -144,8 +144,7 @@ describe('receiver handler', () => {
       schema: 'test-schema'
     })
     when(handleSignalRouting).mockResolvedValue({
-      valid: false,
-      message: 'Routing failed'
+      valid: false
     })
 
     const result = await handler(mockEvent)
