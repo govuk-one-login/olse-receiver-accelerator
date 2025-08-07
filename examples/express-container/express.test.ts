@@ -50,6 +50,7 @@ describe('Express server /v1 endpoint', () => {
     process.env[ConfigurationKeys.CLIENT_SECRET] = 'test_secret'
     process.env[ConfigurationKeys.PRIVATE_KEY_PATH] = './keys/authPrivate.key'
     process.env[ConfigurationKeys.PUBLIC_KEY_PATH] = './keys/authPrivate.key'
+    process.env['JWKS_URL'] = 'https://example.com/jwks'
     await config.initialise()
 
     publicKeyString = readFileSync('./keys/authPublic.key', {

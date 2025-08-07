@@ -2,7 +2,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { getPublicKeyFromRemote } from '../../../../../src/vendor/getPublicKey'
 import { validateJWTWithRemoteKey } from '../../../../../src/vendor/jwt/validateJWT'
 import { validateSignalAgainstSchemas } from '../../../../../src/vendor/validateSchema'
-import { handleSignalRouting } from '../../../../express-container/signalRouting/signalRouter'
+import { handleSignalRouting } from '../../../../express-container/signalRouting/signalRouter' // TODO: avoid import from express container, change when common dir made
 import { httpErrorResponseMessages } from '../../../../express-container/constants'
 
 export const handler = async (
@@ -21,8 +21,19 @@ export const handler = async (
       }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const publicKey = getPublicKeyFromRemote(process.env['JWKS_URL']!)
+    const jwksUrl = process.env['JWKS_URL']
+    if (!jwksUrl) {
+      return {
+        statusCode: 500,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          err: 'internal_error',
+          description: 'JWKS_URL environment variable is required'
+        })
+      }
+    }
+
+    const publicKey = getPublicKeyFromRemote(jwksUrl)
 
     let verifiedJwtBody
     try {
@@ -51,7 +62,8 @@ export const handler = async (
       }
     }
 
-    const schemaValidationResult = await validateSignalAgainstSchemas(jwtPayload)
+    const schemaValidationResult =
+      await validateSignalAgainstSchemas(jwtPayload)
 
     if (!schemaValidationResult.valid) {
       return {
