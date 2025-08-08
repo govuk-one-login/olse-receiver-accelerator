@@ -1,7 +1,7 @@
 import { SignJWT, importJWK, JWK } from 'jose'
 import * as fs from 'fs'
 import { generateJWTPayload } from '../types'
-import { ConfigurationKeys } from '../../../examples/express-container/config/ConfigurationKeys'
+import { ConfigurationKeys } from '../config/ConfigurationKeys'
 import { config } from '../../../examples/express-container/config/globalConfig'
 
 const getPrivateKey = async () => {
