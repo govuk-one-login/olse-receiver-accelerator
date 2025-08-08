@@ -36,10 +36,13 @@ Mappings:
   EnvironmentConfiguration:
     dev:
       dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables
+      jwksUrl: https://ssf-transmitter.transaction.dev.account.gov.uk/jwks.json
     build:
       dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables
+      jwksUrl: https://ssf-transmitter.transaction.build.account.gov.uk/jwks.json
     staging:
       dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables
+      jwksUrl: https://ssf-transmitter.transaction.staging.account.gov.uk/jwks.json
 
 Conditions:
   UseCodeSigning: !Not [!Equals [!Ref CodeSigningConfigArn, none]]
@@ -325,7 +328,39 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+  GetJwksFunction:
+    #checkov:skip=CKV_AWS_115:Defined in Globals
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/examples/aws-lambda/src/lambda/receiver
+      Handler: handler.handler
+      FunctionName: !Sub ${AWS::StackName}-get-jwks-function
+      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
+      Environment:
+        Variables:
+          JWKS_URL:
+            !FindInMap [EnvironmentConfiguration, !Ref Environment, jwksUrl]
+      Role: !GetAtt GetJwksFunctionRole.Arn
 
+  GetJwksFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${AWS::StackName}-get-jwks-function'
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowLambdaToAssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
 Outputs:
   SharedSignalsApiUrl:
     Description: API Gateway endpoint URL
