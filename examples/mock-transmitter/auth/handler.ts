@@ -6,6 +6,8 @@ import { getEnv } from '../utils'
 import { generatePolicy } from './policy'
 import { verifyAuthRequest } from './cognitoService'
 
+//
+
 export async function handler(
   event: APIGatewayTokenAuthorizerEvent
 ): Promise<APIGatewayAuthorizerResult> {
