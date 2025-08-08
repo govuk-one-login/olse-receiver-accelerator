@@ -7,6 +7,7 @@ import { generatePolicy } from './policy'
 import { verifyAuthRequest } from './cognitoService'
 
 //
+type AuthContext = Record<string, string | number | boolean>
 
 export async function handler(
   event: APIGatewayTokenAuthorizerEvent
@@ -35,7 +36,7 @@ export async function handler(
       authResult.principalId,
       'Allow',
       event.methodArn,
-      authResult.context
+      authResult.context as AuthContext
     )
   }
 

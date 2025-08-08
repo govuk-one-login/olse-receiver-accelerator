@@ -8,12 +8,14 @@ import {
   NO_CONTENT_RESPONSE
 } from './responses'
 import { isValidationError } from './validation'
+import { SETVerificationRequest } from './types'
 
 export async function handler(
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> {
   try {
-    const verificationRequest = getVerificationRequest(event)
+    const verificationRequest: SETVerificationRequest =
+      getVerificationRequest(event)
 
     const verificationSET = constructVerificationFullSecurityEvent(
       event.requestContext.requestId,

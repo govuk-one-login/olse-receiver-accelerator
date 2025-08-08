@@ -9,12 +9,15 @@ interface AuthRequest {
   body: string | null
 }
 
-interface AuthContext {
-  accessToken?: string
-  clientId: string
-  grantType: string
-  scope?: string
-}
+// interface AuthContext {
+//     accessToken: string | undefined
+//     clientId: string | undefined
+//     grantType: string | undefined
+//     scope: string | undefined
+// }
+
+type AuthContext = Record<string, string | number | boolean | undefined>
+
 interface AuthResult {
   isAuthorised: boolean
   principalId?: string
@@ -80,12 +83,12 @@ export async function verifyAuthRequest(
 
     const authResponse = await cognitoClient.send(authCommand)
 
-    if (!authResponse.AuthenticationResult?.AccessToken) {
+    if (authResponse.AuthenticationResult?.AccessToken) {
       return {
         isAuthorised: true,
         principalId: credentials.client_id,
         context: {
-          accessToken: authResponse.AuthenticationResult?.AccessToken,
+          accessToken: authResponse.AuthenticationResult.AccessToken,
           clientId: authRequest.mockTokenEndpointclientId,
           grantType: credentials.grant_type,
           scope: credentials.scope
