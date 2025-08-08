@@ -31,6 +31,20 @@ Parameters:
     Type: String
     Description: The name of the stack containing the VPC
     Default: none
+  MockTxKMSKeyArn:
+    Type: String
+    Description: ARN of the KMS key used for JWT Signing
+  ReceiverEndpoint:
+    Type: String
+    Default: https://rp.co.uk/verify
+    Description: URL endpoint to send verification events to
+  Issuer:
+    Type: String
+    Default: https://mocktx.co.uk
+    Description: 'Jwt issuer'
+  Audience:
+    Type: String
+    Default: https://rp.co.uk
 
 Mappings:
   EnvironmentConfiguration:
@@ -131,3 +145,124 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+############### Mock Verification Transmitter Endpoint Resources
+  SetMockTxApiUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+    Identifier: 'set-tx-mock'
+    UserPoolName: 'set-mock-verification-tx-api-${Environment}'
+    Scopes:
+      - ScopeDescription: 'Allows user to post to Events endpoint'
+        ScopeName: 'post'
+
+  SetMockTxApiUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref SetMockTxApiUserPool
+      AllowedOAuthFlows:
+      - client_credentials
+      AllowedOAuthScopes:
+      - 'set-tx-mock/post'
+      AllowedOAuthFlowsUserPoolClient: true
+      GenerateSecret: true
+  
+
+  MockVerfTxLambdaExecutionRole:
+    Type: AWS::IAM::Role 
+    Properties: 
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement: 
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: mockVerfTxLambdaPerms
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - kms:Sign 
+                  - kms:GetPublicKey
+                  - cognito-idp: InitiateAuth
+                Resource: '*'
+
+
+MockVerfTxAuthFunction:
+  Type: AWS::Serverless::Function
+  Properties:
+    FunctionName: set-mock-tx-auth
+    Handler: handler.handler
+    CodeUri: ./auth/
+    Role: !GetAtt MockVerfTxLambdaExecutionRole.Arn
+    Environment:
+      Variables:
+        COGNITO_CLIENT_ID: !Ref SetMockTxApiUserPoolClient
+
+MockVerfTxEventFunction:
+  Type: AWS::Serverless::Function
+  Properties:
+    FunctionName: set-mock-tx-verfication
+    Handler: handler.handler
+    CodeUri: ./createVerificationEvent/
+    Role: !GetAtt MockVerfTxLambdaExecutionRole
+    Environment: 
+      Variables: 
+        KMS_KEY_ID: !Ref MockTxKMSKeyArn
+        RECEIVER_ENDPOINT: !Ref RecieverEndpoint 
+        ISSUER: !Ref Issuer 
+        AUDIENCE: !Ref Audience
+    Events:
+      MockTxVerificationApi:
+        Type: Api 
+        Properties:
+          RestApiId: !Ref ApiGateway
+          Path: /verify
+          Method: post
+          Auth: 
+            Authorizer: OAuth2Authorizer
+
+MockVerfTxJWKSEndpointFunction:
+  Type: AWS::Serverless::Function
+  Properties:
+    FunctionName: set-mock-tx-verification-jwks 
+    Handler: handler.handler
+    CodeUri: ./jwks/
+    Role: !GetAtt MockVerfTxLambdaExecutionRole
+    Environment:
+      Variables:
+        KMS_KEY_ID: !Ref MockTxKMSKeyArn
+    Events:
+      MockTxJwksApi:
+      Type: Api
+      Properties:
+        RestApiId: !Ref ApiGateway
+        Path: /jwks.json
+        Method: Get
+        Auth:
+          Authorizer: NONE 
+
+MockTxVerfApiGateway:
+  Type: AWS::Serverless::Api
+  Properties:
+    Name: set-mock-Transmitter
+    StageName: ${Environment}
+    Auth:
+      Authorizers:
+        OAuth2Authorizer:
+          FunctionArn: !GetAtt MockVerfTxAuthFunction.Arn
+          Identity:
+            Header: Authorization
+        DefaultAuthorizer: OAuth2Authorizer
+
+Outputs:
+  MockTxVerfApiGatewayUrl:
+    Value: !Sub 'https://${MockTxVerfApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}'
+  
+  SetMockTxApiUserPoolId:
+    Value: !Ref SetMockTxApiUserPool
+
+  SetMockTxApiUserPoolClient:
+    Value: !Ref SetMockTxApiUserPoolClient
