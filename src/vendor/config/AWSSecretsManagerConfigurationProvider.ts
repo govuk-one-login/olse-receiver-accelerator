@@ -1,4 +1,4 @@
-import { AbstractConfigurationProvider } from './AbstractConfigurationProvider'
+import { AbstractConfigurationProvider } from '../config/AbstractConfigurationProvider'
 import {
   SecretsManagerClient,
   BatchGetSecretValueCommand
