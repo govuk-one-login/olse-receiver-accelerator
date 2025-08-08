@@ -31,6 +31,20 @@ Parameters:
     Type: String
     Description: The name of the stack containing the VPC
     Default: none
+  MockTxKMSKeyArn:
+    Type: String
+    Description: ARN of the KMS key used for JWT Signing
+  ReceiverEndpoint:
+    Type: String
+    Default: https://rp.co.uk/verify
+    Description: URL endpoint to send verification events to
+  Issuer:
+    Type: String
+    Default: https://mocktx.co.uk
+    Description: 'Jwt issuer'
+  Audience:
+    Type: String
+    Default: https://rp.co.uk
 
 Mappings:
   EnvironmentConfiguration:
@@ -326,9 +340,166 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
 
+  ###### Mock Verification Transmitter Endpoint Resources #########
+  SetMockTxApiUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub 'set-mock-verification-tx-api-${Environment}'
+
+  SetMockTxApiUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref SetMockTxApiUserPool
+      AllowedOAuthFlows:
+        - client_credentials
+      AllowedOAuthScopes:
+        - 'set-tx-mock/post'
+      AllowedOAuthFlowsUserPoolClient: true
+      GenerateSecret: true
+
+  SetMockTxApiResourceServer:
+    Type: AWS::Cognito::UserPoolResourceServer
+    Properties:
+      UserPoolId: !Ref SetMockTxApiUserPool
+      Identifier: 'set-tx-mock'
+      Name: 'Mock TX API'
+      Scopes:
+        - ScopeName: 'post'
+          ScopeDescription: 'Allow users to post to mock verify endpoint'
+
+  MockVerfTxLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: mockVerfTxLambdaPerms
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - kms:Decrypt
+                Resource: !Ref MockTxKMSKeyArn
+              - Effect: Allow
+                Action:
+                  - kms:Sign
+                  - kms:GetPublicKey
+                Resource: !Ref MockTxKMSKeyArn
+              - Effect: Allow
+                Action:
+                  - cognito-idp:InitiateAuth
+                Resource: !GetAtt SetMockTxApiUserPool.Arn
+
+  MockVerfTxAuthFunction:
+    #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: set-mock-tx-auth
+      Handler: handler.handler
+      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
+      CodeUri: dist/examples/mock-transmitter/auth/handler
+      Role: !GetAtt MockVerfTxLambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          COGNITO_CLIENT_ID: !Ref SetMockTxApiUserPoolClient
+
+  MockVerfTxEventFunction:
+    #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: set-mock-tx-verfication
+      Handler: handler.handler
+      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
+      CodeUri: dist/examples/mock-transmitter/verification/handler
+      Role: !GetAtt MockVerfTxLambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          KMS_KEY_ID: !Ref MockTxKMSKeyArn
+          RECEIVER_ENDPOINT: !Ref ReceiverEndpoint
+          ISSUER: !Ref Issuer
+          AUDIENCE: !Ref Audience
+      Events:
+        MockTxVerificationApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MockTxVerfApiGateway
+            Path: /verify
+            Method: post
+            Auth:
+              Authorizer: OAuth2Authorizer
+
+  MockVerfTxJWKSEndpointFunction:
+    #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: set-mock-tx-verification-jwks
+      Handler: handler.handler
+      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
+      CodeUri: dist/examples/mock-transmitter/jwks/handler
+      Role: !GetAtt MockVerfTxLambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          KMS_KEY_ID: !Ref MockTxKMSKeyArn
+      Events:
+        MockTxJwksApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MockTxVerfApiGateway
+            Path: /jwks.json
+            Method: get
+
+  MockTxVerfApiGateway:
+    #checkov:skip=CKV_AWS_120:We explicitly don't want caching because we are making POST requests
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: set-mock-Transmitter
+      StageName: !Ref Environment
+      TracingEnabled: true
+      AccessLogSetting:
+        DestinationArn: !GetAtt MockTxApiAccessLogGroup.Arn
+        Format: >-
+          {
+          "requestId": "$context.requestId",
+          "ip": "$context.identity.sourceIp",
+          "requestTime": "$context.requestTime",
+          "httpMethod": "$context.httpMethod",
+          "path": "$context.path",
+          "routeKey": "$context.routeKey",
+          "status": "$context.status",
+          "protocol": "$context.protocol",
+          "responseLatency": "$context.responseLatency",
+          "responseLength": "$context.responseLength"
+          }
+      Auth:
+        Authorizers:
+          OAuth2Authorizer:
+            FunctionArn: !GetAtt MockVerfTxAuthFunction.Arn
+            Identity:
+              Header: Authorization
+
+  MockTxApiAccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
+      LogGroupName: !Sub /aws/apigateway/mock-api/${AWS::StackName}-endpoint-access-logs
+      RetentionInDays: 30
+
 Outputs:
   SharedSignalsApiUrl:
     Description: API Gateway endpoint URL
     Value: !Sub 'https://${SharedSignalsApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Environment}'
     Export:
       Name: !Sub '${AWS::StackName}-SharedSignalsApiUrl'
+
+  MockTxVerfApiGatewayUrl:
+    Value: !Sub 'https://${MockTxVerfApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}'
+  SetMockTxApiUserPoolId:
+    Value: !Ref SetMockTxApiUserPool
+  SetMockTxApiUserPoolClient:
+    Value: !Ref SetMockTxApiUserPoolClient
