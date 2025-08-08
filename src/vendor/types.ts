@@ -1,4 +1,4 @@
-import { SET } from "../../examples/mock-transmitter/types"
+import { SET } from '../../examples/mock-transmitter/types'
 
 export interface generateJWTPayload {
   issuer: string

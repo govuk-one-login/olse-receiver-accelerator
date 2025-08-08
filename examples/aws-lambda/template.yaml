@@ -145,7 +145,7 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
-############### Mock Verification Transmitter Endpoint Resources
+  ############### Mock Verification Transmitter Endpoint Resources
   SetMockTxApiUserPool:
     Type: AWS::Cognito::UserPool
     Properties:
@@ -160,19 +160,18 @@ Resources:
     Properties:
       UserPoolId: !Ref SetMockTxApiUserPool
       AllowedOAuthFlows:
-      - client_credentials
+        - client_credentials
       AllowedOAuthScopes:
-      - 'set-tx-mock/post'
+        - 'set-tx-mock/post'
       AllowedOAuthFlowsUserPoolClient: true
       GenerateSecret: true
-  
 
   MockVerfTxLambdaExecutionRole:
-    Type: AWS::IAM::Role 
-    Properties: 
+    Type: AWS::IAM::Role
+    Properties:
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
-        Statement: 
+        Statement:
           - Effect: Allow
             Principal:
               Service: lambda.amazonaws.com
@@ -184,11 +183,10 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - kms:Sign 
+                  - kms:Sign
                   - kms:GetPublicKey
                   - cognito-idp: InitiateAuth
                 Resource: '*'
-
 
 MockVerfTxAuthFunction:
   Type: AWS::Serverless::Function
@@ -208,26 +206,26 @@ MockVerfTxEventFunction:
     Handler: handler.handler
     CodeUri: ./createVerificationEvent/
     Role: !GetAtt MockVerfTxLambdaExecutionRole
-    Environment: 
-      Variables: 
+    Environment:
+      Variables:
         KMS_KEY_ID: !Ref MockTxKMSKeyArn
-        RECEIVER_ENDPOINT: !Ref RecieverEndpoint 
-        ISSUER: !Ref Issuer 
+        RECEIVER_ENDPOINT: !Ref RecieverEndpoint
+        ISSUER: !Ref Issuer
         AUDIENCE: !Ref Audience
     Events:
       MockTxVerificationApi:
-        Type: Api 
+        Type: Api
         Properties:
           RestApiId: !Ref ApiGateway
           Path: /verify
           Method: post
-          Auth: 
+          Auth:
             Authorizer: OAuth2Authorizer
 
 MockVerfTxJWKSEndpointFunction:
   Type: AWS::Serverless::Function
   Properties:
-    FunctionName: set-mock-tx-verification-jwks 
+    FunctionName: set-mock-tx-verification-jwks
     Handler: handler.handler
     CodeUri: ./jwks/
     Role: !GetAtt MockVerfTxLambdaExecutionRole
@@ -242,7 +240,7 @@ MockVerfTxJWKSEndpointFunction:
         Path: /jwks.json
         Method: Get
         Auth:
-          Authorizer: NONE 
+          Authorizer: NONE
 
 MockTxVerfApiGateway:
   Type: AWS::Serverless::Api
@@ -260,7 +258,7 @@ MockTxVerfApiGateway:
 Outputs:
   MockTxVerfApiGatewayUrl:
     Value: !Sub 'https://${MockTxVerfApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}'
-  
+
   SetMockTxApiUserPoolId:
     Value: !Ref SetMockTxApiUserPool
 

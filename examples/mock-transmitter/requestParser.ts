@@ -1,13 +1,14 @@
-import { APIGatewayProxyEvent } from "aws-lambda";
-import { SETVerificationRequest } from "./types";
-import { validateBody } from "./validation";
+import { APIGatewayProxyEvent } from 'aws-lambda'
+import { SETVerificationRequest } from './types'
+import { validateBody } from './validation'
 
-export function getVerificationRequest(event: APIGatewayProxyEvent): SETVerificationRequest {
+export function getVerificationRequest(
+  event: APIGatewayProxyEvent
+): SETVerificationRequest {
+  const requestBody = validateBody(event.body)
 
-    const requestBody = validateBody(event.body)
-
-    return {
-        stream_id: requestBody.stream_id,
-        state: requestBody.state
-    }
+  return {
+    stream_id: requestBody.stream_id,
+    state: requestBody.state
+  }
 }
