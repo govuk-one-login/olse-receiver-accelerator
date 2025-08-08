@@ -2,7 +2,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { getPublicKeyFromRemote } from '../../../../../src/vendor/getPublicKey'
 import { validateJWTWithRemoteKey } from '../../../../../src/vendor/jwt/validateJWT'
 import { validateSignalAgainstSchemas } from '../../../../../src/vendor/validateSchema'
-import { handleSignalRouting } from '../../../../express-container/signalRouting/signalRouter' // TODO: avoid import from express container, change when common dir made
+import { handleSignalRouting } from '../../../../express-container/signalRouting/signalRouter'
 import { httpErrorResponseMessages } from '../../../../express-container/constants'
 
 export const handler = async (
