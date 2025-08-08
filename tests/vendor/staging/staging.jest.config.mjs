@@ -6,7 +6,7 @@ import { baseJestConfig } from '../../baseJestUnitConfig.mjs'
 const config = {
   ...baseJestConfig,
   rootDir: '../../../',
-  testMatch: [`<rootDir>/tests/implementor/staging/**/*.spec.ts`]
+  testMatch: [`<rootDir>/tests/vendor/staging/**/*.spec.ts`]
 }
 
 export default config

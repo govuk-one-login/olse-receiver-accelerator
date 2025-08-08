@@ -1,16 +1,26 @@
 import { sendVerificationSignal } from './sendVerification'
-import { config } from '../config/config'
+import { ConfigurationKeys } from '../config/ConfigurationKeys'
+import { config } from '../config/globalConfig'
 
 let verificationTimer: NodeJS.Timeout | undefined
 export function startHealthCheck(): boolean {
   if (verificationTimer) {
     return true
   }
-  const intervalMs = config.VERIFICATION_INTERVAL * 60 * 1000
+  const INTERVALS_MILLISECONDS =
+    config.getNumber(ConfigurationKeys.VERIFICATION_INTERVAL) ?? 900000
+  const VERIFICATION_ENDPOINT_URL = config.getOrDefault(
+    ConfigurationKeys.VERIFICATION_ENDPOINT_URL,
+    'https://rp.co.uk/verify'
+  )
+  const STREAM_ID = config.getOrDefault(
+    ConfigurationKeys.STREAM_ID,
+    'default-stream-id'
+  )
   try {
     verificationTimer = setInterval(() => {
-      void sendVerificationSignal(config.RELYING_PARTY_URL, config.STREAM_ID)
-    }, intervalMs)
+      void sendVerificationSignal(VERIFICATION_ENDPOINT_URL, STREAM_ID)
+    }, INTERVALS_MILLISECONDS)
     console.log('Verification signals scheduled sucessfully')
     return true
   } catch (error) {

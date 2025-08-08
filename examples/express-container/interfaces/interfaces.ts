@@ -24,11 +24,3 @@ export interface VerificationPayload {
     }
   }
 }
-
-export interface VerificationTxConfig {
-  JWT_SECRET: string
-  ISSUER: string
-  VERIFICATION_INTERVAL: number
-  RELYING_PARTY_URL: string
-  STREAM_ID: string
-}

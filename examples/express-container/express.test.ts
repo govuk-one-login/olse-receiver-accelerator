@@ -8,6 +8,8 @@ import { getPublicKeyFromRemote } from '../../src/vendor/getPublicKey'
 import { app } from './express'
 import * as signalRouting from './signalRouting/signalRouter'
 import { stopVerificationSignals } from './verification/startHealthCheck'
+import { config } from './config/globalConfig'
+import { ConfigurationKeys } from './config/ConfigurationKeys'
 
 jest.mock('../../src/vendor/getPublicKey', () => ({
   getPublicKeyFromRemote: jest.fn()
@@ -37,8 +39,6 @@ let publicKeyJson
 let key: webcrypto.CryptoKey | Uint8Array
 
 describe('Express server /v1 endpoint', () => {
-  const originalEnv = process.env
-
   beforeEach(async () => {
     jest.resetAllMocks()
     jest.clearAllMocks()
@@ -46,9 +46,11 @@ describe('Express server /v1 endpoint', () => {
 
     jest.spyOn(console, 'error')
 
-    process.env = { ...originalEnv }
-    process.env['CLIENT_ID'] = 'test_client'
-    process.env['CLIENT_SECRET'] = 'test_secret'
+    process.env[ConfigurationKeys.CLIENT_ID] = 'test_client'
+    process.env[ConfigurationKeys.CLIENT_SECRET] = 'test_secret'
+    process.env[ConfigurationKeys.PRIVATE_KEY_PATH] = './keys/authPrivate.key'
+    process.env[ConfigurationKeys.PUBLIC_KEY_PATH] = './keys/authPrivate.key'
+    await config.initialise()
 
     publicKeyString = readFileSync('./keys/authPublic.key', {
       encoding: 'utf8'
@@ -59,7 +61,6 @@ describe('Express server /v1 endpoint', () => {
   })
 
   afterEach(() => {
-    process.env = originalEnv
     stopVerificationSignals()
     jest.useRealTimers()
   })
@@ -98,7 +99,7 @@ describe('Express server /v1 endpoint', () => {
   })
 
   it('should return 401 when CLIENT_ID env var is missing', async () => {
-    delete process.env['CLIENT_ID']
+    config.delete(ConfigurationKeys.CLIENT_ID)
 
     const response = await request(app)
       .post('/v1/token')
@@ -114,7 +115,7 @@ describe('Express server /v1 endpoint', () => {
   })
 
   it('should return 401 when CLIENT_SECRET env var is missing', async () => {
-    delete process.env['CLIENT_SECRET']
+    config.delete(ConfigurationKeys.CLIENT_SECRET)
 
     const response = await request(app).post('/v1/token').query({
       client_id: 'test_client',
@@ -127,6 +128,8 @@ describe('Express server /v1 endpoint', () => {
   })
 
   it('should return 200 with valid credentials', async () => {
+    config.set(ConfigurationKeys.CLIENT_ID, 'test_client')
+    config.set(ConfigurationKeys.CLIENT_SECRET, 'test_secret')
     const response = await request(app).post('/v1/token').query({
       client_id: 'test_client',
       client_secret: 'test_secret',

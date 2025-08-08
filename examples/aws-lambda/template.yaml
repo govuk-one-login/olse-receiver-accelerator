@@ -88,19 +88,135 @@ Globals:
         - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdC
 
 Resources:
-  HelloFunction:
+  #####################
+  # Cognito Resources #
+  #####################
+
+  SSrUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub ${AWS::StackName}-ssr-user-pool
+
+  SSrUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      UserPoolId: !Ref SSrUserPool
+      Domain: !Sub '${AWS::StackName}-ssr-${Environment}'
+
+  SSrSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub '${AWS::StackName}-ssr-secrets'
+      Description: 'Secrets for Signal Exchange Receiver'
+      KmsKeyId: '{{resolve:ssm:SecretsKmsKeyArn}}'
+      SecretString: !Sub |
+        {
+          "userPoolId": "${SSrUserPool}",
+          "userPoolArn": "${SSrUserPool.Arn}",
+          "userPoolClientId": "${SSrUserPoolClient}",
+          "userPoolClientSecret": "${SSrUserPoolClient.ClientSecret}",
+          "domain": "${SSrUserPoolDomain}"
+        }
+
+  SSrSignalResourceServer:
+    Type: AWS::Cognito::UserPoolResourceServer
+    Properties:
+      UserPoolId: !Ref SSrUserPool
+      Identifier: 'signal'
+      Name: !Sub '${AWS::StackName}-signal-resource-server'
+      Scopes:
+        - ScopeDescription: 'Allows user to post to Events endpoint'
+          ScopeName: 'post'
+
+  SSrUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    DependsOn: SSrSignalResourceServer
+    Properties:
+      UserPoolId: !Ref SSrUserPool
+      ClientName: !Sub '${AWS::StackName}-app-client'
+      GenerateSecret: true
+      AllowedOAuthFlows:
+        - client_credentials
+      AllowedOAuthScopes:
+        - 'signal/post'
+      AllowedOAuthFlowsUserPoolClient: true
+
+  #########################
+  # API Gateway Resources  #
+  #########################
+
+  SharedSignalsApi:
+    #checkov:skip=CKV_AWS_120:We explicitly don't want caching because we are making POST requests
+    Type: AWS::Serverless::Api
+    Properties:
+      AccessLogSetting:
+        DestinationArn: !GetAtt SharedSignalsApiAccessLogGroup.Arn
+        Format: >-
+          {
+          "requestId": "$context.requestId",
+          "ip": "$context.identity.sourceIp",
+          "requestTime": "$context.requestTime",
+          "httpMethod": "$context.httpMethod",
+          "path": "$context.path",
+          "routeKey": "$context.routeKey",
+          "status": "$context.status",
+          "protocol": "$context.protocol",
+          "responseLatency": "$context.responseLatency",
+          "responseLength": "$context.responseLength"
+          }
+      Description: Shared Signals Receiver API Endpoint
+      DisableExecuteApiEndpoint: false
+      EndpointConfiguration:
+        Type: REGIONAL
+      Name: !Sub ${AWS::StackName}-shared-signals-receiver-api-endpoint
+      TracingEnabled: true
+      StageName: !Ref Environment
+      # OpenApiVersion is needed to prevent the deployment of a default stage: https://github.com/aws/serverless-application-model/issues/191#issuecomment-516724809
+      OpenApiVersion: 3.0.1
+      Auth:
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt SSrUserPool.Arn
+            AuthorizationScopes:
+              - 'signal/post'
+            Identity:
+              Header: Authorization
+
+  SharedSignalsApiAccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
+      LogGroupName: !Sub /aws/apigateway/${AWS::StackName}-endpoint-access-logs
+      RetentionInDays: 30
+
+  ReceiverFunction:
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: dist/examples/aws-lambda/src/lambda/hello
-      FunctionName: !Sub ${AWS::StackName}-hello
+      CodeUri: dist/examples/aws-lambda/src/lambda/receiver
+      FunctionName: !Sub ${AWS::StackName}-receiver
       Handler: handler.handler
-      Role: !GetAtt HelloFunctionRole.Arn
+      Role: !GetAtt ReceiverFunctionRole.Arn
+      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
+      Environment:
+        Variables:
+          SECRET_ARN: !Ref SSrSecret
+      Events:
+        ReceiverAPI:
+          Type: Api
+          Properties:
+            Path: /api/v1/Events
+            Method: post
+            RestApiId: !Ref SharedSignalsApi
+            Auth:
+              Authorizer: CognitoAuthorizer
+              AuthorizationScopes:
+                - 'signal/post'
 
-  HelloFunctionRole:
+  ReceiverFunctionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub '${AWS::StackName}-hello'
+      RoleName: !Sub '${AWS::StackName}-receiver-role'
       PermissionsBoundary: !If
         - UsePermissionsBoundary
         - !Ref PermissionsBoundary
@@ -116,6 +232,23 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+      Policies:
+        - PolicyName: SecretsManagerAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource: !Ref SSrSecret
+
+  PermissionforAPItoCallReceiverFunction:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref ReceiverFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SharedSignalsApi}/*/*/*'
 
   GoodbyeFunction:
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
@@ -145,15 +278,16 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
-  ############### Mock Verification Transmitter Endpoint Resources
+
+  ###### Mock Verification Transmitter Endpoint Resources #########
   SetMockTxApiUserPool:
     Type: AWS::Cognito::UserPool
     Properties:
-    Identifier: 'set-tx-mock'
-    UserPoolName: 'set-mock-verification-tx-api-${Environment}'
-    Scopes:
-      - ScopeDescription: 'Allows user to post to Events endpoint'
-        ScopeName: 'post'
+      Identifier: 'set-tx-mock'
+      UserPoolName: 'set-mock-verification-tx-api-${Environment}'
+      Scopes:
+        - ScopeDescription: 'Allows user to post to Events endpoint'
+          ScopeName: 'post'
 
   SetMockTxApiUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
@@ -188,7 +322,7 @@ Resources:
                   - cognito-idp: InitiateAuth
                 Resource: '*'
 
-MockVerfTxAuthFunction:
+  MockVerfTxAuthFunction:
   Type: AWS::Serverless::Function
   Properties:
     FunctionName: set-mock-tx-auth
@@ -199,7 +333,7 @@ MockVerfTxAuthFunction:
       Variables:
         COGNITO_CLIENT_ID: !Ref SetMockTxApiUserPoolClient
 
-MockVerfTxEventFunction:
+  MockVerfTxEventFunction:
   Type: AWS::Serverless::Function
   Properties:
     FunctionName: set-mock-tx-verfication
@@ -222,7 +356,7 @@ MockVerfTxEventFunction:
           Auth:
             Authorizer: OAuth2Authorizer
 
-MockVerfTxJWKSEndpointFunction:
+  MockVerfTxJWKSEndpointFunction:
   Type: AWS::Serverless::Function
   Properties:
     FunctionName: set-mock-tx-verification-jwks
@@ -242,7 +376,7 @@ MockVerfTxJWKSEndpointFunction:
         Auth:
           Authorizer: NONE
 
-MockTxVerfApiGateway:
+  MockTxVerfApiGateway:
   Type: AWS::Serverless::Api
   Properties:
     Name: set-mock-Transmitter
@@ -256,11 +390,15 @@ MockTxVerfApiGateway:
         DefaultAuthorizer: OAuth2Authorizer
 
 Outputs:
+  SharedSignalsApiUrl:
+    Description: API Gateway endpoint URL
+    Value: !Sub 'https://${SharedSignalsApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Environment}'
+    Export:
+      Name: !Sub '${AWS::StackName}-SharedSignalsApiUrl'
+
   MockTxVerfApiGatewayUrl:
     Value: !Sub 'https://${MockTxVerfApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}'
-
   SetMockTxApiUserPoolId:
     Value: !Ref SetMockTxApiUserPool
-
   SetMockTxApiUserPoolClient:
     Value: !Ref SetMockTxApiUserPoolClient
