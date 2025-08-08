@@ -1,6 +1,6 @@
 export interface SETVerificationRequest {
   stream_id: string
-  state?: string
+  state: string | undefined
 }
 
 export interface SET {

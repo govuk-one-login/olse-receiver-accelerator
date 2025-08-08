@@ -45,7 +45,7 @@ export async function handler(
     'Deny',
     event.methodArn,
     {
-      error: authResult.error
+      error: String(authResult.error)
     }
   )
 }
