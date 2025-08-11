@@ -342,7 +342,7 @@ Resources:
       FunctionName: set-mock-tx-auth
       Handler: handler.handler
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
-      CodeUri: dist/examples/aws-lambda/src/mock-transmitter/auth/handler
+      CodeUri: dist/examples/aws-lambda/src/mock-transmitter/auth/
       Role: !GetAtt MockVerfTxLambdaExecutionRole.Arn
       Environment:
         Variables:
@@ -355,7 +355,7 @@ Resources:
       FunctionName: set-mock-tx-verfication
       Handler: handler.handler
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
-      CodeUri: dist/examples/aws-lambda/src/mock-transmitter/verification/handler
+      CodeUri: dist/examples/aws-lambda/src/mock-transmitter/verification/
       Role: !GetAtt MockVerfTxLambdaExecutionRole.Arn
       Environment:
         Variables:
@@ -380,7 +380,7 @@ Resources:
       FunctionName: set-mock-tx-verification-jwks
       Handler: handler.handler
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
-      CodeUri: dist/examples/aws-lambda/src/mock-transmitter/jwks/handler
+      CodeUri: dist/examples/aws-lambda/src/mock-transmitter/jwks/
       Role: !GetAtt MockVerfTxLambdaExecutionRole.Arn
       Environment:
         Variables:
