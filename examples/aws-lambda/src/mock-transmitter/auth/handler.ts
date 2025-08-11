@@ -9,9 +9,9 @@ import { verifyAuthRequest } from './cognitoService'
 //
 type AuthContext = Record<string, string | number | boolean>
 
-export async function handler(
+export const handler = async (
   event: APIGatewayTokenAuthorizerEvent
-): Promise<APIGatewayAuthorizerResult> {
+): Promise<APIGatewayAuthorizerResult> => {
   const mockTokenEndpointclientId = getEnv('COGNITO_CLIENT_ID')
   if (!mockTokenEndpointclientId) {
     return generatePolicy('error', 'Deny', event.methodArn)

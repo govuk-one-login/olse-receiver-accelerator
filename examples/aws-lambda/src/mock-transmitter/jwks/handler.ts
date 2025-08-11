@@ -6,7 +6,7 @@ import { JsonWebKey } from 'crypto'
 export const jwkArray: JsonWebKey[] = []
 
 const SIGNING_KEY_ENV_VAR_NAMES = ['KMS_KEY_ID']
-export async function handler(): Promise<APIGatewayProxyResult> {
+export const handler = async (): Promise<APIGatewayProxyResult> => {
   try {
     const promiseArray = SIGNING_KEY_ENV_VAR_NAMES.map(async (envVar) => {
       const publicKeyData = await getKmsPublicKey(getEnv(envVar))

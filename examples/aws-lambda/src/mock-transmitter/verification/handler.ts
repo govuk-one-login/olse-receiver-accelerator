@@ -10,9 +10,9 @@ import {
 import { isValidationError } from './validation'
 import { SETVerificationRequest } from '../types'
 
-export async function handler(
+export const handler = async (
   event: APIGatewayProxyEvent
-): Promise<APIGatewayProxyResult> {
+): Promise<APIGatewayProxyResult> => {
   try {
     const verificationRequest: SETVerificationRequest =
       getVerificationRequest(event)
