@@ -32,7 +32,6 @@ async function main() {
 
 async function buildFor_AWS_LAMBDA_REFERENCE() {
   const baseLambdaPath = 'examples/aws-lambda'
-  const lambdasPath = `${baseLambdaPath}/src/lambda`
   const { Resources } = yamlParse(
     readFileSync(join(dirname('.'), `${baseLambdaPath}/template.yaml`), 'utf-8')
   )
@@ -43,10 +42,14 @@ async function buildFor_AWS_LAMBDA_REFERENCE() {
   )
 
   const entries = lambdas.reduce((entryPoints, lambda) => {
-    const lambdaName = lambda.Properties.CodeUri.split('/').pop()
-    if (!(lambdaName in entryPoints)) {
-      entryPoints.push(`./${lambdasPath}/${lambdaName}/handler.ts`)
-    }
+    const codeUri = lambda.properties.codeUri
+
+    const sourcePath = codeUri.startsWith('dist/')
+      ? codeUri.subString(5)
+      : codeUri
+
+    const handlerPath = `./${sourcePath}/handler.ts`
+    entryPoints.push(handlerPath)
 
     return entryPoints
   }, [])
