@@ -1,8 +1,8 @@
-import { getPublicKeyFromJWK } from '../../../src/vendor/getPublicKey'
-import { validateJWT } from '../../../src/vendor/jwt/validateJWT'
+import { getPublicKeyFromJWK } from '../../src/vendor/getPublicKey'
+import { validateJWT } from '../../src/vendor/jwt/validateJWT'
 import * as fs from 'fs'
-import { config } from '../config/globalConfig'
-import { ConfigurationKeys } from '../config/ConfigurationKeys'
+import { config } from '../../examples/express-container/config/globalConfig'
+import { ConfigurationKeys } from '../../examples/express-container/config/ConfigurationKeys'
 
 export async function verifyStateJwt(
   stateJwt: string

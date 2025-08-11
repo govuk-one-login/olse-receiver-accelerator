@@ -9,8 +9,8 @@ import {
   validateJWTWithRemoteKey
 } from '../../src/vendor/jwt/validateJWT'
 import { validateSignalAgainstSchemas } from '../../src/vendor/validateSchema'
-import { handleSignalRouting } from './signalRouting/signalRouter'
-import { httpErrorResponseMessages } from './constants'
+import { handleSignalRouting } from '../../common/signalRouting/signalRouter'
+import { httpErrorResponseMessages } from '../../common/constants'
 import { startHealthCheck } from './verification/startHealthCheck'
 
 // app.use(express.json())

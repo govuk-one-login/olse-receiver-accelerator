@@ -3,13 +3,13 @@ import { APIGatewayProxyEvent } from 'aws-lambda'
 import { getPublicKeyFromRemote } from '../../../../../src/vendor/getPublicKey'
 import { validateJWTWithRemoteKey } from '../../../../../src/vendor/jwt/validateJWT'
 import { validateSignalAgainstSchemas } from '../../../../../src/vendor/validateSchema'
-import { handleSignalRouting } from '../../../../express-container/signalRouting/signalRouter'
+import { handleSignalRouting } from '../../../../../common/signalRouting/signalRouter'
 import { handler } from './handler'
 
 jest.mock('../../../../../src/vendor/getPublicKey')
 jest.mock('../../../../../src/vendor/jwt/validateJWT')
 jest.mock('../../../../../src/vendor/validateSchema')
-jest.mock('../../../../express-container/signalRouting/signalRouter')
+jest.mock('../../../../../common/signalRouting/signalRouter')
 
 const mockEvent: APIGatewayProxyEvent = {
   body: 'mock.jwt.token',
