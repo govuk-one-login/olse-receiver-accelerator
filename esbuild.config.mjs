@@ -45,7 +45,7 @@ async function buildFor_AWS_LAMBDA_REFERENCE() {
     const codeUri = lambda.Properties.CodeUri
 
     const sourcePath = codeUri.startsWith('dist/')
-      ? codeUri.subString(5)
+      ? codeUri.substring(5)
       : codeUri
 
     const handlerPath = `./${sourcePath}/handler.ts`
