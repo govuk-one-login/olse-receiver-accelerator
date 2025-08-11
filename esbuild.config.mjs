@@ -62,7 +62,7 @@ async function buildFor_AWS_LAMBDA_REFERENCE() {
     ...baseEsBuildConfig,
     format: 'cjs', // Override ESM format for AWS Lambda
     entryPoints: entries,
-    outdir: `dist/${lambdasPath}`
+    outdir: `dist/${handlerPath}`
   }
   await esbuild.build(finalConfig)
 }
