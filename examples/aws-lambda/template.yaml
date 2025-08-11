@@ -31,9 +31,6 @@ Parameters:
     Type: String
     Description: The name of the stack containing the VPC
     Default: none
-  MockTxKMSKeyArn:
-    Type: String
-    Description: ARN of the KMS key used for JWT Signing
   ReceiverEndpoint:
     Type: String
     Default: https://rp.co.uk/verify
@@ -324,12 +321,12 @@ Resources:
               - Effect: Allow
                 Action:
                   - kms:Decrypt
-                Resource: !Ref MockTxKMSKeyArn
+                Resource: !GetAtt MockTxKMSKey.Arn
               - Effect: Allow
                 Action:
                   - kms:Sign
                   - kms:GetPublicKey
-                Resource: !Ref MockTxKMSKeyArn
+                Resource: !GetAtt MockTxKMSKey.Arn
               - Effect: Allow
                 Action:
                   - cognito-idp:InitiateAuth
@@ -359,7 +356,7 @@ Resources:
       Role: !GetAtt MockVerfTxLambdaExecutionRole.Arn
       Environment:
         Variables:
-          KMS_KEY_ID: !Ref MockTxKMSKeyArn
+          KMS_KEY_ID: !Ref MockTxKMSKey
           RECEIVER_ENDPOINT: !Ref ReceiverEndpoint
           ISSUER: !Ref Issuer
           AUDIENCE: !Ref Audience
@@ -384,7 +381,7 @@ Resources:
       Role: !GetAtt MockVerfTxLambdaExecutionRole.Arn
       Environment:
         Variables:
-          KMS_KEY_ID: !Ref MockTxKMSKeyArn
+          KMS_KEY_ID: !Ref MockTxKMSKey
       Events:
         MockTxJwksApi:
           Type: Api
@@ -428,6 +425,22 @@ Resources:
       KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
       LogGroupName: !Sub /aws/apigateway/mock-api/${AWS::StackName}-endpoint-access-logs
       RetentionInDays: 30
+
+  MockTxKMSKey:
+    Type: AWS::KMS::key
+    Properties:
+      Description: KMS Key for mock tx JWT Signing
+      KeyUsage: SIGN_VERIFY
+      KeySpec: RSA_2048
+      KeyPolicy:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: IAM policy
+            Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+            Action: 'kms:*'
+            Resource: '*'
 
 Outputs:
   SharedSignalsApiUrl:
