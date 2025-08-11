@@ -1,5 +1,5 @@
 import { APIGatewayProxyEvent } from 'aws-lambda'
-import { SETVerificationRequest } from './types'
+import { SETVerificationRequest } from '../types'
 import { validateBody } from './validation'
 
 export function getVerificationRequest(

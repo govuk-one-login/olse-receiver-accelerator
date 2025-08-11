@@ -1,14 +1,14 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { getVerificationRequest } from './requestParser'
 import { constructVerificationFullSecurityEvent } from './constructVerificationSecurityEvent'
-import { signedJWTWithKMS } from './kmsService'
+import { signedJWTWithKMS } from '../kmsService'
 import {
   INTERNAL_SERVER_ERROR_RESPONSE,
   INVALID_REQUEST_RESPONSE,
   NO_CONTENT_RESPONSE
-} from './responses'
+} from '../responses'
 import { isValidationError } from './validation'
-import { SETVerificationRequest } from './types'
+import { SETVerificationRequest } from '../types'
 
 export async function handler(
   event: APIGatewayProxyEvent
