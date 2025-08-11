@@ -42,7 +42,7 @@ async function buildFor_AWS_LAMBDA_REFERENCE() {
   )
 
   const entries = lambdas.reduce((entryPoints, lambda) => {
-    const codeUri = lambda.properties.CodeUri
+    const codeUri = lambda.Properties.CodeUri
 
     const sourcePath = codeUri.startsWith('dist/')
       ? codeUri.subString(5)
