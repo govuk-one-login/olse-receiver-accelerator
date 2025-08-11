@@ -427,7 +427,7 @@ Resources:
       RetentionInDays: 30
 
   MockTxKMSKey:
-    Type: AWS::KMS::key
+    Type: AWS::KMS::Key
     Properties:
       Description: KMS Key for mock tx JWT Signing
       KeyUsage: SIGN_VERIFY
