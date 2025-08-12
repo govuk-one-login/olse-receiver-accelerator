@@ -276,7 +276,7 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
 
-  ###### Mock Verification Transmitter Endpoint Resources ########
+  ###### Mock Verification Transmitter Endpoint Resources #######
   SetMockTxApiUserPool:
     Type: AWS::Cognito::UserPool
     Properties:
