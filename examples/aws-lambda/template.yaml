@@ -284,6 +284,7 @@ Resources:
 
   SetMockTxApiUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
+    DependsOn: SetMockTxApiResourceServer
     Properties:
       UserPoolId: !Ref SetMockTxApiUserPool
       AllowedOAuthFlows:
