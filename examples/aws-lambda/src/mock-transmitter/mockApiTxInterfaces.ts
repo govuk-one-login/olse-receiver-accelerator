@@ -5,6 +5,8 @@ export interface AuthRequest {
 
 export type AuthContext = Record<string, string | number | boolean | undefined>
 
+// type AuthContext = Record<string, string | number | boolean>
+
 export interface AuthResult {
   isAuthorised: boolean
   principalId?: string

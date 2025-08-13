@@ -390,7 +390,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref MockTxVerfApiGateway
-            Path: /jwks.json
+            Path: /jwks
             Method: get
 
   MockTxVerfApiGateway:
