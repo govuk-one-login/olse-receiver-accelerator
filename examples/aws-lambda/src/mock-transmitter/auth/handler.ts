@@ -12,8 +12,8 @@ type AuthContext = Record<string, string | number | boolean>
 export const handler = async (
   event: APIGatewayTokenAuthorizerEvent
 ): Promise<APIGatewayAuthorizerResult> => {
-  const mockTokenEndpointclientId = getEnv('COGNITO_CLIENT_ID')
-  if (!mockTokenEndpointclientId) {
+  const tokenEndpointClientId = getEnv('COGNITO_CLIENT_ID')
+  if (!tokenEndpointClientId) {
     return generatePolicy('error', 'Deny', event.methodArn)
   }
 
@@ -27,7 +27,7 @@ export const handler = async (
   }
 
   const authResult = await verifyAuthRequest({
-    mockTokenEndpointclientId,
+    tokenEndpointClientId,
     body
   })
 

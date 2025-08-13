@@ -4,8 +4,8 @@ import {
   InitiateAuthCommand
 } from '@aws-sdk/client-cognito-identity-provider'
 
-interface AuthRequest {
-  mockTokenEndpointclientId: string
+export interface AuthRequest {
+  tokenEndpointClientId: string
   body: string | null
 }
 
@@ -74,7 +74,7 @@ export async function verifyAuthRequest(
 
     const authCommand = new InitiateAuthCommand({
       AuthFlow: AuthFlowType.USER_PASSWORD_AUTH,
-      ClientId: authRequest.mockTokenEndpointclientId,
+      ClientId: authRequest.tokenEndpointClientId,
       AuthParameters: {
         USERNAME: credentials.client_id,
         PASSWORD: credentials.client_secret
@@ -89,7 +89,7 @@ export async function verifyAuthRequest(
         principalId: credentials.client_id,
         context: {
           accessToken: authResponse.AuthenticationResult.AccessToken,
-          clientId: authRequest.mockTokenEndpointclientId,
+          clientId: authRequest.tokenEndpointClientId,
           grantType: credentials.grant_type,
           scope: credentials.scope
         }

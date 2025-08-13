@@ -2,7 +2,7 @@ interface RequestBody {
   stream_id: string
   state?: string
 }
-export function isValidStreamId(streamId: string): boolean {
+function isValidStreamId(streamId: string): boolean {
   return (
     typeof streamId === 'string' &&
     streamId.length >= 1 &&
@@ -11,7 +11,7 @@ export function isValidStreamId(streamId: string): boolean {
   )
 }
 
-export function isValidState(state: string): boolean {
+function isValidState(state: string): boolean {
   return typeof state === 'string' && state.length <= 1024
 }
 
