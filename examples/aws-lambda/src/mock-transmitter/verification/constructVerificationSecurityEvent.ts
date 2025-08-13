@@ -1,4 +1,4 @@
-import { SET, SETVerificationRequest } from '../types'
+import { SET, SETVerificationRequest } from '../mockApiTxInterfaces'
 
 export function constructVerificationFullSecurityEvent(
   requestId: string,

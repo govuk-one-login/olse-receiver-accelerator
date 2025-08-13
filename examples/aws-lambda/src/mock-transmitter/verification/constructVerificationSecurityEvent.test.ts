@@ -1,4 +1,5 @@
 import { constructVerificationFullSecurityEvent } from './constructVerificationSecurityEvent'
+
 describe('constructVerificationFullSecurityEvent', () => {
   it('creates SET', () => {
     const timeStamp = 10001

@@ -8,7 +8,7 @@ import {
   NO_CONTENT_RESPONSE
 } from '../responses'
 import { isValidationError } from './validation'
-import { SETVerificationRequest } from '../types'
+import { SETVerificationRequest } from '../mockApiTxInterfaces'
 
 export const handler = async (
   event: APIGatewayProxyEvent
