@@ -1,6 +1,6 @@
 import { KMSClient } from '@aws-sdk/client-kms'
 import { signedJWTWithKMS, getKmsPublicKey } from './kmsService'
-import { SET } from './types'
+import { SET } from './mockApiTxInterfaces'
 
 jest.mock('@aws-sdk/client-kms')
 

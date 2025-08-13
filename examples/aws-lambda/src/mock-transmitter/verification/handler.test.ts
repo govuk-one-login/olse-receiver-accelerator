@@ -4,7 +4,7 @@ import { getVerificationRequest } from './requestParser'
 import { constructVerificationFullSecurityEvent } from './constructVerificationSecurityEvent'
 import { signedJWTWithKMS } from '../kmsService'
 import { isValidationError } from './validation'
-import { SET } from '../types'
+import { SET } from '../mockApiTxInterfaces'
 
 jest.mock('./requestParser')
 jest.mock('./constructVerificationSecurityEvent')

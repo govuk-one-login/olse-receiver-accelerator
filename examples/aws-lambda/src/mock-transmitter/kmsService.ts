@@ -3,7 +3,7 @@ import {
   KMSClient,
   SignCommand
 } from '@aws-sdk/client-kms'
-import { SET } from './types'
+import { SET } from './mockApiTxInterfaces'
 import { KmsPublicKeyData } from './mockApiTxInterfaces'
 
 export async function signedJWTWithKMS(payload: SET): Promise<string> {
