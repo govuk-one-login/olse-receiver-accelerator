@@ -6,7 +6,6 @@ import { getEnv } from '../utils'
 import { generatePolicy } from './policy'
 import { verifyAuthRequest } from './cognitoService'
 
-//
 type AuthContext = Record<string, string | number | boolean>
 
 export const handler = async (

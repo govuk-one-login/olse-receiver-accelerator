@@ -1,5 +1,5 @@
 import { createPublicKey, JsonWebKey } from 'crypto'
-import { KmsPublicKeyData } from '../kmsService'
+import { KmsPublicKeyData } from '../mockApiTxInterfaces'
 
 export function createJwkFromRawPublicKey(
   publicKeyData: KmsPublicKeyData

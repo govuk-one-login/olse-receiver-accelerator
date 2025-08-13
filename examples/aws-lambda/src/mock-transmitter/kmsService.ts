@@ -4,6 +4,7 @@ import {
   SignCommand
 } from '@aws-sdk/client-kms'
 import { SET } from './types'
+import { KmsPublicKeyData } from './mockApiTxInterfaces'
 
 export async function signedJWTWithKMS(payload: SET): Promise<string> {
   const kmsClient = new KMSClient({
@@ -44,11 +45,6 @@ export async function signedJWTWithKMS(payload: SET): Promise<string> {
   const signature = Buffer.from(signResult.Signature).toString('base64url')
 
   return `${signingInput}.${signature}`
-}
-
-export interface KmsPublicKeyData {
-  keyId: string
-  publicKey: Uint8Array
 }
 
 export async function getKmsPublicKey(

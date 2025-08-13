@@ -1,19 +1,4 @@
-interface PolicyStatement {
-  Effect: 'Allow' | 'Deny'
-  Action: string
-  Resource: string
-}
-
-interface AuthPolicy {
-  Version: string
-  Statement: PolicyStatement[]
-}
-
-interface AuthResponse {
-  principalId: string
-  policyDocument: AuthPolicy
-  context?: AuthContext
-}
+import { AuthResponse } from '../mockApiTxInterfaces'
 
 type AuthContext = Record<string, string | number | boolean>
 

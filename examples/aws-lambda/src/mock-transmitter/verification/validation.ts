@@ -1,7 +1,5 @@
-interface RequestBody {
-  stream_id: string
-  state?: string
-}
+import { RequestBody } from '../mockApiTxInterfaces'
+
 function isValidStreamId(streamId: string): boolean {
   return (
     typeof streamId === 'string' &&

@@ -3,34 +3,11 @@ import {
   CognitoIdentityProviderClient,
   InitiateAuthCommand
 } from '@aws-sdk/client-cognito-identity-provider'
-
-export interface AuthRequest {
-  tokenEndpointClientId: string
-  body: string | null
-}
-
-// interface AuthContext {
-//     accessToken: string | undefined
-//     clientId: string | undefined
-//     grantType: string | undefined
-//     scope: string | undefined
-// }
-
-type AuthContext = Record<string, string | number | boolean | undefined>
-
-interface AuthResult {
-  isAuthorised: boolean
-  principalId?: string
-  context?: AuthContext
-  error?: string
-}
-
-interface ClientCredentials {
-  grant_type: string
-  client_id: string
-  client_secret: string
-  scope?: string
-}
+import {
+  AuthRequest,
+  AuthResult,
+  ClientCredentials
+} from '../mockApiTxInterfaces'
 
 export async function verifyAuthRequest(
   authRequest: AuthRequest

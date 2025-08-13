@@ -1,5 +1,6 @@
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider'
-import { verifyAuthRequest, AuthRequest } from './cognitoService'
+import { verifyAuthRequest } from './cognitoService'
+import { AuthRequest } from '../mockApiTxInterfaces'
 
 jest.mock('@aws-sdk/client-cognito-identity-provider')
 
