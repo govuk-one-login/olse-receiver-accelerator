@@ -1,6 +1,4 @@
-import { AuthResponse } from '../mockApiTxInterfaces'
-
-type AuthContext = Record<string, string | number | boolean>
+import { AuthContext, AuthResponse } from '../mockApiTxInterfaces'
 
 export function generatePolicy(
   principalId: string,

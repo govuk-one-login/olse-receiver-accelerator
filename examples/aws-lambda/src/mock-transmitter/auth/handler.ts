@@ -6,8 +6,6 @@ import { getEnv } from '../utils'
 import { generatePolicy } from './policy'
 import { verifyAuthRequest } from './cognitoService'
 
-type AuthContext = Record<string, string | number | boolean>
-
 export const handler = async (
   event: APIGatewayTokenAuthorizerEvent
 ): Promise<APIGatewayAuthorizerResult> => {
@@ -35,7 +33,7 @@ export const handler = async (
       authResult.principalId,
       'Allow',
       event.methodArn,
-      authResult.context as AuthContext
+      authResult.context
     )
   }
 

@@ -5,8 +5,6 @@ export interface AuthRequest {
 
 export type AuthContext = Record<string, string | number | boolean | undefined>
 
-// type AuthContext = Record<string, string | number | boolean>
-
 export interface AuthResult {
   isAuthorised: boolean
   principalId?: string
@@ -46,4 +44,26 @@ export interface AuthResponse {
   principalId: string
   policyDocument: AuthPolicy
   context?: AuthContext
+}
+
+export interface SETVerificationRequest {
+  stream_id: string
+  state: string | undefined
+}
+
+export interface SET {
+  iss: string
+  aud: string
+  iat: number
+  jti: string
+  events: Record<
+    string,
+    {
+      state?: string
+    }
+  >
+  sub_id: {
+    format: 'opaque'
+    id: string
+  }
 }
