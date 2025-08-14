@@ -6,7 +6,7 @@ import request from 'supertest'
 import { generateJWT } from '../../src/vendor/auth/jwt'
 import { getPublicKeyFromRemote } from '../../src/vendor/getPublicKey'
 import { app } from './express'
-import * as signalRouting from './signalRouting/signalRouter'
+import * as signalRouting from '../../common/signalRouting/signalRouter'
 import { stopVerificationSignals } from './verification/startHealthCheck'
 import { config } from './config/globalConfig'
 import { ConfigurationKeys } from './config/ConfigurationKeys'
@@ -50,6 +50,7 @@ describe('Express server /v1 endpoint', () => {
     process.env[ConfigurationKeys.CLIENT_SECRET] = 'test_secret'
     process.env[ConfigurationKeys.PRIVATE_KEY_PATH] = './keys/authPrivate.key'
     process.env[ConfigurationKeys.PUBLIC_KEY_PATH] = './keys/authPrivate.key'
+    process.env['JWKS_URL'] = 'https://example.com/jwks'
     await config.initialise()
 
     publicKeyString = readFileSync('./keys/authPublic.key', {

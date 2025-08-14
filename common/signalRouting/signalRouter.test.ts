@@ -1,4 +1,4 @@
-import { verificationSignalWithState } from '../../../tests/testConstants'
+import { verificationSignalWithState } from '../../tests/testConstants'
 import { SignalSchema } from '../constants'
 import { handleSignalRouting } from './signalRouter'
 

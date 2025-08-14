@@ -2,7 +2,7 @@ import { Request } from 'express'
 import { auth } from './auth'
 import { generateJWT } from './jwt'
 import { getAuthInput } from './getAuthInput'
-import { ConfigurationKeys } from '../../../examples/express-container/config/ConfigurationKeys'
+import { ConfigurationKeys } from '../config/ConfigurationKeys'
 import { config } from '../../../examples/express-container/config/globalConfig'
 
 jest.mock('./jwt')
