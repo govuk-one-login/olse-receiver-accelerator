@@ -207,6 +207,7 @@ Resources:
   HealthCheckFunctionScheduledTriggerRole:
     Type: AWS::IAM::Role
     Properties:
+      Description: EventBridge scheduler role with permissions to invoke health check lambda
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -226,6 +227,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: dist/examples/aws-lambda/src/lambda/receiver
+      Description: Lambda function that processes signal events
       FunctionName: !Sub ${AWS::StackName}-receiver
       Handler: handler.handler
       Role: !GetAtt ReceiverFunctionRole.Arn
@@ -249,6 +251,7 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       RoleName: !Sub '${AWS::StackName}-receiver-role'
+      Description: Execution role for receiver role with permissions to access secrets manager
       PermissionsBoundary: !If
         - UsePermissionsBoundary
         - !Ref PermissionsBoundary
@@ -287,6 +290,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: dist/examples/aws-lambda/src/lambda/healthCheck
+      Description: Lambda function that processes period health check
       FunctionName: !Sub ${AWS::StackName}-healthCheck
       Handler: handler.handler
       Role: !GetAtt HealthCheckFunctionRole.Arn
@@ -294,6 +298,7 @@ Resources:
   HealthCheckFunctionRole:
     Type: AWS::IAM::Role
     Properties:
+      Description: Execution role for health check lambda
       RoleName: !Sub '${AWS::StackName}-healthCheck'
       PermissionsBoundary: !If
         - UsePermissionsBoundary
@@ -316,6 +321,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: dist/examples/aws-lambda/src/lambda/goodbye
+      Description: Lambda function
       FunctionName: !Sub ${AWS::StackName}-goodbye
       Handler: handler.handler
       Role: !GetAtt GoodbyeFunctionRole.Arn
@@ -323,6 +329,7 @@ Resources:
   GoodbyeFunctionRole:
     Type: AWS::IAM::Role
     Properties:
+      Description: Execution role for Goodbye lambda
       RoleName: !Sub '${AWS::StackName}-goodbye'
       PermissionsBoundary: !If
         - UsePermissionsBoundary
@@ -339,11 +346,13 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+
   GetJwksFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: dist/examples/aws-lambda/src/lambda/receiver
+      Description: Lambda function that exposes public JWKS
       Handler: handler.handler
       FunctionName: !Sub ${AWS::StackName}-get-jwks-function
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
@@ -356,6 +365,7 @@ Resources:
   GetJwksFunctionRole:
     Type: AWS::IAM::Role
     Properties:
+      Description: Execution role for JWKS retrieval lambda
       RoleName: !Sub '${AWS::StackName}-get-jwks-function'
       PermissionsBoundary: !If
         - UsePermissionsBoundary
@@ -376,7 +386,7 @@ Resources:
   SetMockTxApiUserPool:
     Type: AWS::Cognito::UserPool
     Properties:
-      UserPoolName: !Sub 'set-mock-verification-tx-api-${Environment}'
+      UserPoolName: !Sub ${AWS::StackName}-mock-tx-user-pool
 
   SetMockTxApiUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
@@ -395,7 +405,7 @@ Resources:
     Properties:
       UserPoolId: !Ref SetMockTxApiUserPool
       Identifier: 'set-tx-mock'
-      Name: 'Mock TX API'
+      Name: !Sub ${AWS::StackName}-mock-tx-resource-server
       Scopes:
         - ScopeName: 'post'
           ScopeDescription: 'Allow users to post to mock verify endpoint'
@@ -403,6 +413,8 @@ Resources:
   MockVerfTxLambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: !Sub '${AWS::StackName}-mock-tx-role'
+      Description: Execution role for mock verf transmitter lambda with kms permissions
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -431,24 +443,12 @@ Resources:
                   - cognito-idp:InitiateAuth
                 Resource: !GetAtt SetMockTxApiUserPool.Arn
 
-  MockVerfTxAuthFunction:
-    #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: set-mock-tx-auth
-      Handler: handler.handler
-      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
-      CodeUri: dist/examples/aws-lambda/src/mock-transmitter/auth/
-      Role: !GetAtt MockVerfTxLambdaExecutionRole.Arn
-      Environment:
-        Variables:
-          COGNITO_CLIENT_ID: !Ref SetMockTxApiUserPoolClient
-
   MockVerfTxEventFunction:
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: set-mock-tx-verfication
+      Description: Lambda that sends mock verification events to receiver endpoint
+      FunctionName: !Sub '${AWS::StackName}-mock-tx-verification'
       Handler: handler.handler
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       CodeUri: dist/examples/aws-lambda/src/mock-transmitter/verification/
@@ -467,13 +467,16 @@ Resources:
             Path: /verify
             Method: post
             Auth:
-              Authorizer: OAuth2Authorizer
+              Authorizer: CognitoAuthorizer
+              AuthorizationScopes:
+                - 'set-tx-mock/post'
 
   MockVerfTxJWKSEndpointFunction:
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: set-mock-tx-verification-jwks
+      Description: Lambda that exposes JWKS endpoint providing public key for JWT verification
+      FunctionName: !Sub '${AWS::StackName}-mock-tx-jwks'
       Handler: handler.handler
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       CodeUri: dist/examples/aws-lambda/src/mock-transmitter/jwks/
@@ -493,7 +496,7 @@ Resources:
     #checkov:skip=CKV_AWS_120:We explicitly don't want caching because we are making POST requests
     Type: AWS::Serverless::Api
     Properties:
-      Name: set-mock-Transmitter
+      Name: !Sub '${AWS::StackName}-mock-tx-api-endpoint'
       StageName: !Ref Environment
       TracingEnabled: true
       AccessLogSetting:
@@ -513,8 +516,10 @@ Resources:
           }
       Auth:
         Authorizers:
-          OAuth2Authorizer:
-            FunctionArn: !GetAtt MockVerfTxAuthFunction.Arn
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt SetMockTxApiUserPool.Arn
+            AuthorizationScopes:
+              - 'set-tx-mock/post'
             Identity:
               Header: Authorization
 
