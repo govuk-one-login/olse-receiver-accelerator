@@ -1,4 +1,4 @@
-import { EnvironmentVariableConfigurationProvider } from './EnvironmentVariableConfigurationProvider'
+import { EnvironmentVariableConfigurationProvider } from './environmentVariableConfigurationProvider'
 // import { AwsSecretsManagerConfig } from "./AWSSecretsManagerConfigurationProvider";
 
 export const config = new EnvironmentVariableConfigurationProvider()

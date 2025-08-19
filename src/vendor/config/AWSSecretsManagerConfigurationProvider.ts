@@ -3,6 +3,7 @@ import {
   SecretsManagerClient,
   BatchGetSecretValueCommand
 } from '@aws-sdk/client-secrets-manager'
+import { logger } from '../../../common/logger'
 
 class AWSSecretsManagerConfigurationProvider extends AbstractConfigurationProvider {
   private client: SecretsManagerClient
@@ -32,7 +33,7 @@ class AWSSecretsManagerConfigurationProvider extends AbstractConfigurationProvid
         }
       }
     } catch (error) {
-      console.log(`Error retrieving secrets:`, error)
+      logger.error(`Error retrieving secrets:`, { error })
       return retrievedSecrets
     }
 

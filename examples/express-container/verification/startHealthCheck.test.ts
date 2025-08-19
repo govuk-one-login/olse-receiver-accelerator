@@ -1,12 +1,13 @@
 import { startHealthCheck } from './startHealthCheck'
 import { sendVerificationSignal } from './sendVerification'
-import { ConfigurationKeys } from '../config/ConfigurationKeys'
+import { ConfigurationKeys } from '../config/configurationKeys'
+import { logger } from '../../../common/logger'
 
 jest.mock('./sendVerification', () => ({
   sendVerificationSignal: jest.fn()
 }))
 
-const consoleLogSpy = jest.spyOn(console, 'log')
+const loggerInfoSpy = jest.spyOn(logger, 'info').mockImplementation()
 jest.useFakeTimers()
 
 process.env[ConfigurationKeys.VERIFICATION_INTERVAL] = '15'
@@ -29,7 +30,7 @@ describe('startHealthCheck', () => {
     const result = startHealthCheck()
 
     expect(result).toBe(true)
-    expect(consoleLogSpy).toHaveBeenCalledWith(
+    expect(loggerInfoSpy).toHaveBeenCalledWith(
       'Verification signals scheduled sucessfully'
     )
   })

@@ -1,3 +1,4 @@
+import { logger } from '../logger'
 import { VerificationPayload } from '../interfaces/interfaces'
 import { verifyStateJwt } from './verifyState'
 
@@ -20,20 +21,23 @@ export async function handleVerificationSignal(
     ].state
 
   if (!state) {
-    console.log('Verification signal without state received')
+    logger.info('Verification signal without state received')
     return { valid: true }
   }
 
   if (typeof state === 'string' && state.split('.').length === 3) {
-    console.log('Verification signal with state recieved')
+    logger.info('Verification signal with state recieved', {
+      stateFormat: 'JWT',
+      stateParts: state.split('.').length
+    })
 
     const statePayload = await verifyStateJwt(state)
 
     if (!statePayload) {
-      console.error('Invalid state JWT')
+      logger.error('Invalid state JWT: ', { statePayload })
       return { valid: false, errorMessage: 'invalid_state' }
     }
   }
-  console.log('Verification signal with state payload validated successfully')
+  logger.info('Verification signal with state payload validated successfully')
   return { valid: true }
 }

@@ -2,6 +2,7 @@ import { config } from '../config/awsConfig'
 import { generateJWT } from '../../../src/vendor/auth/jwt'
 import { generateJWTPayload } from '../../../src/vendor/types'
 import { ConfigurationKeys } from '../config/ConfigurationKeys'
+import { logger } from '../../../common/logger'
 
 export async function createVerificationJwt(
   relyingPartyUrl: string,
@@ -26,7 +27,7 @@ export async function createVerificationJwt(
 
     return await generateJWT(jwtPayload)
   } catch (error) {
-    console.error('Error creating verification JWT:', error)
+    logger.error('Error creating verification JWT:', error)
     throw new Error('Failed to create verification JWT')
   }
 }

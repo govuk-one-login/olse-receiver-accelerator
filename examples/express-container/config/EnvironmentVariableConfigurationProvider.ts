@@ -1,4 +1,4 @@
-import { AbstractConfigurationProvider } from './AbstractConfigurationProvider'
+import { AbstractConfigurationProvider } from './abstractConfigurationProvider'
 
 export class EnvironmentVariableConfigurationProvider extends AbstractConfigurationProvider {
   async getAll(): Promise<Map<string, string>> {

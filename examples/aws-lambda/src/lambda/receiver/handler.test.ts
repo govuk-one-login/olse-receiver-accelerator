@@ -5,11 +5,14 @@ import { validateJWTWithRemoteKey } from '../../../../../src/vendor/jwt/validate
 import { validateSignalAgainstSchemas } from '../../../../../src/vendor/validateSchema'
 import { handleSignalRouting } from '../../../../../common/signalRouting/signalRouter'
 import { handler } from './handler'
+import { logger } from '../../../../../common/logger'
 
 jest.mock('../../../../../src/vendor/getPublicKey')
 jest.mock('../../../../../src/vendor/jwt/validateJWT')
 jest.mock('../../../../../src/vendor/validateSchema')
 jest.mock('../../../../../common/signalRouting/signalRouter')
+
+const loggerErrorSpy = jest.spyOn(logger, 'error').mockImplementation()
 
 const mockEvent: APIGatewayProxyEvent = {
   body: 'mock.jwt.token',
@@ -39,7 +42,6 @@ const mockJwtPayload = {
 describe('receiver handler', () => {
   beforeEach(() => {
     jest.resetAllMocks()
-    jest.spyOn(console, 'error').mockImplementation()
     process.env['JWKS_URL'] = 'https://example.com/jwks'
   })
 
@@ -75,8 +77,9 @@ describe('receiver handler', () => {
           'One or more keys used to encrypt or sign the SET is invalid or otherwise unacceptable to the SET Recipient (expired, revoked, failed certificate validation, etc.).'
       })
     })
-    expect(console.error).toHaveBeenCalledWith(
-      'failed to validate JWT with remote key'
+    expect(loggerErrorSpy).toHaveBeenCalledWith(
+      'failed to validate JWT with remote key',
+      expect.any(Object)
     )
   })
 
@@ -158,7 +161,7 @@ describe('receiver handler', () => {
           "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
       })
     })
-    expect(console.error).toHaveBeenCalledWith('failed to route signal')
+    expect(loggerErrorSpy).toHaveBeenCalledWith('failed to route signal')
   })
 
   it('returns 202 when signal processing succeeds', async () => {
@@ -207,9 +210,9 @@ describe('receiver handler', () => {
         description: 'An internal error occurred'
       })
     })
-    expect(console.error).toHaveBeenCalledWith(
+    expect(loggerErrorSpy).toHaveBeenCalledWith(
       'Unexpected error in receiver handler:',
-      expect.any(Error)
+      expect.any(Object)
     )
   })
 })

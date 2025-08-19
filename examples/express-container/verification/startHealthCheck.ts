@@ -1,6 +1,7 @@
 import { sendVerificationSignal } from './sendVerification'
-import { ConfigurationKeys } from '../config/ConfigurationKeys'
+import { ConfigurationKeys } from '../config/configurationKeys'
 import { config } from '../config/globalConfig'
+import { logger } from '../../../common/logger'
 
 let verificationTimer: NodeJS.Timeout | undefined
 export function startHealthCheck(): boolean {
@@ -21,10 +22,10 @@ export function startHealthCheck(): boolean {
     verificationTimer = setInterval(() => {
       void sendVerificationSignal(VERIFICATION_ENDPOINT_URL, STREAM_ID)
     }, INTERVALS_MILLISECONDS)
-    console.log('Verification signals scheduled sucessfully')
+    logger.info('Verification signals scheduled sucessfully')
     return true
   } catch (error) {
-    console.error('Error scheduling verification signals:', error)
+    logger.error('Error scheduling verification signals:', { error })
     return false
   }
 }

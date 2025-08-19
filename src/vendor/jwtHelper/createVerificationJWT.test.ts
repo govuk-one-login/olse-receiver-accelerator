@@ -1,7 +1,9 @@
 import { createVerificationJwt } from './createVerificationJWT'
 import { generateJWT } from '../../../src/vendor/auth/jwt'
 import { ConfigurationKeys } from '../config/ConfigurationKeys'
+import { logger } from '../../../common/logger'
 
+const loggerErrorSpy = jest.spyOn(logger, 'error').mockImplementation()
 jest.mock('../../../src/vendor/auth/jwt', () => ({
   generateJWT: jest.fn()
 }))
@@ -86,7 +88,6 @@ describe('createVerificationJwt', () => {
     ;(generateJWT as jest.MockedFunction<typeof generateJWT>).mockRejectedValue(
       error
     )
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
 
     const relyingPartyUrl = 'https://rp.co.uk/verification'
     const streamId = 'default-stream-id-001'
@@ -95,7 +96,7 @@ describe('createVerificationJwt', () => {
       createVerificationJwt(relyingPartyUrl, streamId)
     ).rejects.toThrow('Failed to create verification JWT')
 
-    expect(consoleSpy).toHaveBeenCalledWith(
+    expect(loggerErrorSpy).toHaveBeenCalledWith(
       'Error creating verification JWT:',
       error
     )

@@ -2,7 +2,8 @@ import { getPublicKeyFromJWK } from '../../src/vendor/getPublicKey'
 import { validateJWT } from '../../src/vendor/jwt/validateJWT'
 import * as fs from 'fs'
 import { config } from '../../examples/express-container/config/globalConfig'
-import { ConfigurationKeys } from '../../examples/express-container/config/ConfigurationKeys'
+import { ConfigurationKeys } from '../../examples/express-container/config/configurationKeys'
+import { logger } from '../logger'
 
 export async function verifyStateJwt(
   stateJwt: string
@@ -25,7 +26,7 @@ export async function verifyStateJwt(
 
     return result.payload
   } catch (error) {
-    console.error('Failed to verify state JWT:', error)
+    logger.error('Failed to verify state JWT:', { error })
     return null
   }
 }
