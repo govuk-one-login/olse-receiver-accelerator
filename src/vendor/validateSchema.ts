@@ -2,7 +2,7 @@ import Ajv, { AnySchema } from 'ajv'
 import addFormats from 'ajv-formats'
 import { readFileSync } from 'fs'
 import { readdir } from 'fs/promises'
-import { logger } from '../../common/logger'
+import { logger } from '../../common/logging/logger'
 
 const ajv = new Ajv()
 addFormats(ajv)

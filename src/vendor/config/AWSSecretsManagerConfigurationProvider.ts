@@ -3,7 +3,7 @@ import {
   SecretsManagerClient,
   BatchGetSecretValueCommand
 } from '@aws-sdk/client-secrets-manager'
-import { logger } from '../../../common/logger'
+import { logger } from '../../../common/logging/logger'
 
 class AWSSecretsManagerConfigurationProvider extends AbstractConfigurationProvider {
   private client: SecretsManagerClient

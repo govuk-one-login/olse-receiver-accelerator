@@ -1,7 +1,7 @@
 import { startHealthCheck } from './startHealthCheck'
 import { sendVerificationSignal } from './sendVerification'
 import { ConfigurationKeys } from '../config/ConfigurationKeys'
-import { logger } from '../../../common/logger'
+import { logger } from '../../../common/logging/logger'
 
 jest.mock('./sendVerification', () => ({
   sendVerificationSignal: jest.fn()

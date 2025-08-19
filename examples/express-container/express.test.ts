@@ -10,7 +10,7 @@ import * as signalRouting from '../../common/signalRouting/signalRouter'
 import { stopVerificationSignals } from './verification/startHealthCheck'
 import { config } from './config/globalConfig'
 import { ConfigurationKeys } from './config/ConfigurationKeys'
-import { logger } from '../../common/logger'
+import { logger } from '../../common/logging/logger'
 
 jest.mock('../../src/vendor/getPublicKey', () => ({
   getPublicKeyFromRemote: jest.fn()

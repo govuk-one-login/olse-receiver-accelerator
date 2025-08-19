@@ -1,4 +1,4 @@
-import { logger } from '../../../common/logger.ts'
+import { logger } from '../../../common/logging/logger.ts'
 import { createVerificationJwt } from './createVerificationJWT.ts'
 
 export async function sendVerificationSignal(

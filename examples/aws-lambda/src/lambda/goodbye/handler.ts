@@ -3,7 +3,7 @@ import {
   APIGatewayProxyResult,
   Context
 } from 'aws-lambda'
-import { logger } from '../../../../../common/logger'
+import { logger } from '../../../../../common/logging/logger'
 
 const pause = (timeInMs: number) => {
   return new Promise((resolve) => setTimeout(resolve, timeInMs))

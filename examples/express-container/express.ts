@@ -12,7 +12,7 @@ import { validateSignalAgainstSchemas } from '../../src/vendor/validateSchema'
 import { handleSignalRouting } from '../../common/signalRouting/signalRouter'
 import { httpErrorResponseMessages } from '../../common/constants'
 import { startHealthCheck } from './verification/startHealthCheck'
-import { logger } from '../../common/logger'
+import { logger } from '../../common/logging/logger'
 
 // app.use(express.json())
 const app = express()

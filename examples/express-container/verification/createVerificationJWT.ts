@@ -2,7 +2,7 @@ import { config } from '../config/globalConfig'
 import { generateJWT } from '../../../src/vendor/auth/jwt'
 import { generateJWTPayload } from '../../../src/vendor/types'
 import { ConfigurationKeys } from '../config/ConfigurationKeys'
-import { logger } from '../../../common/logger'
+import { logger } from '../../../common/logging/logger'
 
 export async function createVerificationJwt(
   relyingPartyUrl: string,

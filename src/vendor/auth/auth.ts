@@ -3,7 +3,7 @@ import { generateJWT } from './jwt'
 import { getAuthInput } from './getAuthInput'
 import { config } from '../../../examples/express-container/config/globalConfig'
 import { ConfigurationKeys } from '../config/ConfigurationKeys'
-import { logger } from '../../../common/logger'
+import { logger } from '../../../common/logging/logger'
 
 interface ValidResponse {
   valid: true

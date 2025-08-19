@@ -6,7 +6,7 @@ import {
 import { sendVerificationSignal } from '../../../../express-container/verification/sendVerification'
 import { config } from '../../../../express-container/config/globalConfig'
 import { ConfigurationKeys } from '../../../../express-container/config/ConfigurationKeys'
-import { logger } from '../../../../../common/logger'
+import { logger } from '../../../../../common/logging/logger'
 
 const pause = (timeInMs: number) => {
   return new Promise((resolve) => setTimeout(resolve, timeInMs))
