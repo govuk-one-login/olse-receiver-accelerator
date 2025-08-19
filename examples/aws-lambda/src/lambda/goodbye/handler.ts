@@ -30,7 +30,9 @@ export const handler = async (
     }
   } catch (error) {
     // Handle any errors
-    logger.error('Error processing request:', { error })
+    logger.error('Error processing request:', {
+      error: error instanceof Error ? error.message : 'unknown error'
+    })
     return {
       statusCode: 500,
       body: JSON.stringify({

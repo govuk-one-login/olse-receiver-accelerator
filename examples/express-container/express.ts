@@ -97,7 +97,9 @@ v1Router.post(
         )
         logger.info('JWT validation successful')
       } catch (error) {
-        logger.error('Failed to validate JWT with remote key', { error })
+        logger.error('Failed to validate JWT with remote key', {
+          error: error instanceof Error ? error.message : 'unknown error'
+        })
 
         res.status(400).json(httpErrorResponseMessages.invalid_key)
         return
@@ -150,7 +152,9 @@ v1Router.post(
         return
       }
     } catch (error) {
-      logger.error('Unexpected error in /Events endpoint:', { error })
+      logger.error('Unexpected error in /Events endpoint:', {
+        error: error instanceof Error ? error.message : 'unknown error'
+      })
       res.status(500).json({ error: 'Internal server error' })
     }
   }
