@@ -98,7 +98,7 @@ describe('createVerificationJwt', () => {
 
     expect(loggerErrorSpy).toHaveBeenCalledWith(
       'Error creating verification JWT:',
-      error
+      { error }
     )
   })
 })
