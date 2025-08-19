@@ -27,7 +27,7 @@ export async function verifyStateJwt(
     return result.payload
   } catch (error) {
     logger.error('Failed to verify state JWT:', {
-      error: error instanceof Error ? error.message : 'unknown error'
+      error: error instanceof Error ? error.message : String(error)
     })
     return null
   }

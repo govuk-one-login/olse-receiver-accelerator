@@ -49,7 +49,7 @@ export const handler = async (
       logger.info('JWK validation successful')
     } catch (error) {
       logger.error('failed to validate JWT with remote key', {
-        error: error instanceof Error ? error.message : 'unknown error'
+        error: error instanceof Error ? error.message : String(error)
       })
       return {
         statusCode: 400,
@@ -110,7 +110,7 @@ export const handler = async (
     }
   } catch (error) {
     logger.error('Unexpected error in receiver handler:', {
-      error: error instanceof Error ? error.message : 'unknown error'
+      error: error instanceof Error ? error.message : String(error)
     })
     return {
       statusCode: 500,

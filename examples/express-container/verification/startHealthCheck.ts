@@ -26,7 +26,7 @@ export function startHealthCheck(): boolean {
     return true
   } catch (error) {
     logger.error('Error scheduling verification signals:', {
-      error: error instanceof Error ? error.message : 'unknown error'
+      error: error instanceof Error ? error.message : String(error)
     })
     return false
   }

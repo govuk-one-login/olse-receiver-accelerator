@@ -33,7 +33,7 @@ export async function sendVerificationSignal(
     }
   } catch (error) {
     logger.error('Error sending verification signal:', {
-      error: error instanceof Error ? error.message : 'unknown error'
+      error: error instanceof Error ? error.message : String(error)
     })
     return false
   }

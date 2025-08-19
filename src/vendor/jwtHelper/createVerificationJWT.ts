@@ -28,7 +28,7 @@ export async function createVerificationJwt(
     return await generateJWT(jwtPayload)
   } catch (error) {
     logger.error('Error creating verification JWT:', {
-      error: error instanceof Error ? error.message : 'unknown error'
+      error: error instanceof Error ? error.message : String(error)
     })
     throw new Error('Failed to create verification JWT')
   }
