@@ -1,6 +1,6 @@
 import { createVerificationJwt } from './createVerificationJWT'
 import { generateJWT } from '../../../src/vendor/auth/jwt'
-import { ConfigurationKeys } from '../config/configurationKeys'
+import { ConfigurationKeys } from '../config/ConfigurationKeys'
 import { config } from '../config/globalConfig'
 import { logger } from '../../../common/logger'
 const loggerErrorSpy = jest.spyOn(logger, 'error').mockImplementation()

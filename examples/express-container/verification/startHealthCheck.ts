@@ -1,5 +1,5 @@
 import { sendVerificationSignal } from './sendVerification'
-import { ConfigurationKeys } from '../config/configurationKeys'
+import { ConfigurationKeys } from '../config/ConfigurationKeys'
 import { config } from '../config/globalConfig'
 import { logger } from '../../../common/logger'
 

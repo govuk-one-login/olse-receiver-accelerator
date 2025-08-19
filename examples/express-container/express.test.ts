@@ -9,7 +9,7 @@ import { app } from './express'
 import * as signalRouting from '../../common/signalRouting/signalRouter'
 import { stopVerificationSignals } from './verification/startHealthCheck'
 import { config } from './config/globalConfig'
-import { ConfigurationKeys } from './config/configurationKeys'
+import { ConfigurationKeys } from './config/ConfigurationKeys'
 import { logger } from '../../common/logger'
 
 jest.mock('../../src/vendor/getPublicKey', () => ({

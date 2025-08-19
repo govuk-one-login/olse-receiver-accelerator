@@ -5,7 +5,7 @@ import {
 } from 'aws-lambda'
 import { sendVerificationSignal } from '../../../../express-container/verification/sendVerification'
 import { config } from '../../../../express-container/config/globalConfig'
-import { ConfigurationKeys } from '../../../../express-container/config/configurationKeys'
+import { ConfigurationKeys } from '../../../../express-container/config/ConfigurationKeys'
 import { logger } from '../../../../../common/logger'
 
 const pause = (timeInMs: number) => {

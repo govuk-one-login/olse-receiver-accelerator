@@ -1,4 +1,4 @@
-import { ConfigurationKeys } from './configurationKeys'
+import { ConfigurationKeys } from './ConfigurationKeys'
 
 export abstract class AbstractConfigurationProvider {
   private configMap = new Map<string, string>()
