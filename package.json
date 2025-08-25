@@ -30,8 +30,8 @@
   },
   "homepage": "https://github.com/govuk-one-login/olse-receiver-accelerator#readme",
   "devDependencies": {
-    "@eslint/js": "^9.33.0",
-    "@aws-sdk/client-cognito-identity-provider": "^3.865.0",
+    "@eslint/js": "^9.34.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.873.0",
     "@aws-sdk/client-secrets-manager": "^3.848.0",
     "@types/aws-lambda": "^8.10.152",
     "@types/express": "^5.0.3",
@@ -44,7 +44,7 @@
     "concurrently": "^9.2.0",
     "dotenv": "^17.2.1",
     "esbuild": "^0.25.9",
-    "eslint": "^9.33.0",
+    "eslint": "^9.34.0",
     "eslint-config-prettier": "^10.1.8",
     "husky": "^9.1.7",
     "jest": "^30.0.5",
@@ -55,9 +55,9 @@
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.1",
     "ts-node": "^10.9.2",
-    "tsx": "^4.20.4",
+    "tsx": "^4.20.5",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.39.1",
+    "typescript-eslint": "^8.40.0",
     "yaml-cfn": "^0.3.2"
   },
   "lint-staged": {
