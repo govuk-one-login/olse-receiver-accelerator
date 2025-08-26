@@ -4,15 +4,6 @@ import { getKmsPublicKey } from '../kmsService'
 import { JsonWebKey } from 'crypto'
 import { createJwkFromRawPublicKey } from './createJwksFromRawPublicKey'
 
-jest.mock('./createJwksFromRawPublicKey', () => ({
-  createJwkFromRawPublicKey: jest.fn(() => ({
-    kty: 'RSA',
-    kid: 'test-key-id-001',
-    n: '...',
-    e: 'AQAB'
-  }))
-}))
-
 export const jwkArray: JsonWebKey[] = []
 
 const SIGNING_KEY_ENV_VAR_NAMES = ['KMS_KEY_ID']
