@@ -4,18 +4,27 @@ import { getKmsPublicKey } from '../kmsService'
 import { JsonWebKey } from 'crypto'
 import { createJwkFromRawPublicKey } from './createJwksFromRawPublicKey'
 
+jest.mock('./createJwksFromRawPublicKey', () => ({
+  createJwkFromRawPublicKey: jest.fn(() => ({
+    kty: 'RSA',
+    kid: 'test-key-id-001',
+    n: '...',
+    e: 'AQAB'
+  }))
+}))
+
 export const jwkArray: JsonWebKey[] = []
 
 const SIGNING_KEY_ENV_VAR_NAMES = ['KMS_KEY_ID']
 export const handler = async (): Promise<APIGatewayProxyResult> => {
   try {
     const promiseArray = SIGNING_KEY_ENV_VAR_NAMES.map(async (envVar) => {
-      const publicKeyData = await getKmsPublicKey(getEnv(envVar))
+      const envValue = getEnv(envVar)
+      const publicKeyData = await getKmsPublicKey(envValue)
       const jwk = createJwkFromRawPublicKey(
         publicKeyData.publicKey,
         publicKeyData.keyId
       )
-
       jwkArray.push(jwk)
     })
 

@@ -1,6 +1,6 @@
 import { getKmsPublicKey } from '../kmsService'
 import { getEnv } from '../utils'
-import { handler } from './handler'
+import { handler, jwkArray } from './handler'
 
 jest.mock('../utils')
 jest.mock('../kmsService')
@@ -11,6 +11,7 @@ const mockGetKmsPublicKey = jest.mocked(getKmsPublicKey)
 describe('JWKS handler', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    jwkArray.length = 0
   })
 
   it('processes and returns all keys successfully', async () => {
