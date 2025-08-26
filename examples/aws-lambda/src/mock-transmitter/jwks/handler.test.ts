@@ -4,6 +4,14 @@ import { handler, jwkArray } from './handler'
 
 jest.mock('../utils')
 jest.mock('../kmsService')
+jest.mock('./createJwksFromRawPublicKey', () => ({
+  createJwkFromRawPublicKey: jest.fn(() => ({
+    kty: 'RSA',
+    kid: 'test-key-id-001',
+    n: 'keyModulus456',
+    e: 'keyExpontent456'
+  }))
+}))
 
 const mockGetEnv = jest.mocked(getEnv)
 const mockGetKmsPublicKey = jest.mocked(getKmsPublicKey)
