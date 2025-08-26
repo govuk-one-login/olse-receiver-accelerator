@@ -1,10 +1,9 @@
 import { createPublicKey, JsonWebKey } from 'crypto'
-import { KmsPublicKeyData } from '../mockApiTxInterfaces'
 
 export function createJwkFromRawPublicKey(
-  publicKeyData: KmsPublicKeyData
+  publicKeyData: Uint8Array, keyId: string
 ): JsonWebKey {
-  const stringPublicKey = uint8ArrayToBase64(publicKeyData.publicKey)
+  const stringPublicKey = uint8ArrayToBase64(publicKeyData)
 
   const formattedPublicKey =
     '-----BEGIN PUBLIC KEY-----\n' +
@@ -16,7 +15,7 @@ export function createJwkFromRawPublicKey(
       format: 'jwk'
     })
 
-    jsonWebKey['kid'] = publicKeyData.keyId
+    jsonWebKey['kid'] = keyId
     return jsonWebKey
   } catch {
     throw Error(

@@ -2,6 +2,7 @@ import { APIGatewayProxyResult } from 'aws-lambda'
 import { getEnv } from '../utils'
 import { getKmsPublicKey } from '../kmsService'
 import { JsonWebKey } from 'crypto'
+import { createJwkFromRawPublicKey } from './createJwksFromRawPublicKey'
 
 export const jwkArray: JsonWebKey[] = []
 
@@ -10,8 +11,9 @@ export const handler = async (): Promise<APIGatewayProxyResult> => {
   try {
     const promiseArray = SIGNING_KEY_ENV_VAR_NAMES.map(async (envVar) => {
       const publicKeyData = await getKmsPublicKey(getEnv(envVar))
+      const jwk = createJwkFromRawPublicKey(publicKeyData.publicKey, publicKeyData.keyId)
 
-      return { envVar, publicKeyData }
+      jwkArray.push(jwk)
     })
 
     const res = await Promise.allSettled(promiseArray)
@@ -23,6 +25,8 @@ export const handler = async (): Promise<APIGatewayProxyResult> => {
           reason: String(promise.reason)
         })
         failedCount += 1
+      } else {
+
       }
     })
 
