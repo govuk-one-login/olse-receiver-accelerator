@@ -48,8 +48,8 @@ async function buildFor_AWS_LAMBDA_REFERENCE() {
       ? codeUri.substring(5)
       : codeUri
 
-    const handlerPath = `./${sourcePath}/handler.ts`
-    if (!entryPoints.push(handlerPath)) {
+    const handlerPath = join('.', sourcePath, 'handler.ts')
+    if (!entryPoints.includes(handlerPath)) {
       entryPoints.push(handlerPath)
     }
 
