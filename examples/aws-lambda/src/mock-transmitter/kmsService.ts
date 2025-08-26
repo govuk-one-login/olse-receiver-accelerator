@@ -8,7 +8,7 @@ import { KmsPublicKeyData } from './mockApiTxInterfaces'
 
 export async function signedJWTWithKMS(payload: SET): Promise<string> {
   const kmsClient = new KMSClient({
-    region: process.env['AWS_REGION'] ?? 'eu-west-1'
+    region: process.env['AWS_REGION'] ?? 'eu-west-2'
   })
 
   const header = {
@@ -51,7 +51,7 @@ export async function getKmsPublicKey(
   keyArn: string
 ): Promise<KmsPublicKeyData> {
   const kmsClient = new KMSClient({
-    region: process.env['AWS_REGION'] ?? 'eu-west-1'
+    region: process.env['AWS_REGION'] ?? 'eu-west-2'
   })
 
   const getKeyCommand = new GetPublicKeyCommand({

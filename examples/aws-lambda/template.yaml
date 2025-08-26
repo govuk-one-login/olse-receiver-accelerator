@@ -535,7 +535,7 @@ Resources:
     Properties:
       Description: KMS Key for mock tx JWT Signing
       KeyUsage: SIGN_VERIFY
-      KeySpec: RSA_2048
+      KeySpec: RSA_4096
       KeyPolicy:
         Version: '2012-10-17'
         Statement:
