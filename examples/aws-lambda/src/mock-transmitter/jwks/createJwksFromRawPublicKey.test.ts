@@ -22,10 +22,10 @@ describe('createJwkFromRawPublicKey', () => {
       export: jest.fn().mockReturnValue(mockJwk)
     } as unknown as KeyObject)
 
-    const result = createJwkFromRawPublicKey({
-      keyId: 'test-key-001',
-      publicKey: new Uint8Array([1, 2, 3])
-    })
+    const result = createJwkFromRawPublicKey(
+      new Uint8Array([1, 2, 3]),
+      'test-key-001'
+    )
 
     expect(result['kid']).toBe('test-key-001')
   })
@@ -36,10 +36,7 @@ describe('createJwkFromRawPublicKey', () => {
     })
 
     expect(() =>
-      createJwkFromRawPublicKey({
-        keyId: 'test-key-001',
-        publicKey: new Uint8Array([1, 2, 3])
-      })
+      createJwkFromRawPublicKey(new Uint8Array([1, 2, 3]), 'test-key-001')
     ).toThrow(
       'Could not create Public Key. Imported key may be in an incorrect format'
     )

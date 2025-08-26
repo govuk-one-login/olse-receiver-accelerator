@@ -1,7 +1,8 @@
 import { createPublicKey, JsonWebKey } from 'crypto'
 
 export function createJwkFromRawPublicKey(
-  publicKeyData: Uint8Array, keyId: string
+  publicKeyData: Uint8Array,
+  keyId: string
 ): JsonWebKey {
   const stringPublicKey = uint8ArrayToBase64(publicKeyData)
 
