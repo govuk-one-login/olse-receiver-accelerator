@@ -32,7 +32,7 @@ describe('signedJwtWithKms', () => {
   it('throws error when KMS_KEY_ID not set', async () => {
     delete process.env['KMS_KEY_ID']
     await expect(signedJWTWithKMS({} as unknown as SET)).rejects.toThrow(
-      'KMS_KEY_ID environment variable not set'
+      'Missing environment variable: KMS_KEY_ID'
     )
   })
 

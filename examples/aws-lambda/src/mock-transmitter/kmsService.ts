@@ -5,6 +5,7 @@ import {
 } from '@aws-sdk/client-kms'
 import { SET } from './mockApiTxInterfaces'
 import { KmsPublicKeyData } from './mockApiTxInterfaces'
+import { getEnv } from './utils'
 
 export async function signedJWTWithKMS(payload: SET): Promise<string> {
   const kmsClient = new KMSClient({
@@ -12,8 +13,9 @@ export async function signedJWTWithKMS(payload: SET): Promise<string> {
   })
 
   const header = {
-    alg: 'PS256',
-    typ: 'JWT'
+    alg: 'RS256',
+    typ: 'secevent+jwt',
+    kid: getEnv('KMS_KEY_ID')
   }
 
   const encodedHeader = Buffer.from(JSON.stringify(header)).toString(
