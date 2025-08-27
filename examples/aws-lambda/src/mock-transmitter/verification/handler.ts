@@ -17,7 +17,6 @@ export const handler = async (
     const verificationRequest: SETVerificationRequest =
       getVerificationRequest(event)
 
-    console.log(constructVerificationFullSecurityEvent)
     const verificationSET = constructVerificationFullSecurityEvent(
       event.requestContext.requestId,
       Date.now(),
@@ -38,7 +37,7 @@ export const handler = async (
       body: signedJWT
     })
 
-    if (response.ok) {
+    if (response.status === 202) {
       console.log(
         `Verification SET delivered successfully to ${receiverEndpoint}`
       )
