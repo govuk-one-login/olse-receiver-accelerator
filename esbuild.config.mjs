@@ -32,7 +32,6 @@ async function main() {
 
 async function buildFor_AWS_LAMBDA_REFERENCE() {
   const baseLambdaPath = 'examples/aws-lambda'
-  const lambdasPath = `${baseLambdaPath}/src/lambda`
   const { Resources } = yamlParse(
     readFileSync(join(dirname('.'), `${baseLambdaPath}/template.yaml`), 'utf-8')
   )
@@ -43,9 +42,15 @@ async function buildFor_AWS_LAMBDA_REFERENCE() {
   )
 
   const entries = lambdas.reduce((entryPoints, lambda) => {
-    const lambdaName = lambda.Properties.CodeUri.split('/').pop()
-    if (!(lambdaName in entryPoints)) {
-      entryPoints.push(`./${lambdasPath}/${lambdaName}/handler.ts`)
+    const codeUri = lambda.Properties.CodeUri
+
+    const sourcePath = codeUri.startsWith('dist/')
+      ? codeUri.substring(5)
+      : codeUri
+
+    const handlerPath = join('.', sourcePath, 'handler.ts')
+    if (!entryPoints.includes(handlerPath)) {
+      entryPoints.push(handlerPath)
     }
 
     return entryPoints
@@ -57,7 +62,7 @@ async function buildFor_AWS_LAMBDA_REFERENCE() {
     ...baseEsBuildConfig,
     format: 'cjs', // Override ESM format for AWS Lambda
     entryPoints: entries,
-    outdir: `dist/${lambdasPath}`
+    outdir: `dist/${baseLambdaPath}/src`
   }
   await esbuild.build(finalConfig)
 }
