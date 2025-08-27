@@ -10,7 +10,7 @@ env:
 jobs:
   upload-testing-artifact:
     name: Upload testing image to ECR
-    if: contains(github.ref_name, 'main')
+    if: contains(github.ref_name, 'main') || contains(github.ref, 'main')
     permissions:
       id-token: write
       contents: read
