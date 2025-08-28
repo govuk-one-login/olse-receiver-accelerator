@@ -8,12 +8,18 @@ import { getPublicKeyFromRemote } from '../../src/vendor/getPublicKey'
 import { app } from './express'
 import * as signalRouting from '../../common/signalRouting/signalRouter'
 import { stopVerificationSignals } from './verification/startHealthCheck'
-import { config } from './config/globalConfig'
-import { ConfigurationKeys } from './config/ConfigurationKeys'
+import { ConfigurationKeys } from '../../common/config/configurationKeys'
+import { getSecret } from '../../common/secretsManager/secretsManager'
 
 jest.mock('../../src/vendor/getPublicKey', () => ({
   getPublicKeyFromRemote: jest.fn()
 }))
+
+jest.mock('../../common/secretsManager/secretsManager', () => ({
+  getSecret: jest.fn()
+}))
+
+const mockGetSecret = jest.mocked(getSecret)
 
 const sampleVerificationEvent = {
   alg: 'PS256',
@@ -49,9 +55,10 @@ describe('Express server /v1 endpoint', () => {
     process.env[ConfigurationKeys.CLIENT_ID] = 'test_client'
     process.env[ConfigurationKeys.CLIENT_SECRET] = 'test_secret'
     process.env[ConfigurationKeys.PRIVATE_KEY_PATH] = './keys/authPrivate.key'
-    process.env[ConfigurationKeys.PUBLIC_KEY_PATH] = './keys/authPrivate.key'
-    process.env['JWKS_URL'] = 'https://example.com/jwks'
-    await config.initialise()
+    process.env[ConfigurationKeys.PUBLIC_KEY_PATH] = './keys/authPublic.key'
+    process.env[ConfigurationKeys.JWKS_URL] = 'https://example.com/jwks'
+    process.env[ConfigurationKeys.AWS_REGION] = 'eu-west-2'
+    process.env[ConfigurationKeys.PRIVATE_KEY_SECRET_NAME] = 'test-private-key-secret'
 
     publicKeyString = readFileSync('./keys/authPublic.key', {
       encoding: 'utf8'
@@ -59,6 +66,9 @@ describe('Express server /v1 endpoint', () => {
     // eslint-disable-next-line
     publicKeyJson = JSON.parse(publicKeyString as any)
     key = await jose.importJWK(publicKeyJson as jose.JWK, 'PS256')
+
+    const privateKeyString = readFileSync('./keys/authPrivate.key', { encoding: 'utf8' })
+    mockGetSecret.mockResolvedValue(JSON.stringify({ privateKey: privateKeyString }))
   })
 
   afterEach(() => {
@@ -100,7 +110,7 @@ describe('Express server /v1 endpoint', () => {
   })
 
   it('should return 401 when CLIENT_ID env var is missing', async () => {
-    config.delete(ConfigurationKeys.CLIENT_ID)
+    delete process.env[ConfigurationKeys.CLIENT_ID]
 
     const response = await request(app)
       .post('/v1/token')
@@ -116,7 +126,7 @@ describe('Express server /v1 endpoint', () => {
   })
 
   it('should return 401 when CLIENT_SECRET env var is missing', async () => {
-    config.delete(ConfigurationKeys.CLIENT_SECRET)
+    delete process.env[ConfigurationKeys.CLIENT_SECRET]
 
     const response = await request(app).post('/v1/token').query({
       client_id: 'test_client',
@@ -129,8 +139,8 @@ describe('Express server /v1 endpoint', () => {
   })
 
   it('should return 200 with valid credentials', async () => {
-    config.set(ConfigurationKeys.CLIENT_ID, 'test_client')
-    config.set(ConfigurationKeys.CLIENT_SECRET, 'test_secret')
+    process.env[ConfigurationKeys.CLIENT_ID] = 'test_client'
+    process.env[ConfigurationKeys.CLIENT_SECRET] = 'test_secret'
     const response = await request(app).post('/v1/token').query({
       client_id: 'test_client',
       client_secret: 'test_secret',
