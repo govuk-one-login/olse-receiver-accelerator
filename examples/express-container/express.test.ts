@@ -58,7 +58,8 @@ describe('Express server /v1 endpoint', () => {
     process.env[ConfigurationKeys.PUBLIC_KEY_PATH] = './keys/authPublic.key'
     process.env[ConfigurationKeys.JWKS_URL] = 'https://example.com/jwks'
     process.env[ConfigurationKeys.AWS_REGION] = 'eu-west-2'
-    process.env[ConfigurationKeys.PRIVATE_KEY_SECRET_NAME] = 'test-private-key-secret'
+    process.env[ConfigurationKeys.PRIVATE_KEY_SECRET_NAME] =
+      'test-private-key-secret'
 
     publicKeyString = readFileSync('./keys/authPublic.key', {
       encoding: 'utf8'
@@ -67,8 +68,12 @@ describe('Express server /v1 endpoint', () => {
     publicKeyJson = JSON.parse(publicKeyString as any)
     key = await jose.importJWK(publicKeyJson as jose.JWK, 'PS256')
 
-    const privateKeyString = readFileSync('./keys/authPrivate.key', { encoding: 'utf8' })
-    mockGetSecret.mockResolvedValue(JSON.stringify({ privateKey: privateKeyString }))
+    const privateKeyString = readFileSync('./keys/authPrivate.key', {
+      encoding: 'utf8'
+    })
+    mockGetSecret.mockResolvedValue(
+      JSON.stringify({ privateKey: privateKeyString })
+    )
   })
 
   afterEach(() => {
@@ -110,6 +115,7 @@ describe('Express server /v1 endpoint', () => {
   })
 
   it('should return 401 when CLIENT_ID env var is missing', async () => {
+    // eslint-disable-next-line
     delete process.env[ConfigurationKeys.CLIENT_ID]
 
     const response = await request(app)
@@ -126,6 +132,7 @@ describe('Express server /v1 endpoint', () => {
   })
 
   it('should return 401 when CLIENT_SECRET env var is missing', async () => {
+    // eslint-disable-next-line
     delete process.env[ConfigurationKeys.CLIENT_SECRET]
 
     const response = await request(app).post('/v1/token').query({
@@ -139,8 +146,8 @@ describe('Express server /v1 endpoint', () => {
   })
 
   it('should return 200 with valid credentials', async () => {
-    process.env[ConfigurationKeys.CLIENT_ID] = 'test_client'
-    process.env[ConfigurationKeys.CLIENT_SECRET] = 'test_secret'
+    process.env['CLIENT_ID'] = 'test_client'
+    process.env['CLIENT_SECRET'] = 'test_secret'
     const response = await request(app).post('/v1/token').query({
       client_id: 'test_client',
       client_secret: 'test_secret',
