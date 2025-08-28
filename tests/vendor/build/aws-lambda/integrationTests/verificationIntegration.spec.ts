@@ -1,5 +1,5 @@
 import { getTokenFromCognito } from "../../../helpers/getTokenFromCognito"
-
+import 'dotenv/config'
 describe('SET Verification Event Integration Tests', () => {
     const apiUrl = process.env['API_GATEWAY_URL'] ?? ''
     const jwksUrl = process.env['JWKS_URL'] ?? ''
@@ -17,9 +17,8 @@ describe('SET Verification Event Integration Tests', () => {
         console.log('Bearer ' + token)
 
         const verificationPayload = {
-            subject: 'test-subject-001',
-            verification_type: 'verification-type',
-            timestamp: Date.now()
+            stream_id: 'test-stream-001',
+            state: 'test-state-001',
         }
 
         const response = await fetch(
