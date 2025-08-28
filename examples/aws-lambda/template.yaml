@@ -410,6 +410,27 @@ Resources:
         - ScopeName: 'post'
           ScopeDescription: 'Allow users to post to mock verify endpoint'
 
+  SetMockTxApiUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      UserPoolId: !Ref SetMockTxApiUserPool
+      Domain: !Sub '${AWS::StackName}-mock-tx-${Environment}'
+
+  SetMockTxApiSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub '${AWS::StackName}-mock-tx-secrets'
+      Description: 'Secrets for Mock Tx Transmitter'
+      KmsKeyId: '{{resolve:ssm:SecretsKmsKeyArn}}'
+      SecretString: !Sub |
+        {
+          "userPoolId": "${SetMockTxApiUserPool}",
+          "userPoolArn": "${SetMockTxApiUserPool.Arn}",
+          "userPoolClientId": "${SetMockTxApiUserPoolClient}",
+          "userPoolClientSecret": "${SetMockTxApiUserPoolClient.ClientSecret}",
+          "domain": "${SetMockTxApiUserPoolDomain}"
+        }
+
   MockVerfTxLambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
