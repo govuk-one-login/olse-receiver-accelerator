@@ -34,12 +34,15 @@ describe('generateJWT', () => {
 
   test('should throw error when privateKey field is missing in secret', async () => {
     mockedGetSecret.mockResolvedValue(JSON.stringify({}))
-    await expect(generateJWT(payload)).rejects.toThrow('Private key not found in secret')
+    await expect(generateJWT(payload)).rejects.toThrow(
+      'Private key not found in secret'
+    )
   })
 
   test('should throw error when privateKey field is invalid JSON', async () => {
-    mockedGetSecret.mockResolvedValue(JSON.stringify({ privateKey: 'not-json' }))
+    mockedGetSecret.mockResolvedValue(
+      JSON.stringify({ privateKey: 'not-json' })
+    )
     await expect(generateJWT(payload)).rejects.toThrow()
   })
-
 })
