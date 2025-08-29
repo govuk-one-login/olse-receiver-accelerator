@@ -463,7 +463,14 @@ Resources:
                 Action:
                   - cognito-idp:InitiateAuth
                 Resource: !GetAtt SetMockTxApiUserPool.Arn
-
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource:
+                  - !GetAtt MockVerfTxEventFunctionLogGroup.Arn
+                  - !GetAtt MockVerfTxJWKSEndpointFunctionLogGroup.Arn
   MockVerfTxEventFunction:
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
     Type: AWS::Serverless::Function
@@ -543,6 +550,20 @@ Resources:
               - 'set-tx-mock/post'
             Identity:
               Header: Authorization
+
+  MockVerfTxEventFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
+      LogGroupName: !Sub /aws/apigateway/mock-api/${AWS::StackName}-mock-tx-verification
+      RetentionInDays: 30
+
+  MockVerfTxJWKSEndpointFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
+      LogGroupName: !Sub /aws/apigateway/mock-api/${AWS::StackName}-mock-tx-jwks
+      RetentionInDays: 30
 
   MockTxApiAccessLogGroup:
     Type: AWS::Logs::LogGroup
