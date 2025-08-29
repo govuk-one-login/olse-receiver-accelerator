@@ -8,7 +8,7 @@ import { logger } from '../../../common/logging/logger'
 class AWSSecretsManagerConfigurationProvider extends AbstractConfigurationProvider {
   private client: SecretsManagerClient
 
-  constructor(region = 'eu-west-1') {
+  constructor(region = 'eu-west-2') {
     super()
     this.client = new SecretsManagerClient({
       region: region
