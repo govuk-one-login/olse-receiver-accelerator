@@ -29,7 +29,8 @@ export const handler = async (
     console.log('Signed JWT:', signedJWT)
 
     const receiverEndpoint =
-      process.env['RECEIVER_ENDPOINT'] ?? 'https://rp.co.uk/Events'
+      process.env['RECEIVER_ENDPOINT1'] ??
+      'https://uiaxaw17k2.execute-api.eu-west-2.amazonaws.com/dev/api/v1/Events'
     console.log('Sending verification SET to:', receiverEndpoint)
     const response = await fetch(receiverEndpoint, {
       method: 'POST',

@@ -9,8 +9,10 @@ export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   try {
+    console.log('Received event:', event)
     const jwt = event.body
     if (!jwt) {
+      console.error('No JWT found in request body')
       return {
         statusCode: 400,
         headers: { 'Content-Type': 'application/json' },
@@ -22,7 +24,9 @@ export const handler = async (
     }
 
     const jwksUrl = process.env['JWKS_URL']
+    console.log('Using JWKS URL:', jwksUrl)
     if (!jwksUrl) {
+      console.log('JWKS_URL environment variable is not set')
       return {
         statusCode: 500,
         headers: { 'Content-Type': 'application/json' },
@@ -34,10 +38,13 @@ export const handler = async (
     }
 
     const publicKey = getPublicKeyFromRemote(jwksUrl)
+    console.log('Fetched public key from JWKS URL')
 
     let verifiedJwtBody
     try {
+      console.log('Validating JWT with remote key')
       verifiedJwtBody = await validateJWTWithRemoteKey(jwt, publicKey)
+      console.log('JWT successfully validated')
     } catch (error) {
       console.error('failed to validate JWT with remote key')
       console.error(error)
