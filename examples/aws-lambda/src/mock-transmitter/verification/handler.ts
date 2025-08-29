@@ -14,20 +14,23 @@ export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   try {
+    console.log('Received verification request:', event)
     const verificationRequest: SETVerificationRequest =
       getVerificationRequest(event)
-
+    console.log('Parsed verification request:', verificationRequest)
     const verificationSET = constructVerificationFullSecurityEvent(
       event.requestContext.requestId,
       Date.now(),
       verificationRequest
     )
+    console.log('Constructed verification SET:', verificationSET)
 
     const signedJWT = await signedJWTWithKMS(verificationSET)
+    console.log('Signed JWT:', signedJWT)
 
     const receiverEndpoint =
       process.env['RECEIVER_ENDPOINT'] ?? 'https://rp.co.uk/Events'
-
+    console.log('Sending verification SET to:', receiverEndpoint)
     const response = await fetch(receiverEndpoint, {
       method: 'POST',
       headers: {
@@ -36,6 +39,7 @@ export const handler = async (
       },
       body: signedJWT
     })
+    console.log('Receiver response status:', response.status)
 
     if (response.status === 202) {
       console.log(

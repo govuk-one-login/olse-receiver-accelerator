@@ -1,5 +1,5 @@
 import { getTokenFromCognito } from '../../../helpers/getTokenFromCognito'
-
+import 'dotenv/config'
 describe('handler V1', () => {
   it('handler returns 200 when a valid access token is provided', async () => {
     const apiUrl = process.env['API_GATEWAY_URL'] ?? ''
