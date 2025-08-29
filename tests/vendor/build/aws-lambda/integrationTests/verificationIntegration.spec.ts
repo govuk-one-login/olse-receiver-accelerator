@@ -43,7 +43,7 @@ describe('SET Verification Event Integration Tests', () => {
             timestamp: Date.now()
         }
         const response = await fetch(
-            `${apiUrl}/api/v1/verify`, {
+            `${apiUrl}/verify`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer aa.bb.cc',
@@ -58,7 +58,7 @@ describe('SET Verification Event Integration Tests', () => {
     })
 
     it('should return valid jwks from public key endpoint', async () => {
-        const response = await fetch(`${apiUrl}/v1/jwks`)
+        const response = await fetch(`${apiUrl}/jwks`)
         const jwks = await response.json()
         console.log(jwks)
 
