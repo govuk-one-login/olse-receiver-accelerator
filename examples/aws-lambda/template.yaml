@@ -188,6 +188,14 @@ Resources:
       KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
       LogGroupName: !Sub /aws/apigateway/${AWS::StackName}-endpoint-access-logs
       RetentionInDays: 30
+
+  ReceiverFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
+      LogGroupName: !Sub /aws/lambda/${AWS::StackName}-receiver
+      RetentionInDays: 30
+
   #########################
   # Receiver Function Scheduler #
   #########################
@@ -276,6 +284,16 @@ Resources:
                 Action:
                   - secretsmanager:GetSecretValue
                 Resource: !Ref SSrSecret
+        - PolicyName: CloudWatchLogsAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt ReceiverFunctionLogGroup.Arn
 
   PermissionforAPItoCallReceiverFunction:
     Type: AWS::Lambda::Permission
