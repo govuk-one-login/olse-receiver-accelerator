@@ -22,7 +22,7 @@ describe('SET Verification Event Integration Tests', () => {
         }
 
         const response = await fetch(
-            `${apiUrl}/api/v1/verify`, {
+            `${apiUrl}/verify`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer ' + token,
