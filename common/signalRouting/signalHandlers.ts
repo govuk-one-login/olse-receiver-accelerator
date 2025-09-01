@@ -1,4 +1,4 @@
-import { logger } from '../logging/logger'
+import { baseLogger as logger } from '../../common/logging/logger'
 import { VerificationPayload } from '../interfaces/interfaces'
 import { verifyStateJwt } from './verifyState'
 
