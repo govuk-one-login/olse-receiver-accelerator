@@ -28,11 +28,11 @@ Option 3: Per Function AWS Logging
 Override log level for specific functions by setting them in template.yaml
 
 OLSEFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-        Environment:
-            Variables:
-                LOG_LEVEL: DEBUG
+Type: AWS::Serverless::Function
+Properties:
+Environment:
+Variables:
+LOG_LEVEL: DEBUG
 Output Format
 
 BaseLogger output as JSON
@@ -58,4 +58,3 @@ Lambda Logger output as JSON
     "memoryLimitInMB": 128
 }
 ```
-

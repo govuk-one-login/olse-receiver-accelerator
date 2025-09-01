@@ -25,13 +25,14 @@ export async function sendVerificationSignal(
       body: JSON.stringify(requestBody)
     })
     if (response.ok) {
-      logger.info(
-        'Verification signal sent successfully to : ',
-        { relyingPartyUrl: relyingPartyUrl }
-      )
+      logger.info('Verification signal sent successfully to : ', {
+        relyingPartyUrl: relyingPartyUrl
+      })
       return true
     } else {
-      logger.error('Failed to send verification signal:', { statusText: response.statusText })
+      logger.error('Failed to send verification signal:', {
+        statusText: response.statusText
+      })
       return false
     }
   } catch (error) {

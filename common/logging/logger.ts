@@ -36,7 +36,7 @@ class LambdaLogFormatter extends LogFormatter {
       function_version: attributes.lambdaContext?.functionVersion,
       function_arn: attributes.lambdaContext?.invokedFunctionArn,
       request_id: attributes.lambdaContext?.awsRequestId,
-      memory_size: attributes.lambdaContext?.memoryLimitInMB,
+      memory_size: attributes.lambdaContext?.memoryLimitInMB
     }
 
     const logItem = new LogItem({ attributes: baseAttributes })
@@ -56,7 +56,6 @@ function getLogLevel(): LogLevel {
 
   return 'INFO'
 }
-
 
 export const baseLogger = new Logger({
   logLevel: getLogLevel(),
