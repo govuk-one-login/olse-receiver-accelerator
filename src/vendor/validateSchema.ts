@@ -2,6 +2,7 @@ import Ajv, { AnySchema } from 'ajv'
 import addFormats from 'ajv-formats'
 import { readFileSync } from 'fs'
 import { readdir } from 'fs/promises'
+import { baseLogger as logger } from '../../common/logging/logger'
 
 const ajv = new Ajv()
 addFormats(ajv)
@@ -32,7 +33,7 @@ export async function validateSignalAgainstSchemas(
     if (validate(signalSet)) {
       return { valid: true, schema: filePath }
     } else {
-      console.log(`errors when validating schema: ${filePath}`)
+      logger.info('errors when validating schema', { filePath: filePath })
     }
   }
   return { valid: false, message: 'unable to find matching schema' }

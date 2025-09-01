@@ -10,10 +10,13 @@ import * as signalRouting from '../../common/signalRouting/signalRouter'
 import { stopVerificationSignals } from './verification/startHealthCheck'
 import { config } from './config/globalConfig'
 import { ConfigurationKeys } from './config/ConfigurationKeys'
+import { baseLogger } from '../../common/logging/logger'
 
 jest.mock('../../src/vendor/getPublicKey', () => ({
   getPublicKeyFromRemote: jest.fn()
 }))
+
+const loggerErrorSpy = jest.spyOn(baseLogger, 'error').mockImplementation()
 
 const sampleVerificationEvent = {
   alg: 'PS256',
@@ -43,8 +46,6 @@ describe('Express server /v1 endpoint', () => {
     jest.resetAllMocks()
     jest.clearAllMocks()
     jest.useFakeTimers()
-
-    jest.spyOn(console, 'error')
 
     process.env[ConfigurationKeys.CLIENT_ID] = 'test_client'
     process.env[ConfigurationKeys.CLIENT_SECRET] = 'test_secret'
@@ -205,7 +206,10 @@ describe('Express server /v1 endpoint', () => {
         "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
     })
 
-    expect(console.error).toHaveBeenCalledWith('failed to route signal')
+    expect(loggerErrorSpy).toHaveBeenCalledWith(
+      'failed to route signal',
+      expect.any(Object)
+    )
   })
 
   it('should return 400 and invalid signal for when sent a SET with an invalid SET payload', async () => {
@@ -287,8 +291,9 @@ describe('Express server /v1 endpoint', () => {
         'One or more keys used to encrypt or sign the SET is invalid or otherwise unacceptable to the SET Recipient (expired, revoked, failed certificate validation, etc.).'
     })
 
-    expect(console.error).toHaveBeenCalledWith(
-      'failed to validate JWT with remote key'
+    expect(loggerErrorSpy).toHaveBeenCalledWith(
+      'Failed to validate JWT with remote key',
+      expect.any(Object)
     )
   })
 

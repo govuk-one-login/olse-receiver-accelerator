@@ -42,6 +42,15 @@ Parameters:
   Audience:
     Type: String
     Default: https://rp.co.uk
+  LogLevel:
+    Description: Log level for all lambda functions
+    Type: String
+    Default: INFO
+    AllowedValues:
+      - ERROR
+      - WARN
+      - INFO
+      - DEBUG
 
 Mappings:
   EnvironmentConfiguration:
@@ -66,6 +75,10 @@ Globals:
     Architectures:
       - arm64
     Runtime: nodejs22.x
+    Environment:
+      Variables:
+        LOG_LEVEL: !Ref LogLevel
+    KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
     Timeout: 30
     MemorySize: 256
     PermissionsBoundary:
@@ -231,7 +244,6 @@ Resources:
       FunctionName: !Sub ${AWS::StackName}-receiver
       Handler: handler.handler
       Role: !GetAtt ReceiverFunctionRole.Arn
-      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Environment:
         Variables:
           SECRET_ARN: !Ref SSrSecret
@@ -355,7 +367,6 @@ Resources:
       Description: Lambda function that exposes public JWKS
       Handler: handler.handler
       FunctionName: !Sub ${AWS::StackName}-get-jwks-function
-      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Environment:
         Variables:
           JWKS_URL:
