@@ -23,6 +23,29 @@ class CustomLogFormatter extends LogFormatter {
   }
 }
 
+class LambdaLogFormatter extends LogFormatter {
+  public formatAttributes(
+    attributes: UnformattedAttributes,
+    additionalLogAttributes: LogAttributes
+  ): LogItem {
+    const baseAttributes: LogAttributes = {
+      level: attributes.logLevel,
+      message: attributes.message,
+      timestamp: String(attributes.timestamp),
+      function_name: attributes.lambdaContext?.functionName,
+      function_version: attributes.lambdaContext?.functionVersion,
+      function_arn: attributes.lambdaContext?.invokedFunctionArn,
+      request_id: attributes.lambdaContext?.awsRequestId,
+      memory_size: attributes.lambdaContext?.memoryLimitInMB,
+    }
+
+    const logItem = new LogItem({ attributes: baseAttributes })
+    logItem.addAttributes(additionalLogAttributes)
+
+    return logItem
+  }
+}
+
 function getLogLevel(): LogLevel {
   const envLevel = process.env['LOG_LEVEL']
   const validLevels: LogLevel[] = ['ERROR', 'WARN', 'INFO', 'DEBUG']
@@ -33,7 +56,14 @@ function getLogLevel(): LogLevel {
 
   return 'INFO'
 }
-export const logger = new Logger({
-  logFormatter: new CustomLogFormatter(),
-  logLevel: getLogLevel()
+
+
+export const baseLogger = new Logger({
+  logLevel: getLogLevel(),
+  logFormatter: new CustomLogFormatter()
+})
+
+export const lambdaLogger = new Logger({
+  logLevel: getLogLevel(),
+  logFormatter: new LambdaLogFormatter()
 })

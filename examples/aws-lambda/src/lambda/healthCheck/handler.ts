@@ -6,7 +6,7 @@ import {
 import { sendVerificationSignal } from '../../../../express-container/verification/sendVerification'
 import { config } from '../../../../express-container/config/globalConfig'
 import { ConfigurationKeys } from '../../../../express-container/config/ConfigurationKeys'
-import { logger } from '../../../../../common/logging/logger'
+import { lambdaLogger as logger } from '../../../../../common/logging/logger'
 
 const pause = (timeInMs: number) => {
   return new Promise((resolve) => setTimeout(resolve, timeInMs))
@@ -26,7 +26,7 @@ export const handler = async (
   _context: Context
 ): Promise<APIGatewayProxyResult> => {
   try {
-    logger.info('Processing verification request', { event })
+    logger.info('Processing verification request', { event: event })
 
     // add a pause to prevent eslint from raising issues around the lack of an await function
     await pause(10)
@@ -36,7 +36,7 @@ export const handler = async (
       VERIFICATION_ENDPOINT_URL,
       STREAM_ID
     )
-    logger.info('Verification sginal sent successfully', { response })
+    logger.info('Verification sginal sent successfully', { response: response })
     // Return successful response
     return {
       statusCode: 200,

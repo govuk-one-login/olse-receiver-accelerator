@@ -4,7 +4,7 @@ import { validateJWTWithRemoteKey } from '../../../../../src/vendor/jwt/validate
 import { validateSignalAgainstSchemas } from '../../../../../src/vendor/validateSchema'
 import { handleSignalRouting } from '../../../../../common/signalRouting/signalRouter'
 import { httpErrorResponseMessages } from '../../../../../common/constants'
-import { logger } from '../../../../../common/logging/logger'
+import { lambdaLogger as logger } from '../../../../../common/logging/logger'
 
 export const handler = async (
   event: APIGatewayProxyEvent

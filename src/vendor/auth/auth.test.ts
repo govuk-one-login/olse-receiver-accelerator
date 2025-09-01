@@ -4,7 +4,7 @@ import { generateJWT } from './jwt'
 import { getAuthInput } from './getAuthInput'
 import { ConfigurationKeys } from '../config/ConfigurationKeys'
 import { config } from '../../../examples/express-container/config/globalConfig'
-import { logger } from '../../../common/logging/logger'
+import { baseLogger as logger } from '../../../common/logging/logger'
 
 const loggerWarnSpy = jest.spyOn(logger, 'warn').mockImplementation()
 jest.mock('./jwt')

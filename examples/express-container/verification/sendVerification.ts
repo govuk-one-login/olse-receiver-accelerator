@@ -1,4 +1,4 @@
-import { logger } from '../../../common/logging/logger.ts'
+import { baseLogger as logger } from '../../../common/logging/logger.ts'
 import { createVerificationJwt } from './createVerificationJWT.ts'
 
 export async function sendVerificationSignal(
@@ -27,15 +27,15 @@ export async function sendVerificationSignal(
     if (response.ok) {
       logger.info(
         'Verification signal sent successfully to : ',
-        relyingPartyUrl
+        { relyingPartyUrl: relyingPartyUrl }
       )
       return true
     } else {
-      logger.error('Failed to send verification signal:', response.statusText)
+      logger.error('Failed to send verification signal:', { statusText: response.statusText })
       return false
     }
   } catch (error) {
-    logger.error('Error sending verification signal:', { error })
+    logger.error('Error sending verification signal:', { error: error })
     return false
   }
 }

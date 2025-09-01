@@ -23,9 +23,19 @@ Globals:
                 LOG_LEVEL: !Ref LogLevel
 ```
 
+Option 3: Per Function AWS Logging
+
+Override log level for specific functions by setting them in template.yaml
+
+OLSEFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+        Environment:
+            Variables:
+                LOG_LEVEL: DEBUG
 Output Format
 
-All logs output as JSON with only essential fields
+BaseLogger output as JSON
 
 ```{
     "level": "INFO",
@@ -33,3 +43,19 @@ All logs output as JSON with only essential fields
     "timestamp": "2025-0101T00:00:00:000Z"
 }
 ```
+
+Lambda Logger output as JSON
+
+```
+{
+    "level": "INFO",
+    "message": "Processing",
+    "timestamp": "2025-0101T00:00:00:000Z",
+    "functionName": "OLSEFunction",
+    "functionVersion": "X",
+    "region": "eu-west-2",
+    requestId: "some-request-id"
+    "memoryLimitInMB": 128
+}
+```
+

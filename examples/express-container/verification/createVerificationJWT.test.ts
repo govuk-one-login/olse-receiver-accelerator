@@ -2,7 +2,7 @@ import { createVerificationJwt } from './createVerificationJWT'
 import { generateJWT } from '../../../src/vendor/auth/jwt'
 import { ConfigurationKeys } from '../config/ConfigurationKeys'
 import { config } from '../config/globalConfig'
-import { logger } from '../../../common/logging/logger'
+import { baseLogger as logger } from '../../../common/logging/logger'
 const loggerErrorSpy = jest.spyOn(logger, 'error').mockImplementation()
 jest.mock('../../../src/vendor/auth/jwt', () => ({
   generateJWT: jest.fn()
@@ -13,9 +13,9 @@ describe('createVerificationJwt', () => {
     jest.clearAllMocks()
     process.env[ConfigurationKeys.ISSUER] = 'https://gds.co.uk'
     await config.initialise()
-    ;(generateJWT as jest.MockedFunction<typeof generateJWT>).mockResolvedValue(
-      'mock.jwt.token'
-    )
+      ; (generateJWT as jest.MockedFunction<typeof generateJWT>).mockResolvedValue(
+        'mock.jwt.token'
+      )
   })
 
   it('creates JWT with correct structure and state', async () => {
@@ -62,9 +62,9 @@ describe('createVerificationJwt', () => {
   it('handles generateJWT errors', async () => {
     const error = new Error('Error')
 
-    ;(generateJWT as jest.MockedFunction<typeof generateJWT>).mockRejectedValue(
-      error
-    )
+      ; (generateJWT as jest.MockedFunction<typeof generateJWT>).mockRejectedValue(
+        error
+      )
 
     const relyingPartyUrl = 'https://rp.co.uk/verification'
     const streamId = 'default-stream-id-001'

@@ -33,7 +33,7 @@ class AWSSecretsManagerConfigurationProvider extends AbstractConfigurationProvid
         }
       }
     } catch (error) {
-      logger.error(`Error retrieving secrets:`, { error })
+      logger.error(`Error retrieving secrets:`, { error: error, secretKeys: secretKeys })
       return retrievedSecrets
     }
 

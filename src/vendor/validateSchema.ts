@@ -33,7 +33,7 @@ export async function validateSignalAgainstSchemas(
     if (validate(signalSet)) {
       return { valid: true, schema: filePath }
     } else {
-      logger.info(`errors when validating schema: ${filePath}`)
+      logger.info('errors when validating schema', { filePath: filePath })
     }
   }
   return { valid: false, message: 'unable to find matching schema' }

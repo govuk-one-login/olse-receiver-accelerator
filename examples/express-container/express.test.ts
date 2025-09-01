@@ -10,13 +10,13 @@ import * as signalRouting from '../../common/signalRouting/signalRouter'
 import { stopVerificationSignals } from './verification/startHealthCheck'
 import { config } from './config/globalConfig'
 import { ConfigurationKeys } from './config/ConfigurationKeys'
-import { logger } from '../../common/logging/logger'
+import { baseLogger } from '../../common/logging/logger'
 
 jest.mock('../../src/vendor/getPublicKey', () => ({
   getPublicKeyFromRemote: jest.fn()
 }))
 
-const loggerErrorSpy = jest.spyOn(logger, 'error').mockImplementation()
+const loggerErrorSpy = jest.spyOn(baseLogger, 'error').mockImplementation()
 
 const sampleVerificationEvent = {
   alg: 'PS256',

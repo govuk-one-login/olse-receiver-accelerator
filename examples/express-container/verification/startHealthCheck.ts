@@ -1,7 +1,7 @@
 import { sendVerificationSignal } from './sendVerification'
 import { ConfigurationKeys } from '../config/ConfigurationKeys'
 import { config } from '../config/globalConfig'
-import { logger } from '../../../common/logging/logger'
+import { baseLogger as logger } from '../../../common/logging/logger'
 
 let verificationTimer: NodeJS.Timeout | undefined
 export function startHealthCheck(): boolean {

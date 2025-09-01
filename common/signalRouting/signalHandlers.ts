@@ -34,7 +34,7 @@ export async function handleVerificationSignal(
     const statePayload = await verifyStateJwt(state)
 
     if (!statePayload) {
-      logger.error('Invalid state JWT: ', { statePayload })
+      logger.error('Invalid state JWT: ', { statePayload: statePayload })
       return { valid: false, errorMessage: 'invalid_state' }
     }
   }
