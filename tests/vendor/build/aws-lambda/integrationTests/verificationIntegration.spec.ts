@@ -32,6 +32,8 @@ describe('SET Verification Event Integration Tests', () => {
         })
 
         expect(response.ok).toBe(true)
+        console.log(response.status)
+        expect(response.status).toBe(202)
         const data = await response.json()
         expect(data).toBeDefined()
     })
