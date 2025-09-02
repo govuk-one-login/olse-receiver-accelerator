@@ -3,6 +3,7 @@ import {
   APIGatewayProxyResult,
   Context
 } from 'aws-lambda'
+import { lambdaLogger as logger } from '../../../../../common/logging/logger'
 
 const pause = (timeInMs: number) => {
   return new Promise((resolve) => setTimeout(resolve, timeInMs))
@@ -13,7 +14,7 @@ export const handler = async (
   _context: Context
 ): Promise<APIGatewayProxyResult> => {
   try {
-    console.log(event)
+    logger.info('Processing goodbye request', { event: event })
     // Process the request
     const response = {
       message: 'goodbye',
@@ -29,7 +30,9 @@ export const handler = async (
     }
   } catch (error) {
     // Handle any errors
-    console.error('Error processing request:', error)
+    logger.error('Error processing request:', {
+      error: error instanceof Error ? error.message : String(error)
+    })
     return {
       statusCode: 500,
       body: JSON.stringify({

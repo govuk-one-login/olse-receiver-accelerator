@@ -3,6 +3,7 @@ import { validateJWT } from '../../src/vendor/jwt/validateJWT'
 import * as fs from 'fs'
 import { config } from '../../examples/express-container/config/globalConfig'
 import { ConfigurationKeys } from '../../examples/express-container/config/ConfigurationKeys'
+import { baseLogger as logger } from '../logging/logger'
 
 export async function verifyStateJwt(
   stateJwt: string
@@ -25,7 +26,9 @@ export async function verifyStateJwt(
 
     return result.payload
   } catch (error) {
-    console.error('Failed to verify state JWT:', error)
+    logger.error('Failed to verify state JWT:', {
+      error: error instanceof Error ? error.message : String(error)
+    })
     return null
   }
 }

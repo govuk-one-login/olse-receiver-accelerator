@@ -2,6 +2,7 @@ import { config } from '../config/globalConfig'
 import { generateJWT } from '../../../src/vendor/auth/jwt'
 import { generateJWTPayload } from '../../../src/vendor/types'
 import { ConfigurationKeys } from '../config/ConfigurationKeys'
+import { baseLogger as logger } from '../../../common/logging/logger'
 
 export async function createVerificationJwt(
   relyingPartyUrl: string,
@@ -26,7 +27,8 @@ export async function createVerificationJwt(
 
     return await generateJWT(jwtPayload)
   } catch (error) {
-    console.error('Error creating verification JWT:', error)
+    console.log(logger)
+    logger.error('Error creating verification JWT:', { error: error })
     throw new Error('Failed to create verification JWT')
   }
 }
