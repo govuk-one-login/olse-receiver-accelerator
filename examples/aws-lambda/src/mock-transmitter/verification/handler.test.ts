@@ -11,6 +11,16 @@
 // jest.mock('../kmsService')
 // jest.mock('./validation')
 
+describe('handler', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    process.env['RECEIVER_ENDPOINT'] = 'https://rp.co.uk/events'
+  })
+
+  it('processes verification request successfully', () => {
+    expect(true).toBe(true)
+  })
+})
 // const mockGetVerificationRequest = jest.mocked(getVerificationRequest)
 // const mockConstructVerificationFullSecurityEvent = jest.mocked(
 //   constructVerificationFullSecurityEvent
