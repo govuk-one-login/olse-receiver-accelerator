@@ -37,6 +37,7 @@ export async function handleSignalRoutingByEventType(
   signalPayload: Record<string, unknown>
 ): Promise<validResponse | invalidResponse> {
   const events = signalPayload['events'] as Record<string, unknown> | undefined
+  console.log('events:', events)
 
   if (!events) {
     return {
@@ -44,6 +45,7 @@ export async function handleSignalRoutingByEventType(
     }
   }
   const eventType = Object.keys(events)[0]
+  console.log('eventType:', eventType)
   switch (eventType) {
     case 'https://schemas.openid.net/secevent/ssf/event-type/verification': {
       const handleResponse = await handleVerificationSignal(signalPayload)
