@@ -13,7 +13,10 @@ describe('SET Verification Event Integration Tests', () => {
         }
     })
     it('should complete full verification flow successfully', async () => {
-        const token = await getTokenFromCognito()
+        if (process.env['SECRET_ARN'] === undefined) {
+            throw new Error('SECRET_ARN environment variable is not set')
+        }
+        const token = await getTokenFromCognito(process.env['SECRET_ARN'])
         console.log('Bearer ' + token)
 
         const verificationPayload = {

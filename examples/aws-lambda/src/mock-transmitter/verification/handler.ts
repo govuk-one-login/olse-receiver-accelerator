@@ -33,7 +33,9 @@ export const handler = async (
     const receiverEndpoint =
       process.env['RECEIVER_ENDPOINT1'] ??
       'https://uiaxaw17k2.execute-api.eu-west-2.amazonaws.com/dev/api/v1/Events'
-
+    if (!process.env['RECEIVER_SECRET_ARN']) {
+      throw new Error('RECEIVER_SECRET_ARN environment variable is not set')
+    }
     const access_token = await getTokenFromCognito(
       process.env['RECEIVER_SECRET_ARN']
     )

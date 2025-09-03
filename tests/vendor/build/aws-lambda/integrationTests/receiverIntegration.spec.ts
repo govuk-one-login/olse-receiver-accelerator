@@ -6,7 +6,7 @@ describe('handler V1', () => {
     if (apiUrl === '') {
       throw new Error('API_GATEWAY_URL environment variable is not set')
     }
-    const token = await getTokenFromCognito()
+    const token = await getTokenFromCognito(process.env['SECRET_ARN'] ?? '')
     console.log('Bearer ' + token)
     const response = await fetch(
       `${apiUrl}/api/v1/Events`,
@@ -26,7 +26,7 @@ describe('handler V1', () => {
     if (apiUrl === '') {
       throw new Error('API_GATEWAY_URL environment variable is not set')
     }
-    const token = await getTokenFromCognito()
+    const token = await getTokenFromCognito(process.env['SECRET_ARN'] ?? '')
     console.log('Bearer ' + token)
     const response = await fetch(
       `${apiUrl}/api/v1/Events`,

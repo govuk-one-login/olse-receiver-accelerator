@@ -12,9 +12,7 @@ interface Secrets {
 }
 
 const client = new SecretsManagerClient({ region: 'eu-west-2' })
-export const getSecrets = async (
-  secretArn: string = process.env['SECRET_ARN'] ?? ''
-): Promise<Secrets> => {
+export const getSecrets = async (secretArn: string): Promise<Secrets> => {
   const command = new GetSecretValueCommand({
     SecretId: secretArn
   })
