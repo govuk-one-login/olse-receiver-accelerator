@@ -493,6 +493,10 @@ Resources:
                 Action:
                   - secretsmanager:GetSecretValue
                 Resource: !Ref SSrSecret
+              - Effect: Allow
+                Action:
+                  - kms:Decrypt
+                Resource: '{{resolve:ssm:SecretsKmsKeyArn}}'
 
   MockVerfTxEventFunction:
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
