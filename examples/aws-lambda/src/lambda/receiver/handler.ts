@@ -37,6 +37,14 @@ export const handler = async (
       }
     }
 
+    console.log('Received JWT:', jwt)
+    console.log('Fetching JWKS from URL:', jwksUrl)
+
+    const jwksResponse = await fetch(jwksUrl)
+    const jwks = await jwksResponse.json()
+    console.log('Fetched JWKS:', jwks)
+    console.log('FULL jwksResponse:', jwksResponse)
+
     const publicKey = getPublicKeyFromRemote(jwksUrl)
     console.log('Fetched public key from JWKS URL')
 
