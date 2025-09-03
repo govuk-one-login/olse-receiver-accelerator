@@ -26,6 +26,7 @@ export const handler = async (
     )
     console.log('Constructed verification SET:', verificationSET)
 
+    console.log('Environment variables', JSON.stringify(process.env))
     const signedJWT = await signedJWTWithKMS(verificationSET)
     console.log('Signed JWT:', signedJWT)
 
