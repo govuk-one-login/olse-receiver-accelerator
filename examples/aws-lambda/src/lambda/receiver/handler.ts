@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { getPublicKeyFromRemote } from '../../../../../src/vendor/getPublicKey'
 import { validateJWTWithRemoteKey } from '../../../../../src/vendor/jwt/validateJWT'
-import { validateSignalAgainstSchemas } from '../../../../../src/vendor/validateSchema'
+import { validateSignalAgainstEmbeddedSchemas } from '../../../../../src/vendor/validateSchema'
 import { handleSignalRouting } from '../../../../../common/signalRouting/signalRouter'
 import { httpErrorResponseMessages } from '../../../../../common/constants'
 import { decodeProtectedHeader } from 'jose'
@@ -70,7 +70,7 @@ export const handler = async (
     }
 
     const jwtPayload = verifiedJwtBody.payload
-
+    console.log('JWT Payload:', jwtPayload)
     if (typeof jwtPayload === 'undefined') {
       return {
         statusCode: 400,
@@ -83,8 +83,11 @@ export const handler = async (
       }
     }
 
+    // const schemaValidationResult =
+    //   await validateSignalAgainstSchemas(jwtPayload)
+
     const schemaValidationResult =
-      await validateSignalAgainstSchemas(jwtPayload)
+      await validateSignalAgainstEmbeddedSchemas(jwtPayload)
 
     if (!schemaValidationResult.valid) {
       return {
