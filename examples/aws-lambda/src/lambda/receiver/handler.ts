@@ -88,7 +88,7 @@ export const handler = async (
 
     const schemaValidationResult =
       await validateSignalAgainstEmbeddedSchemas(jwtPayload)
-
+    console.log('Schema validation result:', schemaValidationResult)
     if (!schemaValidationResult.valid) {
       return {
         statusCode: 400,
