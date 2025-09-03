@@ -9,6 +9,7 @@ export const jwkArray: JsonWebKey[] = []
 const SIGNING_KEY_ENV_VAR_NAMES = ['KMS_KEY_ID']
 export const handler = async (): Promise<APIGatewayProxyResult> => {
   try {
+    jwkArray.length = 0
     const promiseArray = SIGNING_KEY_ENV_VAR_NAMES.map(async (envVar) => {
       const envValue = getEnv(envVar)
       const publicKeyData = await getKmsPublicKey(envValue)
