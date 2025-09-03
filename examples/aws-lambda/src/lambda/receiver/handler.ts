@@ -4,6 +4,7 @@ import { validateJWTWithRemoteKey } from '../../../../../src/vendor/jwt/validate
 import { validateSignalAgainstSchemas } from '../../../../../src/vendor/validateSchema'
 import { handleSignalRouting } from '../../../../../common/signalRouting/signalRouter'
 import { httpErrorResponseMessages } from '../../../../../common/constants'
+import { decodeProtectedHeader } from 'jose'
 
 export const handler = async (
   event: APIGatewayProxyEvent
@@ -36,8 +37,13 @@ export const handler = async (
         })
       }
     }
+    const header = decodeProtectedHeader(jwt)
+    console.log('JWT Header:', header)
+    console.log('JWT kid:', header.kid)
+    console.log('JWT alg:', header.alg)
 
     console.log('Received JWT:', jwt)
+    console.log('Fetching JWKS from URL:', jwksUrl)
     console.log('Fetching JWKS from URL:', jwksUrl)
 
     const jwksResponse = await fetch(jwksUrl)
