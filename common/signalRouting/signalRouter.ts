@@ -32,3 +32,34 @@ export async function handleSignalRouting(
       }
   }
 }
+
+export async function handleSignalRoutingByEventType(
+  signalPayload: Record<string, unknown>
+): Promise<validResponse | invalidResponse> {
+  const events = signalPayload['events'] as Record<string, unknown> | undefined
+
+  if (!events) {
+    return {
+      valid: false
+    }
+  }
+  const eventType = Object.keys(events)[0]
+  switch (eventType) {
+    case 'https://schemas.openid.net/secevent/ssf/event-type/verification': {
+      const handleResponse = await handleVerificationSignal(signalPayload)
+      if (!handleResponse.valid) {
+        return {
+          valid: false
+        }
+      }
+      return {
+        valid: true,
+        schema: SignalSchema.VERIFICATION_SIGNAL
+      }
+    }
+    default:
+      return {
+        valid: false
+      }
+  }
+}

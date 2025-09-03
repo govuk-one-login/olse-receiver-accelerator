@@ -2,7 +2,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { getPublicKeyFromRemote } from '../../../../../src/vendor/getPublicKey'
 import { validateJWTWithRemoteKey } from '../../../../../src/vendor/jwt/validateJWT'
 import { validateSignalAgainstEmbeddedSchemas } from '../../../../../src/vendor/validateSchema'
-import { handleSignalRouting } from '../../../../../common/signalRouting/signalRouter'
+import { handleSignalRoutingByEventType } from '../../../../../common/signalRouting/signalRouter'
 import { httpErrorResponseMessages } from '../../../../../common/constants'
 import { decodeProtectedHeader } from 'jose'
 
@@ -97,10 +97,7 @@ export const handler = async (
       }
     }
 
-    const result = await handleSignalRouting(
-      jwtPayload,
-      schemaValidationResult.schema
-    )
+    const result = await handleSignalRoutingByEventType(jwtPayload)
 
     if (result.valid) {
       return {
