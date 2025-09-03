@@ -61,6 +61,7 @@ Conditions:
 
 Globals:
   Function:
+    #checkov:skip=CKV_AWS_117: VPC config
     CodeSigningConfigArn:
       !If [UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue]
     Architectures:
@@ -79,13 +80,13 @@ Globals:
               !Ref Environment,
               dynatraceSecretArn
             ]
-    VpcConfig:
-      SecurityGroupIds:
-        - Fn::ImportValue: !Sub ${VpcStackName}-AWSServicesEndpointSecurityGroupId
-      SubnetIds:
-        - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdA
-        - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdB
-        - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdC
+    # VpcConfig:
+    #   SecurityGroupIds:
+    #     - Fn::ImportValue: !Sub ${VpcStackName}-AWSServicesEndpointSecurityGroupId
+    #   SubnetIds:
+    #     - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdA
+    #     - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdB
+    #     - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdC
 
 Resources:
   #####################
@@ -231,6 +232,7 @@ Resources:
         - !Ref AWS::NoValue
 
   ReceiverFunction:
+    #checkov:skip=CKV_AWS_117: VPC config
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
     Type: AWS::Serverless::Function
     Properties:
@@ -304,6 +306,7 @@ Resources:
       SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SharedSignalsApi}/*/*/*'
 
   HealthCheckFunction:
+    #checkov:skip=CKV_AWS_117: VPC config
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
     Type: AWS::Serverless::Function
     Properties:
@@ -335,6 +338,7 @@ Resources:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
 
   GoodbyeFunction:
+    #checkov:skip=CKV_AWS_117: VPC config
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
     Type: AWS::Serverless::Function
     Properties:
@@ -366,6 +370,7 @@ Resources:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
 
   GetJwksFunction:
+    #checkov:skip=CKV_AWS_117: VPC config
     #checkov:skip=CKV_AWS_115:Defined in Globals
     Type: AWS::Serverless::Function
     Properties:
@@ -499,6 +504,7 @@ Resources:
                 Resource: '{{resolve:ssm:SecretsKmsKeyArn}}'
 
   MockVerfTxEventFunction:
+    #checkov:skip=CKV_AWS_117: VPC config
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
     Type: AWS::Serverless::Function
     Properties:
@@ -529,6 +535,7 @@ Resources:
 
   MockVerfTxJWKSEndpointFunction:
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
+    #checkov:skip=CKV_AWS_117:VPC configuration removed for internet access
     Type: AWS::Serverless::Function
     Properties:
       Description: Lambda that exposes JWKS endpoint providing public key for JWT verification
