@@ -245,6 +245,7 @@ Resources:
       Environment:
         Variables:
           SECRET_ARN: !Ref SSrSecret
+          JWKS_URL: !Sub 'https://${MockTxVerfApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/jwks.json'
       Events:
         ReceiverAPI:
           Type: Api
