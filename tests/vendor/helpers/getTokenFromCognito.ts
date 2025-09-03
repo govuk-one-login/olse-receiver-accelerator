@@ -1,7 +1,7 @@
 import { getSecrets } from './getSecrets'
 
-export const getTokenFromCognito = async () => {
-  const secrets = await getSecrets()
+export const getTokenFromCognito = async (secretArn?: string) => {
+  const secrets = await getSecrets(secretArn)
   const { userPoolClientId, userPoolClientSecret, domain } = secrets
   const accessTokenResponse = await fetch(
     `https://${domain}.auth.eu-west-2.amazoncognito.com/token`,

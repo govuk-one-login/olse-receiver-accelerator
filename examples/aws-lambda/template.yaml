@@ -489,6 +489,11 @@ Resources:
                 Resource:
                   - !GetAtt MockVerfTxEventFunctionLogGroup.Arn
                   - !GetAtt MockVerfTxJWKSEndpointFunctionLogGroup.Arn
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource: !Ref SSrSecret
+
   MockVerfTxEventFunction:
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
     Type: AWS::Serverless::Function
@@ -503,6 +508,7 @@ Resources:
         Variables:
           KMS_KEY_ID: !Ref MockTxKMSKey
           RECEIVER_ENDPOINT: !Ref ReceiverEndpoint
+          RECEIVER_SECRET_ARN: !Ref SSrSecret
           ISSUER: !Ref Issuer
           AUDIENCE: !Ref Audience
       Events:

@@ -8,7 +8,8 @@ import {
   NO_CONTENT_RESPONSE
 } from '../responses'
 import { isValidationError } from './validation'
-import { SETVerificationRequest, TokenResponse } from '../mockApiTxInterfaces'
+import { SETVerificationRequest } from '../mockApiTxInterfaces'
+import { getTokenFromCognito } from '../../../../../tests/vendor/helpers/getTokenFromCognito'
 
 export const handler = async (
   event: APIGatewayProxyEvent
@@ -31,22 +32,15 @@ export const handler = async (
     const receiverEndpoint =
       process.env['RECEIVER_ENDPOINT1'] ??
       'https://uiaxaw17k2.execute-api.eu-west-2.amazonaws.com/dev/api/v1/Events'
-    console.log('Sending verification SET to:', receiverEndpoint)
 
-    const receiverDomain = process.env['RECEIVER_DOMAIN'] ?? ''
-    const tokenEndpoint = `https://${receiverDomain}.auth/eu-west-2.amazoncognito.com/oauth2/token`
-    const tokenResponse = await fetch(tokenEndpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Accept: 'application/json'
-      },
+    const access_token = await getTokenFromCognito(
+      process.env['RECEIVER_SECRET_ARN']
+    )
 
-      body: 'grant_type=client_credentials&scope=signal/post'
-    })
-    console.log('Token response status:', tokenResponse.status)
+    console.log('Using receiver endpoint:', receiverEndpoint)
 
-    const { access_token } = (await tokenResponse.json()) as TokenResponse
+    console.log('sending to receiver endpoint', receiverEndpoint)
+
     /// I NEED TO ADD add auth header
 
     //If not check if the lambda is able to send back out to the net. Because the api gateway its hitting is within its own stack does it need an integration like receiver gateway and lambda so between api gateway and mock tx api tx etc
