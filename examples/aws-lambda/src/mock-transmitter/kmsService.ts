@@ -15,7 +15,7 @@ export async function signedJWTWithKMS(payload: SET): Promise<string> {
   const header = {
     alg: 'RS256',
     typ: 'secevent+jwt',
-    kid: getEnv('KMS_KEY_ID')
+    kid: getEnv('KMS_KEY_ID').split('/').pop()
   }
 
   const encodedHeader = Buffer.from(JSON.stringify(header)).toString(
