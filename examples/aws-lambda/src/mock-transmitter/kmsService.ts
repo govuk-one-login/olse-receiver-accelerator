@@ -37,7 +37,7 @@ export async function signedJWTWithKMS(payload: SET): Promise<string> {
     KeyId: kmsKeyId,
     Message: Buffer.from(signingInput),
     MessageType: 'RAW',
-    SigningAlgorithm: 'RSASSA_PSS_SHA_256'
+    SigningAlgorithm: 'RSASSA_PKCS1_V1_5_SHA_256'
   })
 
   const signResult = await kmsClient.send(signCommand)
