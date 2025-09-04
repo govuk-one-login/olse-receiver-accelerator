@@ -1,7 +1,7 @@
 import { getTokenFromCognito } from "../../../helpers/getTokenFromCognito"
 import 'dotenv/config'
 describe('SET Verification Event Integration Tests', () => {
-    const apiUrl = process.env['API_GATEWAY_URL'] ?? ''
+    const apiUrl = process.env['TRANSMITTER_API_GATEWAY_URL'] ?? ''
     const jwksUrl = process.env['JWKS_URL'] ?? ''
 
     beforeAll(() => {
@@ -16,6 +16,7 @@ describe('SET Verification Event Integration Tests', () => {
         if (process.env['MOCK_TX_SECRET_ARN'] === undefined) {
             throw new Error('MOCK_TX_SECRET_ARN environment variable is not set')
         }
+        console.log(process.env['MOCK_TX_SECRET_ARN'])
         const token = await getTokenFromCognito(process.env['MOCK_TX_SECRET_ARN'] ?? '')
         console.log('Bearer ' + token)
 
