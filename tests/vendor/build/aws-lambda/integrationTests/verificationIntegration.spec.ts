@@ -63,7 +63,7 @@ describe('SET Verification Event Integration Tests', () => {
     })
 
     it('should return valid jwks from public key endpoint', async () => {
-        const response = await fetch(`${apiUrl}/jwks`)
+        const response = await fetch(`${apiUrl}/jwks.json`)
         const jwks = await response.json()
         console.log(jwks)
 

@@ -13,10 +13,14 @@ export const handler = async (): Promise<APIGatewayProxyResult> => {
     const promiseArray = SIGNING_KEY_ENV_VAR_NAMES.map(async (envVar) => {
       const envValue = getEnv(envVar)
       const publicKeyData = await getKmsPublicKey(envValue)
+      console.log('got public key data from KMS', {
+        keyId: publicKeyData.keyId
+      })
       const jwk = createJwkFromRawPublicKey(
         publicKeyData.publicKey,
         publicKeyData.keyId
       )
+      console.log('created JWK from public key', { jwk })
       jwkArray.push(jwk)
     })
 
@@ -33,6 +37,7 @@ export const handler = async (): Promise<APIGatewayProxyResult> => {
     })
 
     if (failedCount === 0) {
+      console.log('returning jwks', { keys: jwkArray })
       return {
         statusCode: 200,
         body: JSON.stringify({ keys: jwkArray })
