@@ -33,7 +33,6 @@ describe('SET Verification Event Integration Tests', () => {
             },
             body: JSON.stringify(verificationPayload)
         })
-
         expect(response.ok).toBe(true)
         console.log(response.status)
         expect(response.status).toBe(204)

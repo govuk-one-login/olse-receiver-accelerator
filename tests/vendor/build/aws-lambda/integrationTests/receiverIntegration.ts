@@ -36,7 +36,7 @@ describe('handler V1', () => {
     }
     )
     expect(response.status).toStrictEqual(202)
-  })
+  }, 10000)
   it('handler returns 401 when no valid access token is provided', async () => {
     const apiUrl = process.env['API_GATEWAY_URL'] ?? ''
     if (apiUrl === '') {
