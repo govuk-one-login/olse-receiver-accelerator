@@ -35,9 +35,11 @@ export const getPrivateKeyFromSecretsManager = async (
 
 // generates for 1 hour
 export const generateJWT = async (
-  payload: generateJWTPayload
+  payload: generateJWTPayload,
+  privateKeySecretName?: string
 ): Promise<string> => {
-  const PRIVATE_KEY_SECRET = process.env['PRIVATE_KEY_SECRET'] ?? 'default'
+  const PRIVATE_KEY_SECRET =
+    privateKeySecretName ?? process.env['PRIVATE_KEY_SECRET'] ?? 'default'
   const privateKey = await getPrivateKeyFromSecretsManager(PRIVATE_KEY_SECRET)
 
   const basePayload = new SignJWT(payload.payload)

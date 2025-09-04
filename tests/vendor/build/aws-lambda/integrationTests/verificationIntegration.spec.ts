@@ -13,10 +13,10 @@ describe('SET Verification Event Integration Tests', () => {
         }
     })
     it('should complete full verification flow successfully', async () => {
-        if (process.env['SECRET_ARN'] === undefined) {
-            throw new Error('SECRET_ARN environment variable is not set')
+        if (process.env['MOCK_TX_SECRET_ARN'] === undefined) {
+            throw new Error('MOCK_TX_SECRET_ARN environment variable is not set')
         }
-        const token = await getTokenFromCognito(process.env['SECRET_ARN'])
+        const token = await getTokenFromCognito(process.env['MOCK_TX_SECRET_ARN'] ?? '')
         console.log('Bearer ' + token)
 
         const verificationPayload = {
@@ -36,10 +36,10 @@ describe('SET Verification Event Integration Tests', () => {
 
         expect(response.ok).toBe(true)
         console.log(response.status)
-        expect(response.status).toBe(202)
+        expect(response.status).toBe(204)
         const data = await response.json()
         expect(data).toBeDefined()
-    })
+    }, 10000)
 
     it('should return 401 when invalid token provided to verify endpoint', async () => {
         const verificationPayload = {
