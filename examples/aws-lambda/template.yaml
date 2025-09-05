@@ -33,15 +33,15 @@ Parameters:
     Default: none
   ReceiverEndpoint:
     Type: String
-    Default: https://rp.co.uk/verify
+    Default: https://5le9kn7k9l.execute-api.eu-west-2.amazonaws.com/dev/api/v1/Events
     Description: URL endpoint to send verification events to
   Issuer:
     Type: String
-    Default: https://mocktx.co.uk
+    Default: https://r1pke2j3he.execute-api.eu-west-2.amazonaws.com/dev/
     Description: 'Jwt issuer'
   Audience:
     Type: String
-    Default: https://rp.co.uk
+    Default: https://5le9kn7k9l.execute-api.eu-west-2.amazonaws.com/dev/
 
 Mappings:
   EnvironmentConfiguration:
