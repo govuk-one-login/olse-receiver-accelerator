@@ -630,7 +630,15 @@ Outputs:
     Value: !Sub 'https://${SharedSignalsApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Environment}'
     Export:
       Name: !Sub '${AWS::StackName}-SharedSignalsApiUrl'
-
+  ReceiverEventApiUrl:
+    Description: URL of the Receiver Event API endpoint
+    Value: !Sub 'https://${SharedSignalsApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/api/v1/Events'
+  ReceiverAudience:
+    Description: Audience to use in the Mock TX JWT when calling the Receiver Event API
+    Value: !Sub 'https://${SharedSignalsApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/'
+  MockTxIssuerUrl:
+    Description: Issuer to use in the Mock TX JWT when calling the Receiver Event API
+    Value: !Sub 'https://${MockTxVerfApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/'
   MockTxVerfApiGatewayUrl:
     Value: !Sub 'https://${MockTxVerfApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}'
   SetMockTxApiUserPoolId:
