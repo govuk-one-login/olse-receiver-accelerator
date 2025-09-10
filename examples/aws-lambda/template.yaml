@@ -287,6 +287,14 @@ Resources:
                 Action:
                   - secretsmanager:GetSecretValue
                 Resource: !Ref SSrSecret
+        - PolicyName: SSMParamAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AWS::StackName}/jwks-url'
         - PolicyName: CloudWatchLogsAccess
           PolicyDocument:
             Version: '2012-10-17'
@@ -563,6 +571,14 @@ Resources:
       KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
       LogGroupName: !Sub /aws/apigateway/jwks-api/${AWS::StackName}-endpoint-access-logs
       RetentionInDays: 30
+
+  JwksUrlParamter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub '/${AWS::StackName}/jwks-url'
+      Type: String
+      Value: !Sub 'https://${JwksApiGateway}.execute-api.${AWS::Region}.amazon.com/${Environment}/jwks.json'
+      Description: 'JWKS URL for JWT validation'
 
   MockVerfTxJWKSEndpointFunction:
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
