@@ -525,10 +525,10 @@ Resources:
       Environment:
         Variables:
           KMS_KEY_ID: !GetAtt MockTxKMSKey.Arn
-          RECEIVER_ENDPOINT: !Sub '{{resolve:ssm:/${AWS::StackName}/receiver-endpoint}}'
+          RECEIVER_ENDPOINT: !Ref ReceiverEndpoint
           RECEIVER_SECRET_ARN: !Ref SSrSecret
-          ISSUER: !Sub '{{resolve:ssm:/${AWS::StackName}/mock-tx-issuer}}'
-          AUDIENCE: !Sub '{{resolve:ssm:/${AWS::StackName}/receiver-audience}}'
+          ISSUER: !Ref Issuer
+          AUDIENCE: !Ref Audience
       Events:
         MockTxVerificationApi:
           Type: Api
