@@ -1,6 +1,6 @@
 // esbuild.config.js
 import esbuild from 'esbuild'
-import { readFileSync } from 'fs'
+import { existsSync, readFileSync } from 'fs'
 import { dirname, join } from 'path'
 import { yamlParse } from 'yaml-cfn'
 
@@ -30,6 +30,19 @@ async function main() {
   }
 }
 
+function copySchemas(outdir) {
+  const schemasSource = 'schemas'
+  const scehmasTarget = join(outdir, 'schemas')
+  if (existsSync(schemasSource)) {
+    if (!existsSync(outdir)) {
+      fs.mkdirSync(outdir, { recursive: true })
+      console.log('Copied schemas to', scehmasTarget)
+    }
+    fs.cpSync(schemasSource, scehmasTarget, { recursive: true })
+  } else {
+    console.warn('No schemas folder found to copy')
+  }
+}
 async function buildFor_AWS_LAMBDA_REFERENCE() {
   const baseLambdaPath = 'examples/aws-lambda'
   const { Resources } = yamlParse(
@@ -65,6 +78,8 @@ async function buildFor_AWS_LAMBDA_REFERENCE() {
     outdir: `dist/${baseLambdaPath}/src`
   }
   await esbuild.build(finalConfig)
+
+  copySchemas(outdir)
 }
 
 async function buildForContainer() {

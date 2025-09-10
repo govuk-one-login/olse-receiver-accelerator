@@ -3,12 +3,13 @@ import {
   GetSecretValueCommand
 } from '@aws-sdk/client-secrets-manager'
 
-interface Secrets {
+export interface Secrets {
   userPoolId: string
   userPoolClientId: string
   userPoolClientSecret: string
   userPoolArn: string
   domain: string
+  jwksUrl: string
 }
 
 const client = new SecretsManagerClient({ region: 'eu-west-2' })

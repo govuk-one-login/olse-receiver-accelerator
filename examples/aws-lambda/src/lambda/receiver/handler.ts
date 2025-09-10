@@ -5,6 +5,8 @@ import { validateSignalAgainstEmbeddedSchemas } from '../../../../../src/vendor/
 import { handleSignalRoutingByEventType } from '../../../../../common/signalRouting/signalRouter'
 import { httpErrorResponseMessages } from '../../../../../common/constants'
 import { decodeProtectedHeader } from 'jose'
+import { getSecret } from '../../../../../common/secretsManager/secretsManager'
+import { Secrets } from '../../../../../tests/vendor/helpers/getSecrets'
 
 export const handler = async (
   event: APIGatewayProxyEvent
@@ -24,19 +26,47 @@ export const handler = async (
       }
     }
 
-    const jwksUrl = process.env['JWKS_URL']
-    console.log('Using JWKS URL:', jwksUrl)
-    if (!jwksUrl) {
-      console.log('JWKS_URL environment variable is not set')
+    // const jwksUrl = process.env['JWKS_URL']
+    // console.log('Using JWKS URL:', jwksUrl)
+    // if (!jwksUrl) {
+    //   console.log('JWKS_URL environment variable is not set')
+    //   return {
+    //     statusCode: 500,
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({
+    //       err: 'internal_error',
+    //       description: 'JWKS_URL environment variable is required'
+    //     })
+    //   }
+    // }
+    const secretArn = process.env['RECEIVER_SECRET_ARN']
+    if (!secretArn) {
+      console.error('RECEIVER_SECRET_ARN environment variable is not set')
       return {
         statusCode: 500,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           err: 'internal_error',
-          description: 'JWKS_URL environment variable is required'
+          description: 'RECEIVER_SECRET_ARN environment variable is required'
         })
       }
     }
+
+    const secretString = await getSecret(secretArn)
+    if (!secretString) {
+      console.error('Failed to retrieve secrets from sm')
+      return {
+        statusCode: 500,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          err: 'internal_error',
+          description: 'Failed to retrieve config'
+        })
+      }
+    }
+
+    const secrets: Secrets = JSON.parse(secretString) as Secrets
+    const jwksUrl = secrets.jwksUrl
     const header = decodeProtectedHeader(jwt)
     console.log('JWT Header:', header)
     console.log('JWT kid:', header.kid)

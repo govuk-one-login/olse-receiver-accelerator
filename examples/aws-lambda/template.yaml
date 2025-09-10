@@ -116,7 +116,8 @@ Resources:
           "userPoolArn": "${SSrUserPool.Arn}",
           "userPoolClientId": "${SSrUserPoolClient}",
           "userPoolClientSecret": "${SSrUserPoolClient.ClientSecret}",
-          "domain": "${SSrUserPoolDomain}"
+          "domain": "${SSrUserPoolDomain}",
+          'https://${JwksApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/jwks.json'
         }
 
   SSrSignalResourceServer:
@@ -245,7 +246,6 @@ Resources:
       Environment:
         Variables:
           RECEIVER_SECRET_ARN: !Ref SSrSecret
-          JWKS_URL: !Sub 'https://${MockTxVerfApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/jwks.json'
       Events:
         ReceiverAPI:
           Type: Api
@@ -518,10 +518,10 @@ Resources:
       Environment:
         Variables:
           KMS_KEY_ID: !GetAtt MockTxKMSKey.Arn
-          RECEIVER_ENDPOINT: !Sub '${ReceiverEndpoint}/api/v1/Events'
+          RECEIVER_ENDPOINT: !Sub '{{resolve:ssm:/${AWS::StackName}/receiver-endpoint}}'
           RECEIVER_SECRET_ARN: !Ref SSrSecret
-          ISSUER: !Ref Issuer
-          AUDIENCE: !Ref Audience
+          ISSUER: !Sub '{{resolve:ssm:/${AWS::StackName}/mock-tx-issuer}}'
+          AUDIENCE: !Sub '{{resolve:ssm:/${AWS::StackName}/receiver-audience}}'
       Events:
         MockTxVerificationApi:
           Type: Api
@@ -533,6 +533,36 @@ Resources:
               Authorizer: CognitoAuthorizer
               AuthorizationScopes:
                 - 'set-tx-mock/post'
+
+  JwksApiGateway:
+    #checkov:skip=CKV_AWS_120
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub '${AWS::StackName}-jwks-api-endpoint'
+      StageName: !Ref Environment
+      TracingEnabled: true
+      AccessLogSetting:
+        DestinationArn: !GetAtt JwksApiAccessLogGroup.Arn
+        Format: >-
+          {
+          "requestId": "$context.requestId",
+          "ip": "$context.identity.sourceIp",
+          "requestTime": "$context.requestTime",
+          "httpMethod": "$context.httpMethod",
+          "path": "$context.path",
+          "routeKey": "$context.routeKey",
+          "status": "$context.status",
+          "protocol": "$context.protocol",
+          "responseLatency": "$context.responseLatency",
+          "responseLength": "$context.responseLength"
+          }
+
+  JwksApiAccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
+      LogGroupName: !Sub /aws/apigateway/jwks-api/${AWS::StackName}-endpoint-access-logs
+      RetentionInDays: 30
 
   MockVerfTxJWKSEndpointFunction:
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
@@ -552,7 +582,7 @@ Resources:
         MockTxJwksApi:
           Type: Api
           Properties:
-            RestApiId: !Ref MockTxVerfApiGateway
+            RestApiId: !Ref JwksApiGateway
             Path: /jwks.json
             Method: get
 
