@@ -26,6 +26,7 @@ export const handler = async (
 ): Promise<APIGatewayProxyResult> => {
   try {
     console.log(event)
+    console.log('Verification endpoint url', VERIFICATION_ENDPOINT_URL)
 
     // add a pause to prevent eslint from raising issues around the lack of an await function
     await pause(10)
