@@ -116,8 +116,7 @@ Resources:
           "userPoolArn": "${SSrUserPool.Arn}",
           "userPoolClientId": "${SSrUserPoolClient}",
           "userPoolClientSecret": "${SSrUserPoolClient.ClientSecret}",
-          "domain": "${SSrUserPoolDomain}",
-          'https://${JwksApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/jwks.json'
+          "domain": "${SSrUserPoolDomain}"
         }
 
   SSrSignalResourceServer:
