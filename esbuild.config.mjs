@@ -1,6 +1,6 @@
 // esbuild.config.js
 import esbuild from 'esbuild'
-import { existsSync, readFileSync } from 'fs'
+import { existsSync, readFileSync, cpSync, mkdirSync } from 'fs'
 import { dirname, join } from 'path'
 import { yamlParse } from 'yaml-cfn'
 
@@ -35,10 +35,10 @@ function copySchemas(outdir) {
   const scehmasTarget = join(outdir, 'schemas')
   if (existsSync(schemasSource)) {
     if (!existsSync(outdir)) {
-      fs.mkdirSync(outdir, { recursive: true })
+      mkdirSync(outdir, { recursive: true })
       console.log('Copied schemas to', scehmasTarget)
     }
-    fs.cpSync(schemasSource, scehmasTarget, { recursive: true })
+    cpSync(schemasSource, scehmasTarget, { recursive: true })
   } else {
     console.warn('No schemas folder found to copy')
   }
