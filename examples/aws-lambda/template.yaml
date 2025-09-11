@@ -533,6 +533,7 @@ Resources:
           RECEIVER_SECRET_ARN: !Ref SSrSecret
           ISSUER: !Ref Issuer
           AUDIENCE: !Ref Audience
+          AWS_STACK_NAME: !Ref AWS::StackName
       Events:
         MockTxVerificationApi:
           Type: Api

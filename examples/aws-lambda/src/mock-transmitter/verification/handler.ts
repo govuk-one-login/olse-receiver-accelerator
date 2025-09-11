@@ -10,6 +10,9 @@ import {
 import { isValidationError } from './validation'
 import { SETVerificationRequest } from '../mockApiTxInterfaces'
 import { getTokenFromCognito } from '../../../../../tests/vendor/helpers/getTokenFromCognito'
+import { getParameter } from '../../../../../common/ssm/ssm'
+import { ConfigurationKeys } from '../../../../express-container/config/ConfigurationKeys'
+import { getEnv } from '../utils'
 
 export const handler = async (
   event: APIGatewayProxyEvent
@@ -30,7 +33,10 @@ export const handler = async (
     const signedJWT = await signedJWTWithKMS(verificationSET)
     console.log('Signed JWT:', signedJWT)
 
-    const receiverEndpoint = process.env['RECEIVER_ENDPOINT'] ?? ''
+    const stackName = getEnv(ConfigurationKeys.AWS_STACK_NAME)
+    const receiverEndpoint = await getParameter(
+      `${stackName}/receiver-endpoint`
+    )
     if (!process.env['RECEIVER_SECRET_ARN']) {
       throw new Error('RECEIVER_SECRET_ARN environment variable is not set')
     }
