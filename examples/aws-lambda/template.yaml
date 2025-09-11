@@ -510,6 +510,10 @@ Resources:
                 Action:
                   - kms:Decrypt
                 Resource: '{{resolve:ssm:SecretsKmsKeyArn}}'
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AWS::StackName}/receiver-endpoint'
 
   MockVerfTxEventFunction:
     #checkov:skip=CKV_AWS_117: VPC config
@@ -578,6 +582,14 @@ Resources:
       Type: String
       Value: !Sub 'https://${JwksApiGateway}.execute-api.${AWS::Region}.amazon.com/${Environment}/jwks.json'
       Description: 'JWKS URL for JWT validation'
+
+  ReceiverEndpointParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub '/${AWS::StackName}/receiver-endpoint'
+      Type: String
+      Value: !Sub 'https://${SharedSignalsApi}.execute-api.${AWS::Region}.amazon.com/${Environment}/api/v1/Events'
+      Description: 'Receiver endpoint URL for verification events'
 
   MockVerfTxJWKSEndpointFunction:
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
