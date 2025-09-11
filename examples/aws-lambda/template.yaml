@@ -31,10 +31,6 @@ Parameters:
     Type: String
     Description: The name of the stack containing the VPC
     Default: none
-  ReceiverEndpoint:
-    Type: String
-    Default: https://5le9kn7k9l.execute-api.eu-west-2.amazonaws.com/dev/api/v1/Events
-    Description: URL endpoint to send verification events to
   Issuer:
     Type: String
     Default: https://r1pke2j3he.execute-api.eu-west-2.amazonaws.com/dev/
@@ -413,7 +409,7 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
-  #####Mock Verification Transmitter Endpoint Resources #######
+  #####Mock Verification Transmitter Endpoint Resources ######
   SetMockTxApiUserPool:
     Type: AWS::Cognito::UserPool
     Properties:
@@ -529,7 +525,6 @@ Resources:
       Environment:
         Variables:
           KMS_KEY_ID: !GetAtt MockTxKMSKey.Arn
-          RECEIVER_ENDPOINT: !Ref ReceiverEndpoint
           RECEIVER_SECRET_ARN: !Ref SSrSecret
           ISSUER: !Ref Issuer
           AUDIENCE: !Ref Audience
