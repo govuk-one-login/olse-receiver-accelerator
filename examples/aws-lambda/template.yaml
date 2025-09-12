@@ -509,6 +509,7 @@ Resources:
                 Resource: '{{resolve:ssm:SecretsKmsKeyArn}}'
               - Effect: Allow
                 Action:
+                  - ssm:GetParameters
                   - ssm:GetParameter
                 Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/*'
 
