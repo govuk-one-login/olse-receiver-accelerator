@@ -241,6 +241,7 @@ Resources:
       Environment:
         Variables:
           RECEIVER_SECRET_ARN: !Ref SSrSecret
+          AWS_STACK_NAME: !Ref AWS::StackName
       Events:
         ReceiverAPI:
           Type: Api

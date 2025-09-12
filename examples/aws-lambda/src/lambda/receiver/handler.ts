@@ -5,8 +5,9 @@ import { validateSignalAgainstEmbeddedSchemas } from '../../../../../src/vendor/
 import { handleSignalRoutingByEventType } from '../../../../../common/signalRouting/signalRouter'
 import { httpErrorResponseMessages } from '../../../../../common/constants'
 import { decodeProtectedHeader } from 'jose'
-import { getSecret } from '../../../../../common/secretsManager/secretsManager'
-import { Secrets } from '../../../../../tests/vendor/helpers/getSecrets'
+import { ConfigurationKeys } from '../../../../express-container/config/ConfigurationKeys'
+import { getParameter } from '../../../../../common/ssm/ssm'
+import { getEnv } from '../../mock-transmitter/utils'
 
 export const handler = async (
   event: APIGatewayProxyEvent
@@ -52,21 +53,9 @@ export const handler = async (
       }
     }
 
-    const secretString = await getSecret(secretArn)
-    if (!secretString) {
-      console.error('Failed to retrieve secrets from sm')
-      return {
-        statusCode: 500,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          err: 'internal_error',
-          description: 'Failed to retrieve config'
-        })
-      }
-    }
+    const stackName = getEnv(ConfigurationKeys.AWS_STACK_NAME)
+    const jwksUrl = await getParameter(`/${stackName}/jwks-url`)
 
-    const secrets: Secrets = JSON.parse(secretString) as Secrets
-    const jwksUrl = secrets.jwksUrl
     const header = decodeProtectedHeader(jwt)
     console.log('JWT Header:', header)
     console.log('JWT kid:', header.kid)
