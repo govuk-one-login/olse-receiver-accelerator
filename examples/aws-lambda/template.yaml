@@ -578,7 +578,7 @@ Resources:
     Properties:
       Name: !Sub '/${AWS::StackName}/jwks-url'
       Type: String
-      Value: !Sub 'https://${JwksApiGateway}.execute-api.${AWS::Region}.amazon.com/${Environment}/jwks.json'
+      Value: !Sub 'https://${JwksApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/jwks.json'
       Description: 'JWKS URL for JWT validation'
 
   ReceiverEndpointParameter:
@@ -586,7 +586,7 @@ Resources:
     Properties:
       Name: !Sub '/${AWS::StackName}/receiver-endpoint'
       Type: String
-      Value: !Sub 'https://${SharedSignalsApi}.execute-api.${AWS::Region}.amazon.com/${Environment}/api/v1/Events'
+      Value: !Sub 'https://${SharedSignalsApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/api/v1/Events'
       Description: 'Receiver endpoint URL for verification events'
 
   MockVerfTxJWKSEndpointFunction:
