@@ -301,6 +301,14 @@ Resources:
                   - logs:CreateLogStream
                   - logs:PutLogEvents
                 Resource: !GetAtt ReceiverFunctionLogGroup.Arn
+        - PolicyName: KmsDecrypt
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - kms:Decrypt
+                Resource: '{{resolve:ssm:SecretsKmsKeyArn}}'
 
   PermissionforAPItoCallReceiverFunction:
     Type: AWS::Lambda::Permission
