@@ -511,7 +511,7 @@ Resources:
                 Action:
                   - ssm:GetParameters
                   - ssm:GetParameter
-                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/*'
+                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AWS::StackName}/receiver-endpoint'
 
   MockVerfTxEventFunction:
     #checkov:skip=CKV_AWS_117: VPC config

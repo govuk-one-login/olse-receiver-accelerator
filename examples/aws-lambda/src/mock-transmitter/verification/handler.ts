@@ -35,7 +35,7 @@ export const handler = async (
 
     const stackName = getEnv(ConfigurationKeys.AWS_STACK_NAME)
     const receiverEndpoint = await getParameter(
-      `${stackName}/receiver-endpoint`
+      `/${stackName}/receiver-endpoint`
     )
     if (!process.env['RECEIVER_SECRET_ARN']) {
       throw new Error('RECEIVER_SECRET_ARN environment variable is not set')
