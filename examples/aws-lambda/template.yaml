@@ -338,6 +338,10 @@ Resources:
       FunctionName: !Sub ${AWS::StackName}-healthCheck
       Handler: handler.handler
       Role: !GetAtt HealthCheckFunctionRole.Arn
+      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
+      Environment:
+        Variables:
+          AWS_STACK_NAME: !Ref AWS::StackName
 
   HealthCheckFunctionLogGroup:
     Type: AWS::Logs::LogGroup
