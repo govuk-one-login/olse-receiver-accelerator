@@ -381,6 +381,14 @@ Resources:
                   - logs:CreateLogStream
                   - logs:PutLogEvents
                 Resource: !GetAtt HealthCheckFunctionLogGroup.Arn
+        - PolicyName: SSMParamAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AWS::StackName}/*'
 
   GoodbyeFunction:
     #checkov:skip=CKV_AWS_117: VPC config
