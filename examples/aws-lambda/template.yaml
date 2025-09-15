@@ -389,6 +389,18 @@ Resources:
                 Action:
                   - ssm:GetParameter
                 Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AWS::StackName}/*'
+        - PolicyName: SecretsManagerAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource: !Ref SSrSecret
+              - Effect: Allow
+                Action:
+                  - kms:Decrypt
+                Resource: '{{resolve:ssm:SecretsKmsKeyArn}}'
 
   GoodbyeFunction:
     #checkov:skip=CKV_AWS_117: VPC config
