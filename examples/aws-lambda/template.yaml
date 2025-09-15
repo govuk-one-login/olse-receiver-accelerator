@@ -330,6 +330,13 @@ Resources:
       Handler: handler.handler
       Role: !GetAtt HealthCheckFunctionRole.Arn
 
+  HealthCheckFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
+      LogGroupName: !Sub /aws/lambda/${AWS::StackName}--healthCheck
+      RetentionInDays: 30
+
   HealthCheckFunctionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -350,6 +357,17 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+      Policies:
+        - PolicyName: CloudWatchLogsAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt HealthCheckFunctionLogGroup.Arn
 
   GoodbyeFunction:
     #checkov:skip=CKV_AWS_117: VPC config
