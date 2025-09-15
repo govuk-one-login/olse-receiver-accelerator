@@ -344,7 +344,7 @@ Resources:
           AWS_STACK_NAME: !Ref AWS::StackName
           KMS_KEY_ID: !GetAtt MockTxKMSKey.Arn
           ISSUER: !Ref Issuer
-          Audience: !Ref Audience
+          AUDIENCE: !Ref Audience
 
   HealthCheckFunctionLogGroup:
     Type: AWS::Logs::LogGroup
