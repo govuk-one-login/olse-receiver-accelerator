@@ -345,6 +345,7 @@ Resources:
           KMS_KEY_ID: !GetAtt MockTxKMSKey.Arn
           ISSUER: !Ref Issuer
           AUDIENCE: !Ref Audience
+          MOCK_TX_SECRET_ARN: !Ref SetMockTxApiSecret
 
   HealthCheckFunctionLogGroup:
     Type: AWS::Logs::LogGroup
