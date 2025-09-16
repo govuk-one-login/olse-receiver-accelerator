@@ -402,6 +402,26 @@ Resources:
                   - kms:Sign
                   - kms:GetPublicKey
                 Resource: !GetAtt MockTxKMSKey.Arn
+        - PolicyName: SecretsManagerAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource: !Ref SetMockTxApiSecret
+              - Effect: Allow
+                Action:
+                  - kms:Decrypt
+                Resource: '{{resolve:ssm:SecretsKmsKeyArn}}'
+        - PolicyName: CognitoAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cognito-idp:InitiateAuth
+                Resource: !GetAtt SetMockTxApiUserPool.Arn
 
   GoodbyeFunction:
     #checkov:skip=CKV_AWS_117: VPC config
