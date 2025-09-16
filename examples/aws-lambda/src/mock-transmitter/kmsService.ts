@@ -6,8 +6,11 @@ import {
 import { SET } from './mockApiTxInterfaces'
 import { KmsPublicKeyData } from './mockApiTxInterfaces'
 import { getEnv } from './utils'
+import { VerificationRequestPayload } from '../lambda/healthCheck/handler'
 
-export async function signedJWTWithKMS(payload: SET): Promise<string> {
+export type JWTPayload = SET | VerificationRequestPayload
+
+export async function signedJWTWithKMS(payload: JWTPayload): Promise<string> {
   const kmsClient = new KMSClient({
     region: process.env['AWS_REGION'] ?? 'eu-west-2'
   })
