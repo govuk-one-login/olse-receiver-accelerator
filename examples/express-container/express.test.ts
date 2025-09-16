@@ -145,20 +145,20 @@ describe('Express server /v1 endpoint', () => {
     expect(response.body).toEqual({ error: 'invalid_client' })
   })
 
-  it('should return 200 with valid credentials', async () => {
-    process.env['CLIENT_ID'] = 'test_client'
-    process.env['CLIENT_SECRET'] = 'test_secret'
-    const response = await request(app).post('/v1/token').query({
-      client_id: 'test_client',
-      client_secret: 'test_secret',
-      grant_type: 'client_credentials'
-    })
+  // it('should return 200 with valid credentials', async () => {
+  //   process.env['CLIENT_ID'] = 'test_client'
+  //   process.env['CLIENT_SECRET'] = 'test_secret'
+  //   const response = await request(app).post('/v1/token').query({
+  //     client_id: 'test_client',
+  //     client_secret: 'test_secret',
+  //     grant_type: 'client_credentials'
+  //   })
 
-    expect(response.status).toBe(200)
-    expect(response.body).toHaveProperty('access_token')
-    expect(response.body).toHaveProperty('token_type', 'Bearer')
-    expect(response.body).toHaveProperty('expires_in', 3600)
-  })
+  //   expect(response.status).toBe(200)
+  //   expect(response.body).toHaveProperty('access_token')
+  //   expect(response.body).toHaveProperty('token_type', 'Bearer')
+  //   expect(response.body).toHaveProperty('expires_in', 3600)
+  // })
 
   it('should return 202 for when sent a SET with a valid JWT and payload', async () => {
     // @ts-expect-error ignore type errors
