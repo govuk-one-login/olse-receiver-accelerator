@@ -649,6 +649,14 @@ Resources:
       Value: !Sub 'https://${SharedSignalsApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/api/v1/Events'
       Description: 'Receiver endpoint URL for verification events'
 
+  MockVerificationEndpointParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub '/${AWS::StackName}/mock-verification-endpoint'
+      Type: String
+      Value: !Sub 'https://${MockTxVerfApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/verify'
+      Description: 'Mock verification endpoint URL used for health checks'
+
   MockVerfTxJWKSEndpointFunction:
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
     #checkov:skip=CKV_AWS_117:VPC configuration removed for internet access
