@@ -6,7 +6,7 @@ import {
 import { SET } from './mockApiTxInterfaces'
 import { KmsPublicKeyData } from './mockApiTxInterfaces'
 import { getEnv } from './utils'
-import { VerificationRequestPayload } from '../lambda/healthCheck/handler'
+import { VerificationRequestPayload } from '../../../../src/vendor/types'
 
 export type JWTPayload = SET | VerificationRequestPayload
 
