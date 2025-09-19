@@ -27,9 +27,7 @@ export const handler = async (
       Date.now(),
       verificationRequest
     )
-    console.log('Constructed verification SET:', verificationSET)
 
-    console.log('Environment variables', JSON.stringify(process.env))
     const signedJWT = await signedJWTWithKMS(verificationSET)
     console.log('Signed JWT:', signedJWT)
 
@@ -43,10 +41,6 @@ export const handler = async (
     const access_token = await getTokenFromCognito(
       process.env['RECEIVER_SECRET_ARN']
     )
-
-    console.log('Using receiver endpoint:', receiverEndpoint)
-
-    console.log('sending to receiver endpoint', receiverEndpoint)
 
     /// I NEED TO ADD add auth header
 

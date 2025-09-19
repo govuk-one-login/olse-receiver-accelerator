@@ -1,55 +1,62 @@
-// import { handler } from './handler'
-// import { sendVerificationSignal } from '../../../../express-container/verification/sendVerification'
-// import { createDefaultApiRequest } from '../../../../awsPayloads/defaultApiRequest'
-// import { mockLambdaContext } from '../../../../awsPayloads/mockLambdaContext'
+import { getParameter } from '../../../../../common/ssm/ssm'
+import { getTokenFromCognito } from '../../../../../tests/vendor/helpers/getTokenFromCognito'
+import { createDefaultApiRequest } from '../../../../awsPayloads/defaultApiRequest'
+import { mockLambdaContext } from '../../../../awsPayloads/mockLambdaContext'
+import { signedJWTWithKMS } from '../../mock-transmitter/kmsService'
+import { getEnv } from '../../mock-transmitter/utils'
+import { handler } from './handler'
 
-// jest.mock('../../../../express-container/config/globalConfig', () => ({
-//   config: {
-//     getOrDefault: jest.fn().mockImplementation((key, defaultValue) => {
-//       if (key === 'VERIFICATION_ENDPOINT_URL') {
-//         return 'https://rp.co.uk/verify'
-//       } else if (key === 'STREAM_ID') {
-//         return 'default-stream-id'
-//       }
-//       return defaultValue as string
-//     })
-//   }
-// }))
-// jest.mock(
-//   '../../../../express-container/verification/sendVerification',
-//   () => ({
-//     sendVerificationSignal: jest.fn()
-//   })
-// )
+jest.mock('../../../../../common/ssm/ssm')
+jest.mock('../../../../../tests/vendor/helpers/getTokenFromCognito')
+jest.mock('../../mock-transmitter/kmsService')
 
-// const mockSendVerificationSignal =
-//   sendVerificationSignal as jest.MockedFunction<typeof sendVerificationSignal>
+const mockGetParameter = jest.mocked(getParameter)
+const mockGetEnv = jest.mocked(getEnv)
+const mockGetTokenFromCognito = jest.mocked(getTokenFromCognito)
+const mockSignedJWTWithKMS = jest.mocked(signedJWTWithKMS)
+process.env['AWS_REGION'] = 'eu-west-2'
 
-// process.env['AWS_REGION'] = 'eu-west-2'
-// describe('handler', () => {
-//   it('returns 200 and response body when sendVerificationSignal resolves', async () => {
-//     const fakeResponse = true
-//     mockSendVerificationSignal.mockResolvedValue(fakeResponse)
-//     const result = await handler(createDefaultApiRequest(), mockLambdaContext)
-//     expect(result.statusCode).toBe(200)
-//     expect(result.body).toBe(JSON.stringify(fakeResponse))
-//     expect(mockSendVerificationSignal).toHaveBeenCalledWith(
-//       'https://rp.co.uk/verify',
-//       'default-stream-id'
-//     )
-//   })
-
-//   it('returns 500 if the config entry is missing', async () => {
-//     const fakeResponse = { error: 'Internal server error' }
-//     mockSendVerificationSignal.mockRejectedValue(fakeResponse)
-//     const result = await handler(createDefaultApiRequest(), mockLambdaContext)
-//     expect(result.statusCode).toBe(500)
-//     expect(result.body).toBe(JSON.stringify({ error: 'Internal server error' }))
-//   })
-// })
+global.fetch = jest.fn()
+const mockFetch = jest.mocked(fetch)
 
 describe('handler', () => {
-  it('true', () => {
-    expect(true).toEqual(true)
+  beforeEach(() => {
+    jest.resetAllMocks()
+    mockGetEnv.mockImplementation((key: string) => {
+      if (key === 'AWS_STACK_NAME') return 'test-stack'
+      if (key === 'MOCK_TX_SECRET_ARN') return 'mock-secret-arn'
+      if (key === 'AWS_REGION') return 'eu-west-2'
+      throw new Error(`Environment variable ${key} not set`)
+    })
+    mockGetParameter.mockResolvedValue('test-mock-verification-url')
+    mockGetTokenFromCognito.mockResolvedValue('mock-token')
+    mockSignedJWTWithKMS.mockResolvedValue('mock-jwt')
+  })
+
+  it('returns 200 when health check succeeds', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 204
+    } as Response)
+
+    const result = await handler(createDefaultApiRequest(), mockLambdaContext)
+
+    expect(result.statusCode).toBe(200)
+    expect(JSON.parse(result.body)).toEqual({
+      success: true,
+      status: 204,
+      message: 'Health check passed'
+    })
+  })
+
+  it('returns 500 if health check fails', async () => {
+    mockFetch.mockResolvedValue({
+      ok: false,
+      status: 400
+    } as Response)
+
+    const result = await handler(createDefaultApiRequest(), mockLambdaContext)
+
+    expect(result.statusCode).toBe(500)
   })
 })

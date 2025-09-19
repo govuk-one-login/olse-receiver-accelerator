@@ -31,13 +31,6 @@ Parameters:
     Type: String
     Description: The name of the stack containing the VPC
     Default: none
-  Issuer:
-    Type: String
-    Default: https://r1pke2j3he.execute-api.eu-west-2.amazonaws.com/dev/
-    Description: 'Jwt issuer'
-  Audience:
-    Type: String
-    Default: https://5le9kn7k9l.execute-api.eu-west-2.amazonaws.com/dev/
 
 Mappings:
   EnvironmentConfiguration:
@@ -343,8 +336,6 @@ Resources:
         Variables:
           AWS_STACK_NAME: !Ref AWS::StackName
           KMS_KEY_ID: !GetAtt MockTxKMSKey.Arn
-          ISSUER: !Ref Issuer
-          AUDIENCE: !Ref Audience
           MOCK_TX_SECRET_ARN: !Ref SetMockTxApiSecret
 
   HealthCheckFunctionLogGroup:
@@ -609,8 +600,6 @@ Resources:
         Variables:
           KMS_KEY_ID: !GetAtt MockTxKMSKey.Arn
           RECEIVER_SECRET_ARN: !Ref SSrSecret
-          ISSUER: !Ref Issuer
-          AUDIENCE: !Ref Audience
           AWS_STACK_NAME: !Ref AWS::StackName
       Events:
         MockTxVerificationApi:
