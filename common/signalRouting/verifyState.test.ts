@@ -20,7 +20,7 @@ describe('verifyStateJwt', () => {
     process.env[ConfigurationKeys.ISSUER] = 'test-issuer'
     jest
       .spyOn(fs, 'readFileSync')
-      .mockReturnValue('{"someKey":"someKeyValue"}' as unknown as Buffer)
+      .mockImplementation(() => '{"someKey":"someKeyValue"}')
     mockGetPublicKeyFromJWK.mockResolvedValue({} as CryptoKey)
     await config.initialise()
   })
