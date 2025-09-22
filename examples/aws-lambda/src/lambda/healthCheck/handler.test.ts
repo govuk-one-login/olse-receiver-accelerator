@@ -22,7 +22,7 @@ const mockFetch = jest.mocked(fetch)
 describe('handler', () => {
   beforeEach(() => {
     jest.resetAllMocks()
-    mockGetEnv.mockImplementation((key: string) => {
+    mockGetEnv.mockImplementation((key) => {
       if (key === 'AWS_STACK_NAME') return 'test-stack'
       if (key === 'MOCK_TX_SECRET_ARN') return 'mock-secret-arn'
       if (key === 'AWS_REGION') return 'eu-west-2'
