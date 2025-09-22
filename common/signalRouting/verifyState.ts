@@ -1,4 +1,4 @@
-import { getPublicKeyFromJWK } from '../../src/vendor/getPublicKey'
+import { getPublicKeyFromJWK } from '../../src/vendor/publicKey/getPublicKey'
 import { validateJWT } from '../../src/vendor/jwt/validateJWT'
 import * as fs from 'fs'
 import { config } from '../../examples/express-container/config/globalConfig'

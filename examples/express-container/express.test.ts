@@ -4,7 +4,7 @@ import { when } from 'jest-when'
 import * as jose from 'jose'
 import request from 'supertest'
 import { generateJWT } from '../../src/vendor/auth/jwt'
-import { getPublicKeyFromRemote } from '../../src/vendor/getPublicKey'
+import { getPublicKeyFromRemote } from '../../src/vendor/publicKey/getPublicKey'
 import { app } from './express'
 import * as signalRouting from '../../common/signalRouting/signalRouter'
 import { stopVerificationSignals } from './verification/startHealthCheck'
@@ -12,7 +12,7 @@ import { ConfigurationKeys } from '../../common/config/configurationKeys'
 import { baseLogger } from '../../common/logging/logger'
 import { getSecret } from '../../common/secretsManager/secretsManager'
 
-jest.mock('../../src/vendor/getPublicKey', () => ({
+jest.mock('../../src/vendor/publicKey/getPublicKey', () => ({
   getPublicKeyFromRemote: jest.fn()
 }))
 
@@ -146,20 +146,20 @@ describe('Express server /v1 endpoint', () => {
     expect(response.body).toEqual({ error: 'invalid_client' })
   })
 
-  // it('should return 200 with valid credentials', async () => {
-  //   process.env['CLIENT_ID'] = 'test_client'
-  //   process.env['CLIENT_SECRET'] = 'test_secret'
-  //   const response = await request(app).post('/v1/token').query({
-  //     client_id: 'test_client',
-  //     client_secret: 'test_secret',
-  //     grant_type: 'client_credentials'
-  //   })
+  it('should return 200 with valid credentials', async () => {
+    process.env['CLIENT_ID'] = 'test_client'
+    process.env['CLIENT_SECRET'] = 'test_secret'
+    const response = await request(app).post('/v1/token').query({
+      client_id: 'test_client',
+      client_secret: 'test_secret',
+      grant_type: 'client_credentials'
+    })
 
-  //   expect(response.status).toBe(200)
-  //   expect(response.body).toHaveProperty('access_token')
-  //   expect(response.body).toHaveProperty('token_type', 'Bearer')
-  //   expect(response.body).toHaveProperty('expires_in', 3600)
-  // })
+    expect(response.status).toBe(200)
+    expect(response.body).toHaveProperty('access_token')
+    expect(response.body).toHaveProperty('token_type', 'Bearer')
+    expect(response.body).toHaveProperty('expires_in', 3600)
+  })
 
   it('should return 202 for when sent a SET with a valid JWT and payload', async () => {
     // @ts-expect-error ignore type errors
@@ -229,54 +229,54 @@ describe('Express server /v1 endpoint', () => {
     )
   })
 
-  // it('should return 400 and invalid signal for when sent a SET with an invalid SET payload', async () => {
-  //   // @ts-expect-error ignore type errors
-  //   when(getPublicKeyFromRemote).mockReturnValue(key)
-  //   const jwt = await generateJWT({
-  //     alg: 'PS256',
-  //     audience: 'https://aud.example.com',
-  //     issuer: 'https://issuer.example.com',
-  //     jti: '123456',
-  //     useExpClaim: false,
-  //     payload: {
-  //       foo: {
-  //         format: 'opaque',
-  //         id: 'f67e39a0a4d34d56b3aa1bc4cff0069f'
-  //       },
-  //       events: {
-  //         'https://schemas.openid.net/secevent/ssf/event-type/verification': {
-  //           state: 'VGhpcyBpcyBhbiBleGFtcGxlIHN0YXRlIHZhbHVlLgo='
-  //         }
-  //       }
-  //     }
-  //   })
+  it('should return 400 and invalid signal for when sent a SET with an invalid SET payload', async () => {
+    // @ts-expect-error ignore type errors
+    when(getPublicKeyFromRemote).mockReturnValue(key)
+    const jwt = await generateJWT({
+      alg: 'PS256',
+      audience: 'https://aud.example.com',
+      issuer: 'https://issuer.example.com',
+      jti: '123456',
+      useExpClaim: false,
+      payload: {
+        foo: {
+          format: 'opaque',
+          id: 'f67e39a0a4d34d56b3aa1bc4cff0069f'
+        },
+        events: {
+          'https://schemas.openid.net/secevent/ssf/event-type/verification': {
+            state: 'VGhpcyBpcyBhbiBleGFtcGxlIHN0YXRlIHZhbHVlLgo='
+          }
+        }
+      }
+    })
 
-  //   const tokenResponse = await request(app).post('/v1/token').query({
-  //     client_id: 'test_client',
-  //     client_secret: 'test_secret',
-  //     grant_type: 'client_credentials'
-  //   })
+    const tokenResponse = await request(app).post('/v1/token').query({
+      client_id: 'test_client',
+      client_secret: 'test_secret',
+      grant_type: 'client_credentials'
+    })
 
-  //   expect(tokenResponse.status).toBe(200)
+    expect(tokenResponse.status).toBe(200)
 
-  //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  //   const accessToken = tokenResponse.body
-  //   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  //   const token = accessToken.access_token as string
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const accessToken = tokenResponse.body
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const token = accessToken.access_token as string
 
-  //   const response = await request(app)
-  //     .post('/v1/Events')
-  //     .set('content-type', 'application/secevent+jwt')
-  //     .set('Authorization', `Bearer ${token}`)
-  //     .send(jwt)
+    const response = await request(app)
+      .post('/v1/Events')
+      .set('content-type', 'application/secevent+jwt')
+      .set('Authorization', `Bearer ${token}`)
+      .send(jwt)
 
-  //   expect(response.status).toBe(400)
-  //   expect(response.body).toStrictEqual({
-  //     err: 'invalid_request',
-  //     description:
-  //       "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
-  //   })
-  // })
+    expect(response.status).toBe(400)
+    expect(response.body).toStrictEqual({
+      err: 'invalid_request',
+      description:
+        "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
+    })
+  })
 
   it('should return 400 and invalid jwt for when sent a jwt that cannot be validated', async () => {
     const jwt =

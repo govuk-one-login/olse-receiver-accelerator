@@ -4,70 +4,120 @@ import { getVerificationRequest } from './requestParser'
 import { constructVerificationFullSecurityEvent } from './constructVerificationSecurityEvent'
 import { signedJWTWithKMS } from '../kmsService'
 import { isValidationError } from './validation'
-import { SET } from '../mockApiTxInterfaces'
+import { SET, SETVerificationRequest } from '../mockApiTxInterfaces'
+import { getTokenFromCognito } from '../../../../../tests/vendor/helpers/getTokenFromCognito'
+import { getParameter } from '../../../../../common/ssm/ssm'
+import { getEnv } from '../utils'
+import { ConfigurationKeys } from '../../../../express-container/config/ConfigurationKeys'
 
 jest.mock('./requestParser')
 jest.mock('./constructVerificationSecurityEvent')
 jest.mock('../kmsService')
 jest.mock('./validation')
+jest.mock('../../../../../tests/vendor/helpers/getTokenFromCognito')
+jest.mock('../../../../../common/ssm/ssm')
+jest.mock('../utils')
 
-const mockGetVerificationRequest = jest.mocked(getVerificationRequest)
-const mockConstructVerificationFullSecurityEvent = jest.mocked(
+const mockParseRequest = jest.mocked(getVerificationRequest)
+const mockBuildSecurityEvent = jest.mocked(
   constructVerificationFullSecurityEvent
 )
-const mockSignedJWTwithKms = jest.mocked(signedJWTWithKMS)
-const mockIsValidationError = jest.mocked(isValidationError)
+const mockSignWithKms = jest.mocked(signedJWTWithKMS)
+const mockCheckValidationError = jest.mocked(isValidationError)
+const mockGetCognitoToken = jest.mocked(getTokenFromCognito)
+const mockGetSsmParameter = jest.mocked(getParameter)
+const mockReadEnv = jest.mocked(getEnv)
 
-global.fetch = jest.fn()
-const mockFetch = jest.mocked(fetch)
+const fetchMock: jest.MockedFunction<typeof fetch> = jest.fn()
+global.fetch = fetchMock
 
-const mockEvent: Partial<APIGatewayProxyEvent> = {
-  requestContext: { requestId: 'test-request-id-001' }
-} as unknown as APIGatewayProxyEvent
-const mockResponse: Partial<Response> = {}
+const baseEvent: Partial<APIGatewayProxyEvent> = {
+  body: null,
+  headers: {},
+  multiValueHeaders: {},
+  httpMethod: 'POST',
+  isBase64Encoded: false,
+  path: '/transmitter',
+  pathParameters: null,
+  queryStringParameters: null,
+  multiValueQueryStringParameters: null,
+  stageVariables: null,
+  requestContext: {
+    requestId: 'req-123'
+  } as APIGatewayProxyEvent['requestContext'],
+  resource: ''
+}
 
-describe('handler', () => {
+describe('transmitter handler', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    process.env['RECEIVER_ENDPOINT'] = 'https://rp.co.uk/events'
+    process.env['RECEIVER_SECRET_ARN'] = 'arn'
+    mockReadEnv.mockImplementation((key: string) => {
+      if (key === ConfigurationKeys.AWS_STACK_NAME) return 'test-stack'
+      throw new Error(`Unexpected key: ${key}`)
+    })
+    mockGetSsmParameter.mockResolvedValue('https://receiver.com/events')
+    mockGetCognitoToken.mockResolvedValue('mock-token')
+    mockSignWithKms.mockResolvedValue('mock-jwt')
+    fetchMock.mockResolvedValue(new Response('', { status: 202 }))
   })
 
-  it('processes verification request successfully', async () => {
-    const mockRequest = { stream_id: 'test-user-id-001', state: undefined }
-    const mockSET: Partial<SET> = { iss: 'test-iss-001', aud: 'test-aud-001' }
-    const mockJwt = 'header.payload.sig'
+  afterEach(() => {
+    delete process.env['RECEIVER_SECRET_ARN']
+  })
 
-    mockGetVerificationRequest.mockReturnValue(mockRequest)
-    mockConstructVerificationFullSecurityEvent.mockReturnValue(mockSET as SET)
-    mockSignedJWTwithKms.mockResolvedValue(mockJwt)
-    mockFetch.mockResolvedValue(mockResponse as Response)
+  it('sends a verification event successfully', async () => {
+    const request: SETVerificationRequest = {
+      stream_id: 'user-123',
+      state: undefined
+    }
+    const securityEvent: SET = {
+      jti: 'jti-123',
+      iss: 'issuer',
+      aud: 'audience',
+      iat: Math.floor(Date.now() / 1000),
+      sub_id: { format: 'opaque', id: 'user-123' },
+      events: {
+        'https://schemas.openid.net/secevent/ssf/event-type/verification': {
+          state: 'abc'
+        }
+      }
+    }
+    mockParseRequest.mockReturnValue(request)
+    mockBuildSecurityEvent.mockReturnValue(securityEvent)
 
-    const result = await handler(mockEvent as APIGatewayProxyEvent)
+    const result = await handler(baseEvent as APIGatewayProxyEvent)
 
     expect(result.statusCode).toBe(204)
+    expect(mockGetSsmParameter).toHaveBeenCalledWith(
+      '/test-stack/receiver-endpoint'
+    )
+    expect(mockGetCognitoToken).toHaveBeenCalledWith('arn')
   })
 
-  it('returns 400 for validation errors', async () => {
-    const validationError = new Error('Invalid request')
-    mockGetVerificationRequest.mockImplementation(() => {
-      throw validationError
+  it('returns 400 if the request is invalid', async () => {
+    const error = new Error('Invalid')
+    mockParseRequest.mockImplementation(() => {
+      throw error
     })
-    mockIsValidationError.mockReturnValue(true)
+    mockCheckValidationError.mockReturnValue(true)
 
-    const result = await handler(mockEvent as APIGatewayProxyEvent)
+    const result = await handler(baseEvent as APIGatewayProxyEvent)
 
     expect(result.statusCode).toBe(400)
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 
-  it('returns 500 for internal errors', async () => {
-    const internalError = new Error('Error')
-    mockGetVerificationRequest.mockImplementation(() => {
-      throw internalError
+  it('returns 500 if an unexpected error occurs', async () => {
+    const error = new Error('Failure')
+    mockParseRequest.mockImplementation(() => {
+      throw error
     })
-    mockIsValidationError.mockReturnValue(false)
+    mockCheckValidationError.mockReturnValue(false)
 
-    const result = await handler(mockEvent as APIGatewayProxyEvent)
+    const result = await handler(baseEvent as APIGatewayProxyEvent)
 
     expect(result.statusCode).toBe(500)
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 })

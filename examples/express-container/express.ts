@@ -3,12 +3,12 @@ import express, { Request, Response } from 'express'
 import { readFileSync } from 'fs'
 import * as jose from 'jose'
 import { auth } from '../../src/vendor/auth/auth'
-import { getPublicKeyFromRemote } from '../../src/vendor/getPublicKey'
+import { getPublicKeyFromRemote } from '../../src/vendor/publicKey/getPublicKey'
 import {
   validateJWT,
   validateJWTWithRemoteKey
 } from '../../src/vendor/jwt/validateJWT'
-import { validateSignalAgainstSchemas } from '../../src/vendor/validateSchema'
+import { validateSignalAgainstSchemas } from '../../src/vendor/validateSchema/validateSchema'
 import { handleSignalRouting } from '../../common/signalRouting/signalRouter'
 import { httpErrorResponseMessages } from '../../common/constants'
 import { startHealthCheck } from './verification/startHealthCheck'

@@ -2,42 +2,43 @@ import { getParameter } from '../../../../../common/ssm/ssm'
 import { getTokenFromCognito } from '../../../../../tests/vendor/helpers/getTokenFromCognito'
 import { createDefaultApiRequest } from '../../../../awsPayloads/defaultApiRequest'
 import { mockLambdaContext } from '../../../../awsPayloads/mockLambdaContext'
-import { signedJWTWithKMS } from '../../mock-transmitter/kmsService'
 import { getEnv } from '../../mock-transmitter/utils'
 import { handler } from './handler'
 
 jest.mock('../../../../../common/ssm/ssm')
 jest.mock('../../../../../tests/vendor/helpers/getTokenFromCognito')
 jest.mock('../../mock-transmitter/kmsService')
+jest.mock('../../mock-transmitter/utils')
 
 const mockGetParameter = jest.mocked(getParameter)
 const mockGetEnv = jest.mocked(getEnv)
 const mockGetTokenFromCognito = jest.mocked(getTokenFromCognito)
-const mockSignedJWTWithKMS = jest.mocked(signedJWTWithKMS)
+
 process.env['AWS_REGION'] = 'eu-west-2'
 
 global.fetch = jest.fn()
-const mockFetch = jest.mocked(fetch)
+const mockFetch = global.fetch as jest.Mock
 
 describe('handler', () => {
   beforeEach(() => {
     jest.resetAllMocks()
-    mockGetEnv.mockImplementation((key) => {
+
+    mockGetEnv.mockImplementation((key: string) => {
       if (key === 'AWS_STACK_NAME') return 'test-stack'
       if (key === 'MOCK_TX_SECRET_ARN') return 'mock-secret-arn'
       if (key === 'AWS_REGION') return 'eu-west-2'
       throw new Error(`Environment variable ${key} not set`)
     })
+
     mockGetParameter.mockResolvedValue('test-mock-verification-url')
     mockGetTokenFromCognito.mockResolvedValue('mock-token')
-    mockSignedJWTWithKMS.mockResolvedValue('mock-jwt')
   })
 
   it('returns 200 when health check succeeds', async () => {
     mockFetch.mockResolvedValue({
       ok: true,
       status: 204
-    } as Response)
+    } as unknown as Response)
 
     const result = await handler(createDefaultApiRequest(), mockLambdaContext)
 
@@ -53,7 +54,7 @@ describe('handler', () => {
     mockFetch.mockResolvedValue({
       ok: false,
       status: 400
-    } as Response)
+    } as unknown as Response)
 
     const result = await handler(createDefaultApiRequest(), mockLambdaContext)
 

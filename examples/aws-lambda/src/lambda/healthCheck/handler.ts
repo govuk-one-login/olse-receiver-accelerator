@@ -10,28 +10,23 @@ import { getTokenFromCognito } from '../../../../../tests/vendor/helpers/getToke
 import { createVerificationRequestJWT } from '../../createVerificationRequestJwt/createVerificationRequestJwt'
 import { lambdaLogger as logger } from '../../../../../common/logging/logger'
 
-const pause = (timeInMs: number) => {
-  return new Promise((resolve) => setTimeout(resolve, timeInMs))
-}
-
 export const handler = async (
   event: APIGatewayProxyEvent,
   _context: Context
 ): Promise<APIGatewayProxyResult> => {
   try {
-    logger.info('Processing verification request', { event: event })
+    logger.info('Processing verification request', { event })
+
     const stackName = getEnv(ConfigurationKeys.AWS_STACK_NAME)
-    console.log(getParameter)
     const verificationEndpointUrl = await getParameter(
       `/${stackName}/mock-verification-endpoint`
     )
-    console.log('Verification endpoint url', verificationEndpointUrl)
+    logger.debug('Verification endpoint url resolved', {
+      verificationEndpointUrl
+    })
 
     const mockTxSecretArn = getEnv('MOCK_TX_SECRET_ARN')
     const access_token = await getTokenFromCognito(mockTxSecretArn)
-
-    // add a pause to prevent eslint from raising issues around the lack of an await function
-    await pause(10)
 
     const verificationRequestJWT = await createVerificationRequestJWT(
       'health-check-stream',
@@ -39,7 +34,7 @@ export const handler = async (
     )
 
     logger.debug('Sending verification signal')
-    const response = await fetch(verificationEndpointUrl, {
+    const response = (await fetch(verificationEndpointUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/secevent+jwt',
@@ -47,22 +42,41 @@ export const handler = async (
         Authorization: `Bearer ${access_token}`
       },
       body: verificationRequestJWT
+    }))
+    logger.info('Verification signal sent', {
+      status: response.status,
+      ok: response.ok
     })
-    logger.info('Verification sginal sent successfully', { response: response })
-    // Return successful response
+
+    if (!response.ok) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          success: false,
+          status: response.status,
+          message: 'Health check failed'
+        })
+      }
+    }
+
     return {
       statusCode: 200,
-      body: JSON.stringify(response)
+      body: JSON.stringify({
+        success: true,
+        status: response.status,
+        message: 'Health check passed'
+      })
     }
   } catch (error) {
-    // Handle any errors
     logger.error('Error processing request:', {
       error: error instanceof Error ? error.message : String(error)
     })
     return {
       statusCode: 500,
       body: JSON.stringify({
-        error: 'Internal server error'
+        success: false,
+        status: 500,
+        message: 'Health check failed'
       })
     }
   }
