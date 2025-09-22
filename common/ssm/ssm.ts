@@ -2,8 +2,6 @@ import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm'
 import { getEnv } from '../../examples/aws-lambda/src/mock-transmitter/utils'
 import { ConfigurationKeys } from '../config/configurationKeys'
 
-
-
 export const getParameter = async (parameterName: string): Promise<string> => {
   try {
     const ssmClient = new SSMClient({
