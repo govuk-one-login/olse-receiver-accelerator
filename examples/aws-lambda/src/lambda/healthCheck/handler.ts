@@ -34,7 +34,7 @@ export const handler = async (
     )
 
     logger.debug('Sending verification signal')
-    const response = (await fetch(verificationEndpointUrl, {
+    const response = await fetch(verificationEndpointUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/secevent+jwt',
@@ -42,7 +42,7 @@ export const handler = async (
         Authorization: `Bearer ${access_token}`
       },
       body: verificationRequestJWT
-    }))
+    })
     logger.info('Verification signal sent', {
       status: response.status,
       ok: response.ok
