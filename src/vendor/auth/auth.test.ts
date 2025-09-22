@@ -4,7 +4,9 @@ import { generateJWT } from './jwt'
 import { getAuthInput } from './getAuthInput'
 import { ConfigurationKeys } from '../config/ConfigurationKeys'
 import { config } from '../../../examples/express-container/config/globalConfig'
+import { baseLogger as logger } from '../../../common/logging/logger'
 
+const loggerWarnSpy = jest.spyOn(logger, 'warn').mockImplementation()
 jest.mock('./jwt')
 jest.mock('./getAuthInput')
 
@@ -15,11 +17,9 @@ const mockGetAuthInput = getAuthInput as jest.MockedFunction<
 
 describe('auth', () => {
   let mockReq: Partial<Request> // to fix
-  let consoleSpy: jest.SpyInstance
 
   beforeEach(async () => {
     mockReq = {}
-    consoleSpy = jest.spyOn(console, 'log').mockImplementation()
     process.env[ConfigurationKeys.CLIENT_ID] = 'test_client_id'
     process.env[ConfigurationKeys.CLIENT_SECRET] = 'test_client_secret'
     await config.initialise()
@@ -27,7 +27,6 @@ describe('auth', () => {
 
   afterEach(() => {
     jest.clearAllMocks()
-    consoleSpy.mockRestore()
   })
 
   test('handle invalid_request error and log correct message', async () => {
@@ -39,7 +38,7 @@ describe('auth', () => {
     mockGenerateJWT.mockRejectedValue(new Error('invalid_request'))
     const result = await auth(mockReq as Request)
 
-    expect(consoleSpy).toHaveBeenCalledWith(
+    expect(loggerWarnSpy).toHaveBeenCalledWith(
       'Invalid request: The request is missing required parameters or is malformed'
     )
     expect(result).toEqual({
@@ -59,7 +58,7 @@ describe('auth', () => {
 
     const result = await auth(mockReq as Request)
 
-    expect(consoleSpy).toHaveBeenCalledWith(
+    expect(loggerWarnSpy).toHaveBeenCalledWith(
       'Invalid grant: The provided authorisation grant is invalid or expired'
     )
     expect(result).toEqual({

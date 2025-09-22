@@ -8,6 +8,7 @@ import { decodeProtectedHeader } from 'jose'
 import { ConfigurationKeys } from '../../../../express-container/config/ConfigurationKeys'
 import { getParameter } from '../../../../../common/ssm/ssm'
 import { getEnv } from '../../mock-transmitter/utils'
+import { lambdaLogger as logger } from '../../../../../common/logging/logger'
 
 export const handler = async (
   event: APIGatewayProxyEvent
@@ -15,8 +16,10 @@ export const handler = async (
   try {
     console.log('Received event:', event)
     const jwt = event.body
+    logger.info('Processing signal receiver request')
     if (!jwt) {
       console.error('No JWT found in request body')
+      logger.warn('Request missing body')
       return {
         statusCode: 400,
         headers: { 'Content-Type': 'application/json' },
@@ -43,6 +46,9 @@ export const handler = async (
     const secretArn = process.env['RECEIVER_SECRET_ARN']
     if (!secretArn) {
       console.error('RECEIVER_SECRET_ARN environment variable is not set')
+      logger.error('Missing JWKS_URL enviornment variable', {
+        variable: 'JWKS_URL'
+      })
       return {
         statusCode: 500,
         headers: { 'Content-Type': 'application/json' },
@@ -76,11 +82,14 @@ export const handler = async (
     let verifiedJwtBody
     try {
       console.log('Validating JWT with remote key')
+      logger.debug('Validating JWT with remote key')
       verifiedJwtBody = await validateJWTWithRemoteKey(jwt, publicKey)
       console.log('JWT successfully validated')
+      logger.info('JWK validation successful')
     } catch (error) {
-      console.error('failed to validate JWT with remote key')
-      console.error(error)
+      logger.error('failed to validate JWT with remote key', {
+        error: error instanceof Error ? error.message : String(error)
+      })
       return {
         statusCode: 400,
         headers: { 'Content-Type': 'application/json' },
@@ -91,6 +100,7 @@ export const handler = async (
     const jwtPayload = verifiedJwtBody.payload
     console.log('JWT Payload:', jwtPayload)
     if (typeof jwtPayload === 'undefined') {
+      logger.warn('JWT payload is undefined')
       return {
         statusCode: 400,
         headers: { 'Content-Type': 'application/json' },
@@ -109,23 +119,26 @@ export const handler = async (
       await validateSignalAgainstEmbeddedSchemas(jwtPayload)
     console.log('Schema validation result:', schemaValidationResult)
     if (!schemaValidationResult.valid) {
+      logger.warn('Schema validationg failed', { Error })
       return {
         statusCode: 400,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(httpErrorResponseMessages.invalid_request)
       }
     }
+    logger.info('Schema validated successfully')
 
     const result = await handleSignalRoutingByEventType(jwtPayload)
 
     if (result.valid) {
+      logger.info('Signal routing processed successfully')
       return {
         statusCode: 202,
         headers: { 'Content-Type': 'application/json' },
         body: ''
       }
     } else {
-      console.error('failed to route signal')
+      logger.error('failed to route signal')
       return {
         statusCode: 400,
         headers: { 'Content-Type': 'application/json' },
@@ -133,7 +146,9 @@ export const handler = async (
       }
     }
   } catch (error) {
-    console.error('Unexpected error in receiver handler:', error)
+    logger.error('Unexpected error in receiver handler:', {
+      error: error instanceof Error ? error.message : String(error)
+    })
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },

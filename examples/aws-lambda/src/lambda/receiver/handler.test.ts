@@ -66,19 +66,19 @@
 
 //     const result = await handler(mockEvent)
 
-//     expect(result).toEqual({
-//       statusCode: 400,
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify({
-//         err: 'invalid_key',
-//         description:
-//           'One or more keys used to encrypt or sign the SET is invalid or otherwise unacceptable to the SET Recipient (expired, revoked, failed certificate validation, etc.).'
-//       })
-//     })
-//     expect(console.error).toHaveBeenCalledWith(
-//       'failed to validate JWT with remote key'
-//     )
+// expect(result).toEqual({
+//   statusCode: 400,
+//   headers: { 'Content-Type': 'application/json' },
+//   body: JSON.stringify({
+//     err: 'invalid_key',
+//     description:
+//       'One or more keys used to encrypt or sign the SET is invalid or otherwise unacceptable to the SET Recipient (expired, revoked, failed certificate validation, etc.).'
 //   })
+// })
+// expect(console.error).toHaveBeenCalledWith(
+//   'failed to validate JWT with remote key'
+// )
+// })
 
 //   it('returns 400 when JWT payload is undefined', async () => {
 //     when(getPublicKeyFromRemote).mockReturnValue(
@@ -149,16 +149,16 @@
 
 //     const result = await handler(mockEvent)
 
-//     expect(result).toEqual({
-//       statusCode: 400,
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify({
-//         err: 'invalid_request',
-//         description:
-//           "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
-//       })
-//     })
-//     expect(console.error).toHaveBeenCalledWith('failed to route signal')
+// expect(result).toEqual({
+//   statusCode: 400,
+//   headers: { 'Content-Type': 'application/json' },
+//   body: JSON.stringify({
+//     err: 'invalid_request',
+//     description:
+//       "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
+//   })
+// })
+// expect(console.error).toHaveBeenCalledWith('failed to route signal')
 //   })
 
 //   it('returns 202 when signal processing succeeds', async () => {
@@ -199,23 +199,17 @@
 
 //     const result = await handler(mockEvent)
 
-//     expect(result).toEqual({
-//       statusCode: 500,
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify({
-//         err: 'internal_error',
-//         description: 'An internal error occurred'
-//       })
-//     })
-//     expect(console.error).toHaveBeenCalledWith(
-//       'Unexpected error in receiver handler:',
-//       expect.any(Error)
-//     )
+// expect(result).toEqual({
+//   statusCode: 500,
+//   headers: { 'Content-Type': 'application/json' },
+//   body: JSON.stringify({
+//     err: 'internal_error',
+//     description: 'An internal error occurred'
 //   })
 // })
-
-describe('placeholder test', () => {
-  it('should pass', () => {
-    expect(true).toBe(true)
-  })
-})
+// expect(console.error).toHaveBeenCalledWith(
+//   'Unexpected error in receiver handler:',
+//   expect.any(Error)
+// )
+//   })
+// })

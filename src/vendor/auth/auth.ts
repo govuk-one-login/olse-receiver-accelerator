@@ -2,6 +2,7 @@ import { Request } from 'express'
 import { generateJWT } from './jwt'
 import { getAuthInput } from './getAuthInput'
 import { ConfigurationKeys } from '../config/ConfigurationKeys'
+import { baseLogger as logger } from '../../../common/logging/logger'
 
 interface ValidResponse {
   valid: true
@@ -20,8 +21,10 @@ interface InvalidResponse {
 
 type Result = ValidResponse | InvalidResponse
 export const auth = async (req: Request): Promise<Result> => {
+  logger.debug('Process authentication request')
   const { client_id, client_secret, grant_type } = getAuthInput(req)
   if (grant_type !== 'client_credentials') {
+    logger.warn('Invalid grant type')
     return { valid: false, error: 'invalid_grant', response_code: 400 }
   }
 
@@ -30,6 +33,7 @@ export const auth = async (req: Request): Promise<Result> => {
     client_secret === process.env[ConfigurationKeys.CLIENT_SECRET]
   ) {
     try {
+      logger.debug('Generating jwt token')
       const token = await generateJWT({
         alg: 'PS256',
         audience: 'https://transmitter.example.com',
@@ -38,6 +42,8 @@ export const auth = async (req: Request): Promise<Result> => {
         useExpClaim: true,
         payload: {}
       })
+
+      logger.info('Authentication successful')
       return {
         valid: true,
         data: { token_type: 'Bearer', access_token: token, expires_in: 3600 }
@@ -45,12 +51,12 @@ export const auth = async (req: Request): Promise<Result> => {
     } catch (error) {
       if (error instanceof Error) {
         if (error.message === 'invalid_request') {
-          console.log(
+          logger.warn(
             'Invalid request: The request is missing required parameters or is malformed'
           )
           return { valid: false, error: 'invalid_request', response_code: 400 }
         } else if (error.message === 'invalid_grant') {
-          console.log(
+          logger.warn(
             'Invalid grant: The provided authorisation grant is invalid or expired'
           )
           return { valid: false, error: 'invalid_grant', response_code: 400 }
@@ -59,7 +65,7 @@ export const auth = async (req: Request): Promise<Result> => {
       return { valid: false, error: 'invalid_request', response_code: 400 }
     }
   } else {
-    console.log('Supplied client id or secret did not match expected values')
+    logger.warn('Supplied client id or secret did not match expected values')
     return { valid: false, error: 'invalid_client', response_code: 401 }
   }
 }
