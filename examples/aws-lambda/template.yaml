@@ -247,10 +247,10 @@ Resources:
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: dist/examples/aws-lambda/src/lambda/receiver
+      CodeUri: dist/examples/aws-lambda/src
       Description: Lambda function that processes signal events
       FunctionName: !Sub ${AWS::StackName}-receiver
-      Handler: handler.handler
+      Handler: lambda/receiver/handler.handler
       Role: !GetAtt ReceiverFunctionRole.Arn
       Environment:
         Variables:
@@ -685,9 +685,9 @@ Resources:
     Properties:
       Description: Lambda that exposes JWKS endpoint providing public key for JWT verification
       FunctionName: !Sub '${AWS::StackName}-mock-tx-jwks'
-      Handler: lambda/receiver/handler.handler
+      Handler: handler.handler
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
-      CodeUri: dist/examples/aws-lambda/src/
+      CodeUri: dist/examples/aws-lambda/src/mock-transmitter/jwks/
       Role: !GetAtt MockVerfTxLambdaExecutionRole.Arn
       Environment:
         Variables:
