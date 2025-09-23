@@ -100,7 +100,15 @@ describe('receiver handler', () => {
       key: new Uint8Array()
     } as unknown as VerifyResult)
     const result = await handler(baseEvent as APIGatewayProxyEvent)
-    expect(result.statusCode).toBe(400)
+    expect(result).toEqual({
+      statusCode: 400,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        err: 'invalid_request',
+        description:
+          "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
+      })
+    })
     expect(warnSpy).toHaveBeenCalledWith('JWT payload is undefined')
   })
 
@@ -115,7 +123,15 @@ describe('receiver handler', () => {
       message: 'Invalid schema'
     })
     const result = await handler(baseEvent as APIGatewayProxyEvent)
-    expect(result.statusCode).toBe(400)
+    expect(result).toEqual({
+      statusCode: 400,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        err: 'invalid_request',
+        description:
+          "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
+      })
+    })
     expect(warnSpy).toHaveBeenCalledWith('Schema validationg failed', { Error })
   })
 
@@ -131,7 +147,15 @@ describe('receiver handler', () => {
     })
     mockHandleSignalRouting.mockResolvedValue({ valid: false })
     const result = await handler(baseEvent as APIGatewayProxyEvent)
-    expect(result.statusCode).toBe(400)
+    expect(result).toEqual({
+      statusCode: 400,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        err: 'invalid_request',
+        description:
+          "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
+      })
+    })
     expect(errorSpy).toHaveBeenCalledWith('failed to route signal')
   })
 
@@ -150,8 +174,11 @@ describe('receiver handler', () => {
       schema: 'test-schema'
     })
     const result = await handler(baseEvent as APIGatewayProxyEvent)
-    expect(result.statusCode).toBe(202)
-    expect(result.body).toBe('')
+    expect(result).toEqual({
+      statusCode: 202,
+      headers: { 'Content-Type': 'application/json' },
+      body: ''
+    })
     expect(mockHandleSignalRouting).toHaveBeenCalledWith(
       mockJwtPayload,
       'test-schema'
@@ -163,6 +190,13 @@ describe('receiver handler', () => {
       throw new Error('Unexpected error')
     })
     const result = await handler(baseEvent as APIGatewayProxyEvent)
-    expect(result.statusCode).toBe(500)
+    expect(result).toEqual({
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        err: 'internal_error',
+        description: 'An internal error occurred'
+      })
+    })
   })
 })

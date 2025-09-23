@@ -772,27 +772,21 @@ Outputs:
   VerificationEndpoint:
     Description: VERIFICATION_ENDPOINT
     Value: !Sub 'https://${MockTxVerfApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}'
-
   ReceiverEndpoint:
     Description: RECEIVER_ENDPOINT
     Value: !Sub 'https://${SharedSignalsApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/api/v1/Events'
-
   JwksEndpoint:
     Description: JWKS_ENDPOINT
     Value: !Sub 'https://${JwksApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/jwks.json'
-
   MockTxSecretArn:
     Description: MOCK_TX_SECRET_ARN
     Value: !Ref SetMockTxApiSecret
-
   ReceiverSecretArn:
     Description: RECEIVER_SECRET_ARN
     Value: !Ref SSrSecret
-
   AwsRegion:
     Description: AWS_REGION
     Value: !Ref AWS::Region
-
   KmsKeyId:
     Description: KMS_KEY_ID
     Value: !GetAtt MockTxKMSKey.Arn

@@ -76,8 +76,10 @@ v1Router.post(
 
       const jwksUrl = config.get(ConfigurationKeys.JWKS_URL)
       if (!jwksUrl) {
-        logger.error('Missing JWKS_URL configuration')
-        res.status(500).json({ error: 'JWKS_URL configuration is required' })
+        logger.error('Missing JWKS_URL environment variable')
+        res
+          .status(500)
+          .json({ error: 'JWKS_URL environment variable is required' })
         return
       }
 

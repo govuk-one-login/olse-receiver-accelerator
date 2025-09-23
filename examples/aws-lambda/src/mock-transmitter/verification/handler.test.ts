@@ -31,22 +31,9 @@ const mockReadEnv = jest.mocked(getEnv)
 const fetchMock: jest.MockedFunction<typeof fetch> = jest.fn()
 global.fetch = fetchMock
 
-const baseEvent: Partial<APIGatewayProxyEvent> = {
-  body: null,
-  headers: {},
-  multiValueHeaders: {},
-  httpMethod: 'POST',
-  isBase64Encoded: false,
-  path: '/transmitter',
-  pathParameters: null,
-  queryStringParameters: null,
-  multiValueQueryStringParameters: null,
-  stageVariables: null,
-  requestContext: {
-    requestId: 'req-123'
-  } as APIGatewayProxyEvent['requestContext'],
-  resource: ''
-}
+const mockEvent: Partial<APIGatewayProxyEvent> = {
+  requestContext: { requestId: 'test-request-id-001' }
+} as unknown as APIGatewayProxyEvent
 
 describe('transmitter handler', () => {
   beforeEach(() => {
@@ -86,7 +73,7 @@ describe('transmitter handler', () => {
     mockParseRequest.mockReturnValue(request)
     mockBuildSecurityEvent.mockReturnValue(securityEvent)
 
-    const result = await handler(baseEvent as APIGatewayProxyEvent)
+    const result = await handler(mockEvent as APIGatewayProxyEvent)
 
     expect(result.statusCode).toBe(204)
     expect(mockGetSsmParameter).toHaveBeenCalledWith(
@@ -95,27 +82,27 @@ describe('transmitter handler', () => {
     expect(mockGetCognitoToken).toHaveBeenCalledWith('arn')
   })
 
-  it('returns 400 if the request is invalid', async () => {
-    const error = new Error('Invalid')
+  it('returns 400 for validation errors', async () => {
+    const error = new Error('Invalid request')
     mockParseRequest.mockImplementation(() => {
       throw error
     })
     mockCheckValidationError.mockReturnValue(true)
 
-    const result = await handler(baseEvent as APIGatewayProxyEvent)
+    const result = await handler(mockEvent as APIGatewayProxyEvent)
 
     expect(result.statusCode).toBe(400)
     expect(fetchMock).not.toHaveBeenCalled()
   })
 
-  it('returns 500 if an unexpected error occurs', async () => {
+  it('returns 500 ifor internal errors', async () => {
     const error = new Error('Failure')
     mockParseRequest.mockImplementation(() => {
       throw error
     })
     mockCheckValidationError.mockReturnValue(false)
 
-    const result = await handler(baseEvent as APIGatewayProxyEvent)
+    const result = await handler(mockEvent as APIGatewayProxyEvent)
 
     expect(result.statusCode).toBe(500)
     expect(fetchMock).not.toHaveBeenCalled()

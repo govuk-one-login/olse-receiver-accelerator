@@ -12,7 +12,9 @@ const baseEsBuildConfig = {
   target: 'node20',
   format: 'esm',
   treeShaking: true,
-  loader: { '.ts': 'ts' }, // Handles .ts files
+  loader: {
+    '.ts': 'ts' // Handles .ts files
+  },
   logLevel: 'info'
 }
 
@@ -49,7 +51,7 @@ async function buildFor_AWS_LAMBDA_REFERENCE() {
   )
 
   const lambdas = Object.values(Resources).filter(
-    (r) => r && r.Type === 'AWS::Serverless::Function'
+    (resource) => resource.Type === 'AWS::Serverless::Function'
   )
 
   const entries = []
