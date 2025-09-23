@@ -114,8 +114,6 @@ Resources:
       KmsKeyId: '{{resolve:ssm:SecretsKmsKeyArn}}'
       SecretString: !Sub |
         {
-          "userPoolId": "${SSrUserPool}",
-          "userPoolArn": "${SSrUserPool.Arn}",
           "userPoolClientId": "${SSrUserPoolClient}",
           "userPoolClientSecret": "${SSrUserPoolClient.ClientSecret}",
           "domain": "${SSrUserPoolDomain}"
@@ -350,13 +348,6 @@ Resources:
           KMS_KEY_ID: !GetAtt MockTxKMSKey.Arn
           MOCK_TX_SECRET_ARN: !Ref SetMockTxApiSecret
 
-  HealthCheckFunctionLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
-      LogGroupName: !Sub /aws/lambda/${AWS::StackName}--healthCheck
-      RetentionInDays: 30
-
   HealthCheckFunctionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -378,16 +369,6 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
       Policies:
-        - PolicyName: CloudWatchLogsAccess
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: !GetAtt HealthCheckFunctionLogGroup.Arn
         - PolicyName: SSMParamAccess
           PolicyDocument:
             Version: '2012-10-17'
