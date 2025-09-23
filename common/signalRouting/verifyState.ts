@@ -14,9 +14,7 @@ export async function verifyStateJwt(
     const publicKeyString = readFileSync(publicKeyPath, { encoding: 'utf8' })
     const publicKeyJson = JSON.parse(publicKeyString) as Record<string, unknown>
 
-    const publicKey = await getPublicKeyFromJWK(
-      publicKeyJson
-    )
+    const publicKey = await getPublicKeyFromJWK(publicKeyJson)
     const result = await validateJWT(stateJwt, publicKey)
 
     return result.payload as Record<string, unknown>
