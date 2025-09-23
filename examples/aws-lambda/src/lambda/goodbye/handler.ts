@@ -15,7 +15,6 @@ export const handler = async (
 ): Promise<APIGatewayProxyResult> => {
   try {
     logger.info('Processing goodbye request', { event: event })
-    // Process the request
     const response = {
       message: 'goodbye',
       timestamp: Date.now()
@@ -23,13 +22,11 @@ export const handler = async (
 
     // add a pause to prevent eslint from raising issues around the lack of an await function
     await pause(10)
-    // Return successful response
     return {
       statusCode: 200,
       body: JSON.stringify(response)
     }
   } catch (error) {
-    // Handle any errors
     logger.error('Error processing request:', {
       error: error instanceof Error ? error.message : String(error)
     })

@@ -1,23 +1,22 @@
-import { sendVerificationSignal } from './sendVerification'
-import { ConfigurationKeys } from '../config/ConfigurationKeys'
-import { config } from '../config/globalConfig'
+import { ConfigurationKeys } from '../../../common/config/configurationKeys'
+import { config } from '../../../common/config/config'
 import { baseLogger as logger } from '../../../common/logging/logger'
+import { sendVerificationSignal } from '../../../src/vendor/jwtHelper/sendVerification'
 
 let verificationTimer: NodeJS.Timeout | undefined
+
 export function startHealthCheck(): boolean {
   if (verificationTimer) {
     return true
   }
-  const INTERVALS_MILLISECONDS =
-    config.getNumber(ConfigurationKeys.VERIFICATION_INTERVAL) ?? 900000
-  const VERIFICATION_ENDPOINT_URL = config.getOrDefault(
-    ConfigurationKeys.VERIFICATION_ENDPOINT_URL,
-    'https://rp.co.uk/verify'
+  const INTERVALS_MILLISECONDS = config.getNumber(
+    ConfigurationKeys.VERIFICATION_INTERVAL
   )
-  const STREAM_ID = config.getOrDefault(
-    ConfigurationKeys.STREAM_ID,
-    'default-stream-id'
+  const VERIFICATION_ENDPOINT_URL = config.get(
+    ConfigurationKeys.VERIFICATION_ENDPOINT_URL
   )
+  const STREAM_ID = config.get(ConfigurationKeys.STREAM_ID)
+
   try {
     verificationTimer = setInterval(() => {
       void sendVerificationSignal(VERIFICATION_ENDPOINT_URL, STREAM_ID)

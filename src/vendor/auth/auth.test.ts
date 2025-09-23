@@ -1,32 +1,26 @@
-import { Request } from 'express'
+import type { Request } from 'express'
 import { auth } from './auth'
 import { generateJWT } from './jwt'
 import { getAuthInput } from './getAuthInput'
-import { ConfigurationKeys } from '../config/ConfigurationKeys'
-import { config } from '../../../examples/express-container/config/globalConfig'
+import { ConfigurationKeys } from '../../../common/config/configurationKeys'
 import { baseLogger as logger } from '../../../common/logging/logger'
 
-const loggerWarnSpy = jest.spyOn(logger, 'warn').mockImplementation()
 jest.mock('./jwt')
 jest.mock('./getAuthInput')
 
-const mockGenerateJWT = generateJWT as jest.MockedFunction<typeof generateJWT>
-const mockGetAuthInput = getAuthInput as jest.MockedFunction<
-  typeof getAuthInput
->
+const mockGenerateJWT = jest.mocked(generateJWT)
+const mockGetAuthInput = jest.mocked(getAuthInput)
+const loggerWarnSpy = jest.spyOn(logger, 'warn').mockImplementation()
 
 describe('auth', () => {
-  let mockReq: Partial<Request> // to fix
+  let mockReq: Request
 
-  beforeEach(async () => {
-    mockReq = {}
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockReq = {} as Request
+
     process.env[ConfigurationKeys.CLIENT_ID] = 'test_client_id'
     process.env[ConfigurationKeys.CLIENT_SECRET] = 'test_client_secret'
-    await config.initialise()
-  })
-
-  afterEach(() => {
-    jest.clearAllMocks()
   })
 
   test('handle invalid_request error and log correct message', async () => {
@@ -36,7 +30,8 @@ describe('auth', () => {
       grant_type: 'client_credentials'
     })
     mockGenerateJWT.mockRejectedValue(new Error('invalid_request'))
-    const result = await auth(mockReq as Request)
+
+    const result = await auth(mockReq)
 
     expect(loggerWarnSpy).toHaveBeenCalledWith(
       'Invalid request: The request is missing required parameters or is malformed'
@@ -56,7 +51,7 @@ describe('auth', () => {
     })
     mockGenerateJWT.mockRejectedValue(new Error('invalid_grant'))
 
-    const result = await auth(mockReq as Request)
+    const result = await auth(mockReq)
 
     expect(loggerWarnSpy).toHaveBeenCalledWith(
       'Invalid grant: The provided authorisation grant is invalid or expired'
@@ -75,7 +70,7 @@ describe('auth', () => {
       grant_type: 'client_credentials'
     })
 
-    const result = await auth(mockReq as Request)
+    const result = await auth(mockReq)
 
     expect(result).toEqual({
       valid: false,

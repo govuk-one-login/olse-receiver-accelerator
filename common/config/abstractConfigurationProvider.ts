@@ -1,29 +1,33 @@
-import { ConfigurationKeys } from './configurationKeys'
+import { ConfigurationKeys } from '../config/configurationKeys'
 
 export abstract class AbstractConfigurationProvider {
   private configMap = new Map<string, string>()
 
   abstract getAll(): Promise<Map<string, string>>
 
-  get(key: string): string | undefined {
-    return this.configMap.get(key)
+  get(key: string): string {
+    const value = this.configMap.get(key)
+    if (typeof value === 'string') {
+      return value
+    }
+    throw new Error(`Missing required configuration: ${key}`)
+  }
+
+  getNumber(key: string): number {
+    const value = this.get(key)
+    const number = Number(value)
+    if (!Number.isFinite(number)) {
+      throw new Error(`Invalid type for ${key}: ${value}`)
+    }
+    return number
   }
 
   getAllKeys(): string[] {
     return Object.values(ConfigurationKeys)
   }
 
-  getNumber(key: string): number | null {
-    const value = this.get(key)
-    if (value === undefined) {
-      return null
-    }
-    const result = parseInt(value, 10)
-    return result
-  }
-
   getOrDefault(key: string, defaultValue: string): string {
-    const value = this.get(key)
+    const value = this.configMap.get(key)
     return value ?? defaultValue
   }
 
@@ -36,7 +40,6 @@ export abstract class AbstractConfigurationProvider {
   }
 
   async initialise(): Promise<void> {
-    const allSecrets = await this.getAll()
-    this.configMap = allSecrets
+    this.configMap = await this.getAll()
   }
 }

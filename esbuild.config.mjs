@@ -1,3 +1,4 @@
+// esbuild.config.js
 import esbuild from 'esbuild'
 import { existsSync, readFileSync, cpSync, mkdirSync } from 'fs'
 import { dirname, join } from 'path'
@@ -11,7 +12,7 @@ const baseEsBuildConfig = {
   target: 'node20',
   format: 'esm',
   treeShaking: true,
-  loader: { '.ts': 'ts' },
+  loader: { '.ts': 'ts' }, // Handles .ts files
   logLevel: 'info'
 }
 
@@ -58,20 +59,19 @@ async function buildFor_AWS_LAMBDA_REFERENCE() {
     const sourcePath = codeUri.startsWith('dist/')
       ? codeUri.substring(5)
       : codeUri
-    const handlerStem = handler.split('.')[0]
-    const entry = join('.', sourcePath, `${handlerStem}.ts`)
+    const handlerPath = handler.split('.')[0]
+    const entry = join('.', sourcePath, `${handlerPath}.ts`)
     if (!entries.includes(entry)) entries.push(entry)
   }
 
   console.log('entries')
   console.log(entries)
 
-  const outdir = `dist/${baseLambdaPath}/src`
   const finalConfig = {
     ...baseEsBuildConfig,
-    format: 'cjs',
+    format: 'cjs', // Override ESM format for AWS Lambda
     entryPoints: entries,
-    outdir
+    outdir: `dist/${baseLambdaPath}/src`
   }
   await esbuild.build(finalConfig)
   copySchemas(outdir)
@@ -86,6 +86,8 @@ async function buildForContainer() {
   }
   try {
     const context = await esbuild.context(finalConfig)
+
+    // Single build
     await context.rebuild()
     console.log('Build complete!')
     await context.dispose()
@@ -95,4 +97,5 @@ async function buildForContainer() {
   }
 }
 
+// --- Run the build ---
 main().then(() => console.log('finished build'))

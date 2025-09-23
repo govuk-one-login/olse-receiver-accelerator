@@ -1,19 +1,19 @@
 import { AbstractConfigurationProvider } from './abstractConfigurationProvider'
 
 export class EnvironmentVariableConfigurationProvider extends AbstractConfigurationProvider {
-  async getAll(): Promise<Map<string, string>> {
-    const keys = this.getAllKeys()
-    const envVariables = new Map<string, string>()
-
-    for (const key of keys) {
-      const value = process.env[key]
-
-      if (value) {
-        envVariables.set(key, value)
-      }
-    }
-    return Promise.resolve(envVariables)
+  // eslint-disable-next-line @typescript-eslint/require-await
+  override async getAll(): Promise<Map<string, string>> {
+    return new Map()
   }
-}
 
-export const envVariableConfig = new EnvironmentVariableConfigurationProvider()
+  override get(key: string): string {
+    const value = process.env[key]
+    if (typeof value === 'string') {
+      return value
+    }
+    throw new Error(`Missing required environment variable: ${key}`)
+  }
+
+  // eslint-disable-next-line
+  override async initialise(): Promise<void> {}
+}

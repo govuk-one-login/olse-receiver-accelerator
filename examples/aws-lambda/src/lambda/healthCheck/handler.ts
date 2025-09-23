@@ -3,7 +3,7 @@ import {
   APIGatewayProxyResult,
   Context
 } from 'aws-lambda'
-import { ConfigurationKeys } from '../../../../express-container/config/ConfigurationKeys'
+import { ConfigurationKeys } from '../../../../../common/config/configurationKeys'
 import { getParameter } from '../../../../../common/ssm/ssm'
 import { getEnv } from '../../mock-transmitter/utils'
 import { getTokenFromCognito } from '../../../../../tests/vendor/helpers/getTokenFromCognito'

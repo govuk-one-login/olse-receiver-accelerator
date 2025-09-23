@@ -25,7 +25,7 @@ jest.mock('../../common/secretsManager/secretsManager', () => ({
 const mockGetSecret = jest.mocked(getSecret)
 
 const sampleVerificationEvent = {
-  alg: 'PS256',
+  alg: 'RS256',
   audience: 'https://aud.example.com',
   issuer: 'https://issuer.example.com',
   jti: '123456',
@@ -59,15 +59,13 @@ describe('Express server /v1 endpoint', () => {
     process.env[ConfigurationKeys.PUBLIC_KEY_PATH] = './keys/authPublic.key'
     process.env[ConfigurationKeys.JWKS_URL] = 'https://example.com/jwks'
     process.env[ConfigurationKeys.AWS_REGION] = 'eu-west-2'
-    process.env[ConfigurationKeys.PRIVATE_KEY_SECRET_NAME] =
-      'test-private-key-secret'
 
     publicKeyString = readFileSync('./keys/authPublic.key', {
       encoding: 'utf8'
     })
     // eslint-disable-next-line
     publicKeyJson = JSON.parse(publicKeyString as any)
-    key = await jose.importJWK(publicKeyJson as jose.JWK, 'PS256')
+    key = await jose.importJWK(publicKeyJson as jose.JWK, 'RS256')
 
     const privateKeyString = readFileSync('./keys/authPrivate.key', {
       encoding: 'utf8'
@@ -233,7 +231,7 @@ describe('Express server /v1 endpoint', () => {
     // @ts-expect-error ignore type errors
     when(getPublicKeyFromRemote).mockReturnValue(key)
     const jwt = await generateJWT({
-      alg: 'PS256',
+      alg: 'RS256',
       audience: 'https://aud.example.com',
       issuer: 'https://issuer.example.com',
       jti: '123456',

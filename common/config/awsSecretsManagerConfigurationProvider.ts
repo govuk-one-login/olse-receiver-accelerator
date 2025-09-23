@@ -1,29 +1,26 @@
-import { AbstractConfigurationProvider } from './abstractConfigurationProvider'
 import {
   SecretsManagerClient,
   BatchGetSecretValueCommand
 } from '@aws-sdk/client-secrets-manager'
+import { AbstractConfigurationProvider } from './abstractConfigurationProvider'
+import { baseLogger as logger } from '../../common/logging/logger'
 
-class AWSSecretsManagerConfigurationProvider extends AbstractConfigurationProvider {
+export class AWSSecretsManagerConfigurationProvider extends AbstractConfigurationProvider {
   private client: SecretsManagerClient
 
   constructor(region = 'eu-west-2') {
     super()
-    this.client = new SecretsManagerClient({
-      region: region
-    })
+    this.client = new SecretsManagerClient({ region })
   }
 
   async getAll(): Promise<Map<string, string>> {
     const secretKeys = this.getAllKeys()
     const retrievedSecrets = new Map<string, string>()
-
     try {
       const command = new BatchGetSecretValueCommand({
         SecretIdList: secretKeys
       })
       const response = await this.client.send(command)
-
       if (response.SecretValues) {
         for (const secret of response.SecretValues) {
           if (secret.Name && secret.SecretString) {
@@ -32,10 +29,9 @@ class AWSSecretsManagerConfigurationProvider extends AbstractConfigurationProvid
         }
       }
     } catch (error) {
-      console.log(`Error retrieving secrets:`, error)
+      logger.error('Error retrieving secrets:', { error, secretKeys })
       return retrievedSecrets
     }
-
     return retrievedSecrets
   }
 }

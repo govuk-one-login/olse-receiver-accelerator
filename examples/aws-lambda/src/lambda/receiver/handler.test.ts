@@ -72,9 +72,7 @@ describe('receiver handler', () => {
     const realRemoteJwks = jose.createRemoteJWKSet(
       new URL('https://test.com/jwks')
     )
-    mockGetPublicKeyFromRemote.mockReturnValue(
-      realRemoteJwks
-    )
+    mockGetPublicKeyFromRemote.mockReturnValue(realRemoteJwks)
   })
 
   afterEach(() => {

@@ -8,7 +8,7 @@ import { SET, SETVerificationRequest } from '../mockApiTxInterfaces'
 import { getTokenFromCognito } from '../../../../../tests/vendor/helpers/getTokenFromCognito'
 import { getParameter } from '../../../../../common/ssm/ssm'
 import { getEnv } from '../utils'
-import { ConfigurationKeys } from '../../../../express-container/config/ConfigurationKeys'
+import { ConfigurationKeys } from '../../../../../common/config/configurationKeys'
 
 jest.mock('./requestParser')
 jest.mock('./constructVerificationSecurityEvent')

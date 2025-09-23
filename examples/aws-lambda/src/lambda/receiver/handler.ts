@@ -4,7 +4,7 @@ import { validateJWTWithRemoteKey } from '../../../../../src/vendor/jwt/validate
 import { validateSignalAgainstSchemas } from '../../../../../src/vendor/validateSchema/validateSchema'
 import { handleSignalRouting } from '../../../../../common/signalRouting/signalRouter'
 import { httpErrorResponseMessages } from '../../../../../common/constants'
-import { ConfigurationKeys } from '../../../../express-container/config/ConfigurationKeys'
+import { ConfigurationKeys } from '../../../../../common/config/configurationKeys'
 import { getParameter } from '../../../../../common/ssm/ssm'
 import { getEnv } from '../../mock-transmitter/utils'
 import { lambdaLogger as logger } from '../../../../../common/logging/logger'

@@ -7,7 +7,7 @@ jest.mock('../../../common/secretsManager/secretsManager')
 const mockedGetSecret = jest.mocked(getSecret)
 
 const payload: generateJWTPayload = {
-  alg: 'PS256',
+  alg: 'RS256',
   audience: 'https://audience.example.com',
   issuer: 'https://issuer.example.com',
   jti: '123456',

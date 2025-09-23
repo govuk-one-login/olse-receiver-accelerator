@@ -13,8 +13,9 @@ import { handleSignalRouting } from '../../common/signalRouting/signalRouter'
 import { httpErrorResponseMessages } from '../../common/constants'
 import { startHealthCheck } from './verification/startHealthCheck'
 import { baseLogger as logger } from '../../common/logging/logger'
+import { config } from '../../common/config/config'
+import { ConfigurationKeys } from '../../common/config/configurationKeys'
 
-// app.use(express.json())
 const app = express()
 const v1Router = express()
 
@@ -63,9 +64,8 @@ v1Router.post(
         const publicKeyString = readFileSync('./keys/authPublic.key', {
           encoding: 'utf8'
         })
-        // eslint-disable-next-line
-        const publicKeyJson = JSON.parse(publicKeyString as any)
-        const key = await jose.importJWK(publicKeyJson as jose.JWK, 'PS256')
+        const publicKeyJson = JSON.parse(publicKeyString) as jose.JWK
+        const key = await jose.importJWK(publicKeyJson, 'RS256')
         await validateJWT(accessToken, key)
         logger.debug('Access token validation successful')
       } catch (error) {
@@ -74,12 +74,10 @@ v1Router.post(
         return
       }
 
-      const jwksUrl = process.env['JWKS_URL']
+      const jwksUrl = config.get(ConfigurationKeys.JWKS_URL)
       if (!jwksUrl) {
-        logger.error('Missing JWKS_URL environment variable')
-        res
-          .status(500)
-          .json({ error: 'JWKS_URL environment variable is required' })
+        logger.error('Missing JWKS_URL configuration')
+        res.status(500).json({ error: 'JWKS_URL configuration is required' })
         return
       }
 
@@ -88,7 +86,7 @@ v1Router.post(
 
       let verifiedJwtBody
       try {
-        logger.debug('Validting JWT with remote key')
+        logger.debug('Validating JWT with remote key')
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const jwt = req.body
         verifiedJwtBody = await validateJWTWithRemoteKey(
@@ -100,7 +98,6 @@ v1Router.post(
         logger.error('Failed to validate JWT with remote key', {
           error: error instanceof Error ? error.message : String(error)
         })
-
         res.status(400).json(httpErrorResponseMessages.invalid_key)
         return
       }
@@ -160,7 +157,18 @@ v1Router.post(
   }
 )
 
+app.get('/health-check', (_req: Request, res: Response) => {
+  try {
+    startHealthCheck()
+    res.status(200).json({ status: 'ok' })
+  } catch (err) {
+    res.status(500).json({
+      status: 'error',
+      message: err instanceof Error ? err.message : String(err)
+    })
+  }
+})
+
 app.use('/v1', v1Router)
-startHealthCheck()
 
 export { app }

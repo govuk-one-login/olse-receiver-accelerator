@@ -11,7 +11,7 @@ import { isValidationError } from './validation'
 import { SETVerificationRequest } from '../mockApiTxInterfaces'
 import { getTokenFromCognito } from '../../../../../tests/vendor/helpers/getTokenFromCognito'
 import { getParameter } from '../../../../../common/ssm/ssm'
-import { ConfigurationKeys } from '../../../../express-container/config/ConfigurationKeys'
+import { ConfigurationKeys } from '../../../../../common/config/configurationKeys'
 import { getEnv } from '../utils'
 
 export const handler = async (
@@ -42,9 +42,6 @@ export const handler = async (
       process.env['RECEIVER_SECRET_ARN']
     )
 
-    /// I NEED TO ADD add auth header
-
-    //If not check if the lambda is able to send back out to the net. Because the api gateway its hitting is within its own stack does it need an integration like receiver gateway and lambda so between api gateway and mock tx api tx etc
     const response = await fetch(receiverEndpoint, {
       method: 'POST',
       headers: {

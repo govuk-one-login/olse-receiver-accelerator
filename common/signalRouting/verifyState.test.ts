@@ -3,24 +3,26 @@ import { getPublicKeyFromJWK } from '../../src/vendor/publicKey/getPublicKey'
 import { validateJWT } from '../../src/vendor/jwt/validateJWT'
 import { verifyStateJwt } from './verifyState'
 import * as fs from 'fs'
-import { ConfigurationKeys } from '../../examples/express-container/config/ConfigurationKeys'
-import { config } from '../../examples/express-container/config/globalConfig'
+import { ConfigurationKeys } from '../../common/config/configurationKeys'
+import { config } from '../config/config'
 
 jest.mock('../../src/vendor/jwt/validateJWT')
 jest.mock('../../src/vendor/publicKey/getPublicKey')
 
-const mockValidateJWT = validateJWT as jest.MockedFunction<typeof validateJWT>
-const mockGetPublicKeyFromJWK = getPublicKeyFromJWK as jest.MockedFunction<
-  typeof getPublicKeyFromJWK
->
+const mockValidateJWT = jest.mocked(validateJWT)
+const mockGetPublicKeyFromJWK = jest.mocked(getPublicKeyFromJWK)
 
 describe('verifyStateJwt', () => {
+  let readFileSpy: jest.SpyInstance
+
   beforeEach(async () => {
     jest.resetAllMocks()
     process.env[ConfigurationKeys.ISSUER] = 'test-issuer'
-    jest
-      .spyOn(fs, 'readFileSync')
-      .mockImplementation(() => '{"someKey":"someKeyValue"}')
+
+    readFileSpy = jest.spyOn(fs, 'readFileSync').mockImplementation(() => {
+      return '{"someKey":"someKeyValue"}' as unknown as string
+    })
+
     mockGetPublicKeyFromJWK.mockResolvedValue({} as CryptoKey)
     await config.initialise()
   })
@@ -30,13 +32,18 @@ describe('verifyStateJwt', () => {
     mockValidateJWT.mockResolvedValue({
       payload: mockPayload
     } as unknown as JWTVerifyResult)
+
     const result = await verifyStateJwt('header.payload.signature')
+
     expect(result).toEqual(mockPayload)
+    expect(readFileSpy).toHaveBeenCalled()
   })
 
   it('returns null for invalid JWT', async () => {
     mockValidateJWT.mockRejectedValue(new Error('Error'))
+
     const result = await verifyStateJwt('header.payload.signature')
+
     expect(result).toBeNull()
   })
 })
