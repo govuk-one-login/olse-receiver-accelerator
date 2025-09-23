@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { getPublicKeyFromRemote } from '../../../../../src/vendor/publicKey/getPublicKey'
 import { validateJWTWithRemoteKey } from '../../../../../src/vendor/jwt/validateJWT'
-import { validateSignalAgainstEmbeddedSchemas } from '../../../../../src/vendor/validateSchema/validateSchema'
+import { validateSignalAgainstSchemas } from '../../../../../src/vendor/validateSchema/validateSchema'
 import { handleSignalRoutingByEventType } from '../../../../../common/signalRouting/signalRouter'
 import { httpErrorResponseMessages } from '../../../../../common/constants'
 import { ConfigurationKeys } from '../../../../express-container/config/ConfigurationKeys'
@@ -84,11 +84,11 @@ export const handler = async (
       }
     }
 
-    // const schemaValidationResult =
-    //   await validateSignalAgainstSchemas(jwtPayload)
-
     const schemaValidationResult =
-      await validateSignalAgainstEmbeddedSchemas(jwtPayload)
+      await validateSignalAgainstSchemas(jwtPayload)
+
+    // const schemaValidationResult =
+    //   await validateSignalAgainstEmbeddedSchemas(jwtPayload)
     console.log('Schema validation result:', schemaValidationResult)
     if (!schemaValidationResult.valid) {
       logger.warn('Schema validationg failed', { Error })
