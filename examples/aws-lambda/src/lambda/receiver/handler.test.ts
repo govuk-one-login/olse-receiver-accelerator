@@ -2,7 +2,7 @@ import { APIGatewayProxyEvent } from 'aws-lambda'
 import * as jose from 'jose'
 import { getPublicKeyFromRemote } from '../../../../../src/vendor/publicKey/getPublicKey'
 import { validateJWTWithRemoteKey } from '../../../../../src/vendor/jwt/validateJWT'
-import { validateSignalAgainstEmbeddedSchemas } from '../../../../../src/vendor/validateSchema/validateSchema'
+import { validateSignalAgainstSchemas } from '../../../../../src/vendor/validateSchema/validateSchema'
 import { handleSignalRoutingByEventType } from '../../../../../common/signalRouting/signalRouter'
 import { handler } from './handler'
 import { getParameter } from '../../../../../common/ssm/ssm'
@@ -26,16 +26,16 @@ type VerifyResult = Awaited<ReturnType<typeof validateJWTWithRemoteKey>>
 
 const mockGetPublicKeyFromRemote = jest.mocked(getPublicKeyFromRemote)
 const mockValidateJWTWithRemoteKey = jest.mocked(validateJWTWithRemoteKey)
-const mockValidateSignalAgainstEmbeddedSchemas = jest.mocked(
-  validateSignalAgainstEmbeddedSchemas
+const mockValidateSignalAgainstSchemas = jest.mocked(
+  validateSignalAgainstSchemas
 )
 const mockHandleSignalRoutingByEventType = jest.mocked(
   handleSignalRoutingByEventType
 )
 const mockGetParameter = jest.mocked(getParameter)
 
-global.fetch = jest.fn() as unknown as typeof fetch
-const mockFetch = jest.mocked(global.fetch)
+const fetchMock: jest.MockedFunction<typeof fetch> = jest.fn()
+global.fetch = fetchMock
 
 const mockJwtPayload = {
   sub_id: { format: 'opaque', id: 'test-id' },
@@ -50,7 +50,7 @@ const baseEvent: Partial<APIGatewayProxyEvent> = {
   body: '1.2.3',
   requestContext: {
     requestId: 'test-request-id-001'
-  } as unknown as APIGatewayProxyEvent['requestContext']
+  } as APIGatewayProxyEvent['requestContext']
 }
 
 let warnSpy: jest.SpyInstance
@@ -67,15 +67,16 @@ describe('receiver handler', () => {
     process.env['AWS_STACK_NAME'] = 'test-stack'
 
     mockGetParameter.mockResolvedValue('https://test.com/jwks')
-
-    mockFetch.mockResolvedValue({
-      json: () => Promise.resolve({ keys: [] })
-    } as unknown as Response)
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ keys: [] }), { status: 200 })
+    )
 
     const realRemoteJwks = jose.createRemoteJWKSet(
       new URL('https://test.com/jwks')
     )
-    mockGetPublicKeyFromRemote.mockReturnValue(realRemoteJwks)
+    mockGetPublicKeyFromRemote.mockReturnValue(
+      realRemoteJwks
+    )
   })
 
   afterEach(() => {
@@ -113,7 +114,7 @@ describe('receiver handler', () => {
       protectedHeader: { alg: 'RS256' },
       key: new Uint8Array()
     } as VerifyResult)
-    mockValidateSignalAgainstEmbeddedSchemas.mockResolvedValue({
+    mockValidateSignalAgainstSchemas.mockResolvedValue({
       valid: false,
       message: 'Invalid schema'
     })
@@ -128,7 +129,7 @@ describe('receiver handler', () => {
       protectedHeader: { alg: 'RS256' },
       key: new Uint8Array()
     } as VerifyResult)
-    mockValidateSignalAgainstEmbeddedSchemas.mockResolvedValue({
+    mockValidateSignalAgainstSchemas.mockResolvedValue({
       valid: true,
       schema: 'test-schema'
     })
@@ -144,7 +145,7 @@ describe('receiver handler', () => {
       protectedHeader: { alg: 'RS256' },
       key: new Uint8Array()
     } as VerifyResult)
-    mockValidateSignalAgainstEmbeddedSchemas.mockResolvedValue({
+    mockValidateSignalAgainstSchemas.mockResolvedValue({
       valid: true,
       schema: 'test-schema'
     })
