@@ -769,23 +769,30 @@ Resources:
             Resource: '*'
 
 Outputs:
-  SharedSignalsApiUrl:
-    Description: API Gateway endpoint URL
-    Value: !Sub 'https://${SharedSignalsApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Environment}'
-    Export:
-      Name: !Sub '${AWS::StackName}-SharedSignalsApiUrl'
-  ReceiverEventApiUrl:
-    Description: URL of the Receiver Event API endpoint
-    Value: !Sub 'https://${SharedSignalsApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/api/v1/Events'
-  ReceiverAudience:
-    Description: Audience to use in the Mock TX JWT when calling the Receiver Event API
-    Value: !Sub 'https://${SharedSignalsApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/'
-  MockTxIssuerUrl:
-    Description: Issuer to use in the Mock TX JWT when calling the Receiver Event API
-    Value: !Sub 'https://${MockTxVerfApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/'
-  MockTxVerfApiGatewayUrl:
+  VerificationEndpoint:
+    Description: VERIFICATION_ENDPOINT
     Value: !Sub 'https://${MockTxVerfApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}'
-  SetMockTxApiUserPoolId:
-    Value: !Ref SetMockTxApiUserPool
-  SetMockTxApiUserPoolClient:
-    Value: !Ref SetMockTxApiUserPoolClient
+
+  ReceiverEndpoint:
+    Description: RECEIVER_ENDPOINT
+    Value: !Sub 'https://${SharedSignalsApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/api/v1/Events'
+
+  JwksEndpoint:
+    Description: JWKS_ENDPOINT
+    Value: !Sub 'https://${JwksApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/jwks.json'
+
+  MockTxSecretArn:
+    Description: MOCK_TX_SECRET_ARN
+    Value: !Ref SetMockTxApiSecret
+
+  ReceiverSecretArn:
+    Description: RECEIVER_SECRET_ARN
+    Value: !Ref SSrSecret
+
+  AwsRegion:
+    Description: AWS_REGION
+    Value: !Ref AWS::Region
+
+  KmsKeyId:
+    Description: KMS_KEY_ID
+    Value: !GetAtt MockTxKMSKey.Arn

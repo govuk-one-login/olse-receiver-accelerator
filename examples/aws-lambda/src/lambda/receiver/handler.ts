@@ -87,8 +87,6 @@ export const handler = async (
     const schemaValidationResult =
       await validateSignalAgainstSchemas(jwtPayload)
 
-    // const schemaValidationResult =
-    //   await validateSignalAgainstEmbeddedSchemas(jwtPayload)
     console.log('Schema validation result:', schemaValidationResult)
     if (!schemaValidationResult.valid) {
       logger.warn('Schema validationg failed', { Error })

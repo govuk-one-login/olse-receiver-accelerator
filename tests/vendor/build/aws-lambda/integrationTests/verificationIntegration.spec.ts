@@ -1,17 +1,19 @@
-import { getTokenFromCognito } from "../../../helpers/getTokenFromCognito"
+import { getTokenFromCognito } from '../../../helpers/getTokenFromCognito'
 import 'dotenv/config'
+
 describe('SET Verification Event Integration Tests', () => {
-    const apiUrl = process.env['TRANSMITTER_API_GATEWAY_URL'] ?? ''
-    const jwksUrl = process.env['JWKS_URL'] ?? ''
+    const apiUrl = process.env['VERIFICATION_ENDPOINT'] ?? ''
+    const jwksUrl = process.env['JWKS_ENDPOINT'] ?? ''
 
     beforeAll(() => {
         if (apiUrl === '') {
-            throw new Error('API_GATEWAY_URL environment variable is not set')
+            throw new Error('VERIFICATION_ENDPOINT environment variable is not set')
         }
         if (jwksUrl === '') {
-            throw new Error('JWKS_URL environment variable is not set')
+            throw new Error('JWKS_ENDPOINT environment variable is not set')
         }
     })
+
     it('should complete full verification flow successfully', async () => {
         if (process.env['MOCK_TX_SECRET_ARN'] === undefined) {
             throw new Error('MOCK_TX_SECRET_ARN environment variable is not set')
@@ -22,23 +24,24 @@ describe('SET Verification Event Integration Tests', () => {
 
         const verificationPayload = {
             stream_id: 'test-stream-001',
-            state: 'test-state-001',
+            state: 'test-state-001'
         }
 
         const response = await fetch(
-            `${apiUrl}/verify`, {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(verificationPayload)
-        })
+            `${apiUrl}/verify`,
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(verificationPayload)
+            }
+        )
+
         expect(response.ok).toBe(true)
         console.log(response.status)
         expect(response.status).toBe(204)
-        const data = await response.json()
-        expect(data).toBeDefined()
     }, 10000)
 
     it('should return 401 when invalid token provided to verify endpoint', async () => {
@@ -47,15 +50,17 @@ describe('SET Verification Event Integration Tests', () => {
             verification_type: 'verification-type',
             timestamp: Date.now()
         }
+
         const response = await fetch(
-            `${apiUrl}/verify`, {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer aa.bb.cc',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(verificationPayload)
-        }
+            `${apiUrl}/verify`,
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer aa.bb.cc',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(verificationPayload)
+            }
         )
 
         console.log(response)
@@ -63,7 +68,7 @@ describe('SET Verification Event Integration Tests', () => {
     })
 
     it('should return valid jwks from public key endpoint', async () => {
-        const response = await fetch(`${apiUrl}/jwks.json`)
+        const response = await fetch(jwksUrl)
         const jwks = await response.json()
         console.log(jwks)
 
