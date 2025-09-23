@@ -2,7 +2,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { getPublicKeyFromRemote } from '../../../../../src/vendor/publicKey/getPublicKey'
 import { validateJWTWithRemoteKey } from '../../../../../src/vendor/jwt/validateJWT'
 import { validateSignalAgainstSchemas } from '../../../../../src/vendor/validateSchema/validateSchema'
-import { handleSignalRoutingByEventType } from '../../../../../common/signalRouting/signalRouter'
+import { handleSignalRouting } from '../../../../../common/signalRouting/signalRouter'
 import { httpErrorResponseMessages } from '../../../../../common/constants'
 import { ConfigurationKeys } from '../../../../express-container/config/ConfigurationKeys'
 import { getParameter } from '../../../../../common/ssm/ssm'
@@ -98,7 +98,10 @@ export const handler = async (
     }
     logger.info('Schema validated successfully')
 
-    const result = await handleSignalRoutingByEventType(jwtPayload)
+    const result = await handleSignalRouting(
+      jwtPayload,
+      schemaValidationResult.schema
+    )
 
     if (result.valid) {
       logger.info('Signal routing processed successfully')

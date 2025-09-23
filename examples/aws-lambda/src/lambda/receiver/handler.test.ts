@@ -3,7 +3,7 @@ import * as jose from 'jose'
 import { getPublicKeyFromRemote } from '../../../../../src/vendor/publicKey/getPublicKey'
 import { validateJWTWithRemoteKey } from '../../../../../src/vendor/jwt/validateJWT'
 import { validateSignalAgainstSchemas } from '../../../../../src/vendor/validateSchema/validateSchema'
-import { handleSignalRoutingByEventType } from '../../../../../common/signalRouting/signalRouter'
+import { handleSignalRouting } from '../../../../../common/signalRouting/signalRouter'
 import { handler } from './handler'
 import { getParameter } from '../../../../../common/ssm/ssm'
 import { lambdaLogger } from '../../../../../common/logging/logger'
@@ -29,9 +29,7 @@ const mockValidateJWTWithRemoteKey = jest.mocked(validateJWTWithRemoteKey)
 const mockValidateSignalAgainstSchemas = jest.mocked(
   validateSignalAgainstSchemas
 )
-const mockHandleSignalRoutingByEventType = jest.mocked(
-  handleSignalRoutingByEventType
-)
+const mockHandleSignalRouting = jest.mocked(handleSignalRouting)
 const mockGetParameter = jest.mocked(getParameter)
 
 const fetchMock: jest.MockedFunction<typeof fetch> = jest.fn()
@@ -74,7 +72,9 @@ describe('receiver handler', () => {
     const realRemoteJwks = jose.createRemoteJWKSet(
       new URL('https://test.com/jwks')
     )
-    mockGetPublicKeyFromRemote.mockReturnValue(realRemoteJwks)
+    mockGetPublicKeyFromRemote.mockReturnValue(
+      realRemoteJwks
+    )
   })
 
   afterEach(() => {
@@ -131,7 +131,7 @@ describe('receiver handler', () => {
       valid: true,
       schema: 'test-schema'
     })
-    mockHandleSignalRoutingByEventType.mockResolvedValue({ valid: false })
+    mockHandleSignalRouting.mockResolvedValue({ valid: false })
     const result = await handler(baseEvent as APIGatewayProxyEvent)
     expect(result.statusCode).toBe(400)
     expect(errorSpy).toHaveBeenCalledWith('failed to route signal')
@@ -147,15 +147,16 @@ describe('receiver handler', () => {
       valid: true,
       schema: 'test-schema'
     })
-    mockHandleSignalRoutingByEventType.mockResolvedValue({
+    mockHandleSignalRouting.mockResolvedValue({
       valid: true,
       schema: 'test-schema'
     })
     const result = await handler(baseEvent as APIGatewayProxyEvent)
     expect(result.statusCode).toBe(202)
     expect(result.body).toBe('')
-    expect(mockHandleSignalRoutingByEventType).toHaveBeenCalledWith(
-      mockJwtPayload
+    expect(mockHandleSignalRouting).toHaveBeenCalledWith(
+      mockJwtPayload,
+      'test-schema'
     )
   })
 
