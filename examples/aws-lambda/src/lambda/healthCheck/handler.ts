@@ -7,7 +7,6 @@ import { ConfigurationKeys } from '../../../../../common/config/configurationKey
 import { getParameter } from '../../../../../common/ssm/ssm'
 import { getEnv } from '../../mock-transmitter/utils'
 import { getTokenFromCognito } from '../../../../../tests/vendor/helpers/getTokenFromCognito'
-import { createVerificationRequestJWT } from '../../createVerificationRequestJwt/createVerificationRequestJwt'
 import { lambdaLogger as logger } from '../../../../../common/logging/logger'
 
 export const handler = async (
@@ -28,27 +27,27 @@ export const handler = async (
     const mockTxSecretArn = getEnv('MOCK_TX_SECRET_ARN')
     const access_token = await getTokenFromCognito(mockTxSecretArn)
 
-    const verificationRequestJWT = await createVerificationRequestJWT(
-      'health-check-stream',
-      'health-check-state'
-    )
+    const verificationRequest = {
+      stream_id: 'health-check-stream',
+      state: 'health-check-state'
+    }
 
     logger.debug('Sending verification signal')
     const response = await fetch(verificationEndpointUrl, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/secevent+jwt',
+        'Content-Type': 'application/json',
         Accept: 'application/json',
         Authorization: `Bearer ${access_token}`
       },
-      body: verificationRequestJWT
+      body: JSON.stringify(verificationRequest)
     })
     logger.info('Verification signal sent', {
       status: response.status,
       ok: response.ok
     })
 
-    if (!response.ok) {
+    if (response.status !== 204) {
       return {
         statusCode: 500,
         body: JSON.stringify({
