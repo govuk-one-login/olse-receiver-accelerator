@@ -6,7 +6,7 @@ import {
 import { ConfigurationKeys } from '../../../../../common/config/configurationKeys'
 import { getParameter } from '../../../../../common/ssm/ssm'
 import { getEnv } from '../../mock-transmitter/utils'
-import { getTokenFromCognito } from '../../../../../tests/vendor/helpers/getTokenFromCognito'
+import { getTokenFromCognito } from '../../../../../common/cognito/getTokenFromCognito'
 import { lambdaLogger as logger } from '../../../../../common/logging/logger'
 
 export const handler = async (

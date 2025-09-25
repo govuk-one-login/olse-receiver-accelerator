@@ -1,4 +1,4 @@
-import { getTokenFromCognito } from '../../../helpers/getTokenFromCognito'
+import { getTokenFromCognito } from '../../../../../common/cognito/getTokenFromCognito'
 import 'dotenv/config'
 
 describe('SET Verification Event Integration Tests', () => {

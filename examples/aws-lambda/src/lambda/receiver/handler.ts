@@ -47,9 +47,9 @@ export const handler = async (
     const stackName = getEnv(ConfigurationKeys.AWS_STACK_NAME)
     const jwksUrl = await getParameter(`/${stackName}/jwks-url`)
 
-    const jwksResponse = await fetch(jwksUrl)
-    const jwks = await jwksResponse.json()
-    console.log('Fetched JWKS:', jwks)
+    // const jwksResponse = await fetch(jwksUrl)
+    // const jwks = await jwksResponse.json()
+    // console.log('Fetched JWKS:', jwks)
 
     const publicKey = getPublicKeyFromRemote(jwksUrl)
     console.log('Fetched public key from JWKS URL')

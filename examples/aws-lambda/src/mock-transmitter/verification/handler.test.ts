@@ -5,7 +5,7 @@ import { constructVerificationFullSecurityEvent } from './constructVerificationS
 import { signedJWTWithKMS } from '../kmsService'
 import { isValidationError } from './validation'
 import { SET, SETVerificationRequest } from '../mockApiTxInterfaces'
-import { getTokenFromCognito } from '../../../../../tests/vendor/helpers/getTokenFromCognito'
+import { getTokenFromCognito } from '../../../../../common/cognito/getTokenFromCognito'
 import { getParameter } from '../../../../../common/ssm/ssm'
 import { getEnv } from '../utils'
 import { ConfigurationKeys } from '../../../../../common/config/configurationKeys'
@@ -14,7 +14,7 @@ jest.mock('./requestParser')
 jest.mock('./constructVerificationSecurityEvent')
 jest.mock('../kmsService')
 jest.mock('./validation')
-jest.mock('../../../../../tests/vendor/helpers/getTokenFromCognito')
+jest.mock('../../../../../common/cognito/getTokenFromCognito')
 jest.mock('../../../../../common/ssm/ssm')
 jest.mock('../utils')
 

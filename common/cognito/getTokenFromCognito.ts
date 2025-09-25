@@ -1,9 +1,14 @@
-import { getSecrets } from './getSecrets'
+import { getSecrets } from '../../tests/vendor/helpers/getSecrets'
+
+interface CognitoTokenResponse {
+  access_token: string
+  expires_in: number
+  token_type: string
+}
 
 export const getTokenFromCognito = async (secretArn: string) => {
   const secrets = await getSecrets(secretArn)
   const { userPoolClientId, userPoolClientSecret, domain } = secrets
-  console.log('Domain:', domain)
   try {
     const accessTokenResponse = await fetch(
       `https://${domain}.auth.eu-west-2.amazoncognito.com/token`,
@@ -20,9 +25,8 @@ export const getTokenFromCognito = async (secretArn: string) => {
       }
     )
 
-    const accessTokenJsonResponse = await accessTokenResponse.json()
-    // @ts-expect-error no-unknown
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const accessTokenJsonResponse: CognitoTokenResponse =
+      (await accessTokenResponse.json()) as CognitoTokenResponse
     const accessToken: string = accessTokenJsonResponse.access_token
     return accessToken
   } catch (error) {

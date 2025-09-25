@@ -1,7 +1,5 @@
-import {
-  SecretsManagerClient,
-  GetSecretValueCommand
-} from '@aws-sdk/client-secrets-manager'
+import { GetSecretValueCommand } from '@aws-sdk/client-secrets-manager'
+import { getSecretsManagerClient } from '../../../examples/aws-lambda/src/sdk/sdkClient'
 
 export interface Secrets {
   userPoolClientId: string
@@ -9,13 +7,13 @@ export interface Secrets {
   domain: string
 }
 
-const client = new SecretsManagerClient({ region: 'eu-west-2' })
 export const getSecrets = async (secretArn: string): Promise<Secrets> => {
-  const command = new GetSecretValueCommand({
-    SecretId: secretArn
-  })
+  const command = new GetSecretValueCommand({ SecretId: secretArn })
+  const response = await getSecretsManagerClient().send(command)
 
-  const response = await client.send(command)
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return JSON.parse(response.SecretString!) as Secrets
+  if (!response.SecretString) {
+    throw new Error(`Secret "${secretArn}" is empty or not found`)
+  }
+
+  return JSON.parse(response.SecretString) as Secrets
 }

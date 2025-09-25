@@ -9,7 +9,7 @@ import {
 } from '../responses'
 import { isValidationError } from './validation'
 import { SETVerificationRequest } from '../mockApiTxInterfaces'
-import { getTokenFromCognito } from '../../../../../tests/vendor/helpers/getTokenFromCognito'
+import { getTokenFromCognito } from '../../../../../common/cognito/getTokenFromCognito'
 import { getParameter } from '../../../../../common/ssm/ssm'
 import { ConfigurationKeys } from '../../../../../common/config/configurationKeys'
 import { getEnv } from '../utils'

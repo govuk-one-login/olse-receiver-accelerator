@@ -21,6 +21,14 @@ describe('auth', () => {
 
     process.env[ConfigurationKeys.CLIENT_ID] = 'test_client_id'
     process.env[ConfigurationKeys.CLIENT_SECRET] = 'test_client_secret'
+    process.env[ConfigurationKeys.AWS_REGION] = 'eu-west-2'
+  })
+
+  afterEach(() => {
+    // clean up but used to avoid lint error for deleting dynamically computed property keys
+    delete process.env['CLIENT_ID']
+    delete process.env['CLIENT_SECRET']
+    delete process.env['AWS_REGION']
   })
 
   test('handle invalid_request error and log correct message', async () => {

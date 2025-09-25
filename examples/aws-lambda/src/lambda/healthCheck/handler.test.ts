@@ -1,12 +1,12 @@
 import { getParameter } from '../../../../../common/ssm/ssm'
-import { getTokenFromCognito } from '../../../../../tests/vendor/helpers/getTokenFromCognito'
+import { getTokenFromCognito } from '../../../../../common/cognito/getTokenFromCognito'
 import { createDefaultApiRequest } from '../../../../awsPayloads/defaultApiRequest'
 import { mockLambdaContext } from '../../../../awsPayloads/mockLambdaContext'
 import { getEnv } from '../../mock-transmitter/utils'
 import { handler } from './handler'
 
 jest.mock('../../../../../common/ssm/ssm')
-jest.mock('../../../../../tests/vendor/helpers/getTokenFromCognito')
+jest.mock('../../../../../common/cognito/getTokenFromCognito')
 jest.mock('../../mock-transmitter/kmsService')
 jest.mock('../../mock-transmitter/utils')
 

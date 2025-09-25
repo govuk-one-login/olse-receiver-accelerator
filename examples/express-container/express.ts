@@ -159,7 +159,7 @@ v1Router.post(
   }
 )
 
-app.get('/health-check', (_req: Request, res: Response) => {
+v1Router.get('/health-check', (_req: Request, res: Response) => {
   try {
     startHealthCheck()
     res.status(200).json({ status: 'ok' })
