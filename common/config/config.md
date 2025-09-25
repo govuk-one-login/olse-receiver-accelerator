@@ -1,6 +1,6 @@
 # Configuration Overview
 
-This configuration implementation provides a flexible way to manage application configuration from one of multiple configuration providers (e.g., environment variables, AWS Secrets Manager). Providers are pluggable and can be extended as needed.
+This configuration implementation provides a way to manage application configuration using environment variables by default. The provider can be extended if needed, but currently only environment variable configuration is supported out of the box.
 
 ## Key Components
 
@@ -14,34 +14,22 @@ This configuration implementation provides a flexible way to manage application 
 - **EnvironmentVariableConfigurationProvider**: Loads config from environment variables.
 - **AWSSecretsManagerConfigurationProvider**: Loads config from an AWS Secrets Manager secret.
 
-## How Provider Selection Works
+## Provider Selection
 
-The provider is chosen at runtime based on the CONFIG_PROVIDER environment variable:
-
-- aws: Uses AWSSecretsManagerConfigurationProvider (requires SECRET_ARN env var).
-- Any other value (or unset): Uses EnvironmentVariableConfigurationProvider.
-
-Example:
-
-export CONFIG_PROVIDER=aws
-export SECRET_ARN=secret_arn
+Currently, the EnvironmentVariableConfigurationProvider is used and exported in config.ts.
 
 ## Usage
 
-Import and initialise the config at app startup:
+Import the config at app startup:
 
-import { config, configReady } from './common/config/config'
+import { config } from './common/config/config'
 
-await configReady()
 const clientId = config.get('CLIENT_ID')
 const interval = config.getNumber('VERIFICATION_INTERVAL')
 
 ## Adding a New Configuration Provider
 
-1. Create a new provider class extending AbstractConfigurationProvider in configurationProviders/.
-2. Implement async getAll(): Promise<Map<string, string>> to fetch and return all config values.
-3. Export an instance of your provider (e.g., export const myProvider = new MyProvider()).
-4. Update the choose() function in config.ts to support selecting your provider (e.g., via a new CONFIG_PROVIDER value).
+If you want to add support for a new configuration source, create a new provider class extending AbstractConfigurationProvider in configurationProviders/, and export an instance from config.ts. You will need to update config.ts to use your new provider.
 
 ## Example: Adding a Custom Provider
 
@@ -57,14 +45,11 @@ export class MyCustomProvider extends AbstractConfigurationProvider {
 export const myCustomProvider = new MyCustomProvider()
 ```
 
-Then update choose() in config.ts:
+Then update config.ts:
 
 ```typescript
 import { myCustomProvider } from './configurationProviders/myCustomProvider'
-function choose() {
-  if (process.env['CONFIG_PROVIDER'] === 'custom') return myCustomProvider
-  // ...existing logic
-}
+export const config = myCustomProvider
 ```
 
 ## Accessing Configuration
@@ -79,4 +64,4 @@ Use the utility methods from AbstractConfigurationProvider:
 
 - All required keys are defined in ConfigurationKeys.
 - The config is validated on initialisation; missing keys will throw an error.
-- Providers can be swapped by changing the CONFIG_PROVIDER environment variable.
+- To use a different provider, update config.ts to export an instance of your custom provider.
