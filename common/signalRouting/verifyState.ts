@@ -5,9 +5,9 @@ import { config } from '../config/config'
 import { ConfigurationKeys } from '../config/configurationKeys'
 import { baseLogger as logger } from '../logging/logger'
 
-export async function verifyStateJwt(
+export const verifyStateJwt = async (
   stateJwt: string
-): Promise<Record<string, unknown> | null> {
+): Promise<Record<string, unknown> | null> => {
   try {
     const publicKeyPath = config.get(ConfigurationKeys.PUBLIC_KEY_PATH)
 

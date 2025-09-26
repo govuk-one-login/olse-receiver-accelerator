@@ -13,11 +13,11 @@ export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   try {
-    console.log('Received event:', event)
+    logger.info('Received event:', { event })
     const jwt = event.body
     logger.info('Processing signal receiver request')
     if (!jwt) {
-      console.error('No JWT found in request body')
+      logger.error('No JWT found in request body')
       logger.warn('Request missing body')
       return {
         statusCode: 400,
@@ -30,7 +30,7 @@ export const handler = async (
     }
     const secretArn = process.env['RECEIVER_SECRET_ARN']
     if (!secretArn) {
-      console.error('RECEIVER_SECRET_ARN environment variable is not set')
+      logger.error('RECEIVER_SECRET_ARN environment variable is not set')
       logger.error('Missing JWKS_URL enviornment variable', {
         variable: 'JWKS_URL'
       })
@@ -47,12 +47,8 @@ export const handler = async (
     const stackName = getEnv(ConfigurationKeys.AWS_STACK_NAME)
     const jwksUrl = await getParameter(`/${stackName}/jwks-url`)
 
-    // const jwksResponse = await fetch(jwksUrl)
-    // const jwks = await jwksResponse.json()
-    // console.log('Fetched JWKS:', jwks)
-
     const publicKey = getPublicKeyFromRemote(jwksUrl)
-    console.log('Fetched public key from JWKS URL')
+    logger.debug('Fetched public key from JWKS URL')
 
     let verifiedJwtBody
     try {
@@ -87,7 +83,7 @@ export const handler = async (
     const schemaValidationResult =
       await validateSignalAgainstSchemas(jwtPayload)
 
-    console.log('Schema validation result:', schemaValidationResult)
+    logger.debug('Schema validation result:', { schemaValidationResult })
     if (!schemaValidationResult.valid) {
       logger.warn('Schema validationg failed', { Error })
       return {

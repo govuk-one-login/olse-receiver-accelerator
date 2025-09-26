@@ -1,3 +1,4 @@
+import { lambdaLogger as logger } from '../../../../../common/logging/logger'
 import { APIGatewayProxyResult } from 'aws-lambda'
 import { getEnv } from '../utils'
 import { getKmsPublicKey } from '../kmsService'
@@ -13,14 +14,14 @@ export const handler = async (): Promise<APIGatewayProxyResult> => {
     const promiseArray = SIGNING_KEY_ENV_VAR_NAMES.map(async (envVar) => {
       const envValue = getEnv(envVar)
       const publicKeyData = await getKmsPublicKey(envValue)
-      console.log('got public key data from KMS', {
+      logger.info('Retrived public key from KMS', {
         keyId: publicKeyData.keyId
       })
       const jwk = createJwkFromRawPublicKey(
         publicKeyData.publicKey,
         publicKeyData.keyId
       )
-      console.log('created JWK from public key', { jwk })
+      logger.info('Created JWK from public key', { jwk })
       jwkArray.push(jwk)
     })
 
@@ -29,7 +30,7 @@ export const handler = async (): Promise<APIGatewayProxyResult> => {
     let failedCount = 0
     res.forEach((promise) => {
       if (promise.status === 'rejected') {
-        console.error('failed to create a JWK', {
+        logger.error('Failed to create a JWK', {
           reason: String(promise.reason)
         })
         failedCount += 1
@@ -37,7 +38,7 @@ export const handler = async (): Promise<APIGatewayProxyResult> => {
     })
 
     if (failedCount === 0) {
-      console.log('returning jwks', { keys: jwkArray })
+      logger.info('Returning jwks', { keys: jwkArray })
       return {
         statusCode: 200,
         body: JSON.stringify({ keys: jwkArray })

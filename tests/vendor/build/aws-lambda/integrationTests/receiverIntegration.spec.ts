@@ -4,7 +4,7 @@ import { getTokenFromCognito } from '../../../../../common/cognito/getTokenFromC
 import 'dotenv/config'
 
 describe('handler V1', () => {
-  it('handler returns 200 when a valid access token is provided', async () => {
+  it('handler returns 202 when a valid access token is provided', async () => {
     const apiUrl = process.env['RECEIVER_ENDPOINT'] ?? ''
     if (apiUrl === '') {
       throw new Error('RECEIVER_ENDPOINT environment variable is not set')

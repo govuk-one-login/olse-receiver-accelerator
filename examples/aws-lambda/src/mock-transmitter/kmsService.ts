@@ -5,7 +5,9 @@ import { getKMSClient } from '../sdk/sdkClient'
 
 export type JWTPayload = SET
 
-export async function signedJWTWithKMS(payload: JWTPayload): Promise<string> {
+export const signedJWTWithKMS = async (
+  payload: JWTPayload
+): Promise<string> => {
   const header = {
     alg: 'RS256',
     typ: 'secevent+jwt',
@@ -37,9 +39,9 @@ export async function signedJWTWithKMS(payload: JWTPayload): Promise<string> {
   return `${signingInput}.${signature}`
 }
 
-export async function getKmsPublicKey(
+export const getKmsPublicKey = async (
   keyArn: string
-): Promise<KmsPublicKeyData> {
+): Promise<KmsPublicKeyData> => {
   const response = await getKMSClient().send(
     new GetPublicKeyCommand({ KeyId: keyArn })
   )

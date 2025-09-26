@@ -407,38 +407,6 @@ Resources:
                   - cognito-idp:InitiateAuth
                 Resource: !GetAtt SetMockTxApiUserPool.Arn
 
-  GoodbyeFunction:
-    #checkov:skip=CKV_AWS_117: VPC config
-    #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: dist/examples/aws-lambda/src/lambda/goodbye
-      Description: Lambda function
-      FunctionName: !Sub ${AWS::StackName}-goodbye
-      Handler: handler.handler
-      Role: !GetAtt GoodbyeFunctionRole.Arn
-
-  GoodbyeFunctionRole:
-    Type: AWS::IAM::Role
-    Properties:
-      Description: Execution role for Goodbye lambda
-      RoleName: !Sub '${AWS::StackName}-goodbye'
-      PermissionsBoundary: !If
-        - UsePermissionsBoundary
-        - !Ref PermissionsBoundary
-        - !Ref AWS::NoValue
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Sid: AllowLambdaToAssumeRole
-            Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action: sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
-
   GetJwksFunction:
     #checkov:skip=CKV_AWS_117: VPC config
     #checkov:skip=CKV_AWS_115:Defined in Globals

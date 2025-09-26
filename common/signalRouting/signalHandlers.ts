@@ -11,9 +11,9 @@ interface invalidResponse {
   errorMessage: string
 }
 
-export async function handleVerificationSignal(
+export const handleVerificationSignal = async (
   _setPayload: Record<string, unknown>
-): Promise<validResponse | invalidResponse> {
+): Promise<validResponse | invalidResponse> => {
   const verificationPayload = _setPayload as unknown as VerificationPayload
   const state =
     verificationPayload.events[

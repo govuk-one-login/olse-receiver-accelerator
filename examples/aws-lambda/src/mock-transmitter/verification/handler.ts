@@ -1,3 +1,4 @@
+import { lambdaLogger as logger } from '../../../../../common/logging/logger'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { getVerificationRequest } from './requestParser'
 import { constructVerificationFullSecurityEvent } from './constructVerificationSecurityEvent'
@@ -18,10 +19,10 @@ export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   try {
-    console.log('Received verification request:', event)
+    logger.info('Received verification request:', { event })
     const verificationRequest: SETVerificationRequest =
       getVerificationRequest(event)
-    console.log('Parsed verification request:', verificationRequest)
+    logger.debug('Parsed verification request:', { verificationRequest })
     const verificationSET = constructVerificationFullSecurityEvent(
       event.requestContext.requestId,
       Date.now(),
@@ -29,7 +30,7 @@ export const handler = async (
     )
 
     const signedJWT = await signedJWTWithKMS(verificationSET)
-    console.log('Signed JWT:', signedJWT)
+    logger.debug('Signed JWT:', { signedJWT })
 
     const stackName = getEnv(ConfigurationKeys.AWS_STACK_NAME)
     const receiverEndpoint = await getParameter(
@@ -51,21 +52,24 @@ export const handler = async (
       },
       body: signedJWT
     })
-    console.log('Receiver response status:', response.status)
+    logger.info('Receiver response status:', { status: response.status })
 
     if (response.status === 202) {
-      console.log(
-        `Verification SET delivered successfully to ${receiverEndpoint}`
-      )
+      logger.info('Verification SET delivered successfully', {
+        receiverEndpoint
+      })
     } else {
-      console.error(
-        `SET failed to delivery: ${String(response.status)} ${response.statusText}`
-      )
+      logger.error('SET failed to delivery', {
+        status: response.status,
+        statusText: response.statusText
+      })
     }
 
     return NO_CONTENT_RESPONSE
   } catch (error) {
-    console.error('Error processing verification request:', error)
+    logger.error('Error processing verification request:', {
+      error: error instanceof Error ? error.message : String(error)
+    })
     if (error instanceof Error && isValidationError(error.message)) {
       return INVALID_REQUEST_RESPONSE
     }

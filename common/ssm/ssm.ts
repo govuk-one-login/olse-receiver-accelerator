@@ -1,3 +1,4 @@
+import { lambdaLogger as logger } from '../logging/logger'
 import { GetParameterCommand } from '@aws-sdk/client-ssm'
 import { getSSMClient } from '../../examples/aws-lambda/src/sdk/sdkClient'
 
@@ -12,7 +13,7 @@ export const getParameter = async (parameterName: string): Promise<string> => {
 
     return response.Parameter.Value
   } catch (error) {
-    console.error('Failed to get parameter ${parameterName}:', { error: error })
+    logger.error(`Failed to get parameter ${parameterName}:`, { error })
     throw error
   }
 }

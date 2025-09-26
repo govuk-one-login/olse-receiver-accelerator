@@ -1,3 +1,4 @@
+import { lambdaLogger as logger } from '../logging/logger'
 import { GetSecretValueCommand } from '@aws-sdk/client-secrets-manager'
 import { getSecretsManagerClient } from '../../examples/aws-lambda/src/sdk/sdkClient'
 
@@ -14,7 +15,7 @@ export const getSecret = async (
 
     return response.SecretString
   } catch (error) {
-    console.error(`Failed to retrieve secret "${secretName}":`, error)
+    logger.error(`Failed to retrieve secret "${secretName}":`, { error })
     return undefined
   }
 }
