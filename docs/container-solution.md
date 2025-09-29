@@ -79,23 +79,23 @@ See this file and the main `README.md` for more details.
 - **Request**: JWT in the request body (as `text/plain` or `application/secevent+jwt`)
 - **Responses:**
   - **202 Accepted**: Signal processed successfully
-    - _Body_: _empty_
+    - Body: \_empty
   - **400 Bad Request**: Invalid JWT, schema validation failed, or payload missing
-    - _Body_ (invalid key):
+    - Body (invalid key):
       ```json
       {
         "err": "invalid_key",
         "description": "One or more keys used to encrypt or sign the SET is invalid or otherwise unacceptable to the SET Recipient (expired, revoked, failed certificate validation, etc.)."
       }
       ```
-    - _Body_ (invalid request):
+    - Body (invalid request):
       ```json
       {
         "err": "invalid_request",
         "description": "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
       }
       ```
-    - _Body_ (payload undefined):
+    - Body (payload undefined):
       ```json
       {
         "err": "invalid_request",
@@ -103,16 +103,16 @@ See this file and the main `README.md` for more details.
       }
       ```
   - **401 Unauthorized**: Missing or invalid Bearer token
-    - _Body_:
+    - Body:
       ```json
       { "error": "Unauthorised access" }
       ```
   - **500 Internal Server Error**: Server error or missing environment variable
-    - _Body_ (missing JWKS_URL):
+    - Body (missing JWKS_URL):
       ```json
       { "error": "JWKS_URL environment variable is required" }
       ```
-    - _Body_ (unexpected error):
+    - Body: (unexpected error):
       ```json
       { "error": "Internal server error" }
       ```
@@ -123,7 +123,7 @@ See this file and the main `README.md` for more details.
 - **Request**: Client credentials (`client_id`, `client_secret`, `grant_type`)
 - **Responses:**
   - **200 OK**: Token issued successfully
-    - _Body_:
+    - Body:
       ```json
       {
         "access_token": "<JWT>",
@@ -132,7 +132,7 @@ See this file and the main `README.md` for more details.
       }
       ```
   - **400 Bad Request**: Invalid grant type or malformed request
-    - _Body_:
+    - Body:
       ```json
       { "error": "invalid_grant" }
       ```
@@ -141,7 +141,7 @@ See this file and the main `README.md` for more details.
       { "error": "invalid_request" }
       ```
   - **401 Unauthorized**: Invalid credentials
-    - _Body_:
+    - Body:
       ```json
       { "error": "invalid_client" }
       ```
@@ -151,12 +151,12 @@ See this file and the main `README.md` for more details.
 - **Purpose**: Health check endpoint
 - **Responses:**
   - **200 OK**: Service is healthy
-    - _Body_:
+    - Body:
       ```json
       { "status": "ok" }
       ```
   - **500 Internal Server Error**: Health check failed
-    - _Body_:
+    - Body:
       ```json
       { "status": "error", "message": "<error details>" }
       ```
