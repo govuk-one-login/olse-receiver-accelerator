@@ -76,19 +76,90 @@ See this file and the main `README.md` for more details.
 
 - **Purpose**: Receive SET events
 - **Authentication**: OAuth2 Bearer token
-- **Request**: JWT in the request body
-- **Response**: 202 on success, 400/500 on error
+- **Request**: JWT in the request body (as `text/plain` or `application/secevent+jwt`)
+- **Responses:**
+  - **202 Accepted**: Signal processed successfully
+    - _Body_: _empty_
+  - **400 Bad Request**: Invalid JWT, schema validation failed, or payload missing
+    - _Body_ (invalid key):
+      ```json
+      {
+        "err": "invalid_key",
+        "description": "One or more keys used to encrypt or sign the SET is invalid or otherwise unacceptable to the SET Recipient (expired, revoked, failed certificate validation, etc.)."
+      }
+      ```
+    - _Body_ (invalid request):
+      ```json
+      {
+        "err": "invalid_request",
+        "description": "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
+      }
+      ```
+    - _Body_ (payload undefined):
+      ```json
+      {
+        "err": "invalid_request",
+        "description": "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
+      }
+      ```
+  - **401 Unauthorized**: Missing or invalid Bearer token
+    - _Body_:
+      ```json
+      { "error": "Unauthorised access" }
+      ```
+  - **500 Internal Server Error**: Server error or missing environment variable
+    - _Body_ (missing JWKS_URL):
+      ```json
+      { "error": "JWKS_URL environment variable is required" }
+      ```
+    - _Body_ (unexpected error):
+      ```json
+      { "error": "Internal server error" }
+      ```
 
 ### POST /v1/token
 
 - **Purpose**: Issue access tokens (client credentials flow)
-- **Request**: Form-encoded client credentials
-- **Response**: Access token (JWT)
+- **Request**: Form-encoded client credentials (`client_id`, `client_secret`, `grant_type`)
+- **Responses:**
+  - **200 OK**: Token issued successfully
+    - _Body_:
+      ```json
+      {
+        "access_token": "<JWT>",
+        "token_type": "Bearer",
+        "expires_in": 3600
+      }
+      ```
+  - **400 Bad Request**: Invalid grant type or malformed request
+    - _Body_:
+      ```json
+      { "error": "invalid_grant" }
+      ```
+      or
+      ```json
+      { "error": "invalid_request" }
+      ```
+  - **401 Unauthorized**: Invalid credentials
+    - _Body_:
+      ```json
+      { "error": "invalid_client" }
+      ```
 
 ### GET /v1/health-check
 
 - **Purpose**: Health check endpoint
-- **Response**: 200 if healthy
+- **Responses:**
+  - **200 OK**: Service is healthy
+    - _Body_:
+      ```json
+      { "status": "ok" }
+      ```
+  - **500 Internal Server Error**: Health check failed
+    - _Body_:
+      ```json
+      { "status": "error", "message": "<error details>" }
+      ```
 
 ## Configuration Files
 
