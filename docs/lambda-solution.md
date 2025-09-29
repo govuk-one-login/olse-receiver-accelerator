@@ -182,8 +182,71 @@ export AWS_STACK_NAME='stack_name'
 - **Purpose**: Receive SET events
 - **Authentication**: OAuth2 Bearer token
 - **Handler**: ReceiverFunction
-- **Request**: JSON payload containing signal data
-- **Response**: JSON acknowledgment
+- **Request**: JWT payload containing signal data
+- **Responses:**
+  - **202 Accepted**: Signal processed successfully
+    - Body: _empty string_
+  - **400 Bad Request**: Invalid JWT, schema validation failed, or payload missing
+    - Body (invalid key):
+      ```json
+      {
+        "err": "invalid_key",
+        "description": "One or more keys used to encrypt or sign the SET is invalid or otherwise unacceptable to the SET Recipient (expired, revoked, failed certificate validation, etc.)."
+      }
+      ```
+    - Body (invalid request):
+      ```json
+      {
+        "err": "invalid_request",
+        "description": "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
+      }
+      ```
+    - Body (payload undefined):
+      ```json
+      {
+        "err": "invalid_request",
+        "description": "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
+      }
+      ```
+  - **500 Internal Server Error**: Server error or missing environment variable
+    - Body (missing RECEIVER_SECRET_ARN):
+      ```json
+      {
+        "err": "internal_error",
+        "description": "RECEIVER_SECRET_ARN environment variable is required"
+      }
+      ```
+    - Body (unexpected error):
+      ```json
+      {
+        "err": "internal_error",
+        "description": "An internal error occurred"
+      }
+      ```
+
+### POST /api/v1/health-check
+
+- **Purpose**: Health check endpoint
+- **Handler**: HealthCheckFunction
+- **Responses:**
+  - **200 OK**: Service is healthy
+    - Body:
+      ```json
+      {
+        "success": true,
+        "status": 204,
+        "message": "Health check passed"
+      }
+      ```
+  - **500 Internal Server Error**: Health check failed
+    - Body:
+      ```json
+      {
+        "success": false,
+        "status": 500,
+        "message": "Health check failed"
+      }
+      ```
 
 ## Configuration Files
 
@@ -260,7 +323,52 @@ The following AWS resources are provisioned for the mockset verification API (mo
 ### Endpoints
 
 - `POST /verify`: Processes verification request
+  - **204 No Content**: Verification SET delivered successfully
+    - _Body_: _empty string_
+  - **400 Bad Request**: Invalid request
+    - _Body_:
+      ```json
+      {
+        "error": "invalid_request",
+        "error_description": "The request is missing required params or contains invalid values"
+      }
+      ```
+  - **403 Forbidden**: Access denied
+    - _Body_:
+      ```json
+      {
+        "error": "access_denied"
+      }
+      ```
+  - **500 Internal Server Error**: Server error
+    - _Body_:
+      ```json
+      {
+        "error": "server_error",
+        "error_description": "An internal server error occured"
+      }
+      ```
+
 - `GET /jwks`: JWKS to retrieve KMS public key for signature verification
+  - **200 OK**: JWKS returned successfully
+    - _Body_:
+      ```json
+      {
+        "keys": [
+          {
+            /* Some object */
+          }
+        ]
+      }
+      ```
+  - **500 Internal Server Error**: Server error
+    - _Body_:
+      ```json
+      {
+        "error": "INTERNAL_SERVER_ERROR",
+        "error_description": "unexpected error occured"
+      }
+      ```
 
 ### Mock Tx Environment Variable Configuration Parameters
 
