@@ -120,7 +120,7 @@ See this file and the main `README.md` for more details.
 ### POST /v1/token
 
 - **Purpose**: Issue access tokens (client credentials flow)
-- **Request**: Form-encoded client credentials (`client_id`, `client_secret`, `grant_type`)
+- **Request**: Client credentials (`client_id`, `client_secret`, `grant_type`)
 - **Responses:**
   - **200 OK**: Token issued successfully
     - _Body_:
