@@ -78,7 +78,7 @@ Once the signal is validated, it can be processed by RP-specific upstream proces
 
 ### Verification Signal
 
-AWS EventBridge can be configured to trigger a Lambda (such as the health check or a dedicated verification handler) every 15 minutes. The payload for the `state` field is stored in AWS DynamoDB so that, when the receiver receives the verification signal sent by the transmitter, it can verify the signal by looking up the value of `state` in the DynamoDB table.
+Every 15 minutes, AWS EventBridge triggers the health check Lambda, which sends a verification request with a `stream_id` and a `state` value to the mock transmitter. The mock transmitter validates that the `state` field, then includes it in the Security Event Token (SET) it generates and signs. The receiver validates the SET and routes the signal.
 
 ## Infrastructure Components
 
