@@ -13,13 +13,10 @@ class CustomLogFormatter extends LogFormatter {
     const baseAttributes: LogAttributes = {
       level: attributes.logLevel,
       message: attributes.message,
+      ...additionalLogAttributes,
       timestamp: String(attributes.timestamp)
     }
-
-    const logItem = new LogItem({ attributes: baseAttributes })
-    logItem.addAttributes(additionalLogAttributes)
-
-    return logItem
+    return new LogItem({ attributes: baseAttributes })
   }
 }
 
