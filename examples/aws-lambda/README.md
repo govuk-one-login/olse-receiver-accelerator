@@ -5,9 +5,8 @@ This directory contains the AWS Lambda implementation of the One Login Signal Ex
 ## Quick Start
 
 1. **Install dependencies:**
-2. **Copy the example directory:**
-3. **Set up environment variables:**
-4. **Run tests:**
+2. **Set up environment variables:**
+3. **Run tests:**
 
 ## Architecture Overview
 
