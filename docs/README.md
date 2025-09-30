@@ -55,4 +55,6 @@ The Signal Exchange Team will use [semantic versioning](https://semver.org/) acr
 Next you should look at the docs that explains the examples, how they work and what work that needs to be done to make the examples useful. See
 
 - [container-solution.md](container-solution.md) to see how the container example works and how it can be modified.
-- [lambda-solution.md](lambda-solution.md) to see how the lambda based example works and how it can be modified
+- [lambda-solution.md](lambda-solution.md) to see how the lambda based example works and how it can be modified.
+- [common/logging/logger.md](../common/logging/logger.md) for logging usage and configuration.
+- [common/config/config.md](../common/config/config.md) for configuration options and environment variable details.

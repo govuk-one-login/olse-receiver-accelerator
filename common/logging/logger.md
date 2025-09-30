@@ -1,60 +1,86 @@
-The four basic logging levels are available
+# Logging Usage and Configuration
 
-- info: Gerenal info (default)
-- warn: Warnings and errors
-- error: Only errors
-- debug: Detailed debugging
+This project uses two custom loggers based on AWS Lambda Powertools:
 
-Set the log level using environment variables:
+- `baseLogger`: For general application logging (uses `CustomLogFormatter`)
+- `lambdaLogger`: For Lambda-specific logging (uses `LambdaLogFormatter`)
 
-Option 1: Locally
+## Log Levels
 
-    `LOG_LEVEL=INFO`
+The following log levels are available:
 
-Option 2: AWS Logging
+- `INFO`: General info (default)
+- `WARN`: Warnings and errors
+- `ERROR`: Only errors
+- `DEBUG`: Detailed debugging
 
-Set the parameter value in template.yaml within the Globals section
+Set the log level using the `LOG_LEVEL` environment variable. Example:
 
+```sh
+LOG_LEVEL=DEBUG npm start
 ```
+
+Or in AWS SAM/CloudFormation:
+
+```yaml
 Globals:
-    Function:
-        Environment:
-            Variables:
-                LOG_LEVEL: !Ref LogLevel
+  Function:
+    Environment:
+      Variables:
+        LOG_LEVEL: !Ref LogLevel
 ```
 
-Option 3: Per Function AWS Logging
+Override per function:
 
-Override log level for specific functions by setting them in template.yaml
-
+```yaml
 OLSEFunction:
-Type: AWS::Serverless::Function
-Properties:
-Environment:
-Variables:
-LOG_LEVEL: DEBUG
-Output Format
+  Type: AWS::Serverless::Function
+  Properties:
+    Environment:
+      Variables:
+        LOG_LEVEL: DEBUG
+```
 
-BaseLogger output as JSON
+## Usage
 
-```{
+Import the logger you need:
+
+```typescript
+import { baseLogger } from '../logging/logger'
+import { lambdaLogger } from '../logging/logger'
+
+baseLogger.info('Message', { context })
+lambdaLogger.error('Error occurred', { error })
+```
+
+## Output Format
+
+### baseLogger output (JSON)
+
+```
+{
     "level": "INFO",
-    "message": "Processing successful
-    "timestamp": "2025-0101T00:00:00:000Z"
+    "message": "Processing successful",
+    "timestamp": "2025-01-01T00:00:00.000Z"
 }
 ```
 
-Lambda Logger output as JSON
+### lambdaLogger output (JSON)
 
 ```
 {
     "level": "INFO",
     "message": "Processing",
-    "timestamp": "2025-0101T00:00:00:000Z",
-    "functionName": "OLSEFunction",
-    "functionVersion": "X",
-    "region": "eu-west-2",
-    requestId: "some-request-id"
-    "memoryLimitInMB": 128
+    "timestamp": "2025-01-01T00:00:00.000Z",
+    "function_name": "OLSEFunction",
+    "function_version": "X",
+    "function_arn": "arn:aws:lambda:...",
+    "request_id": "some-request-id",
+    "memory_size": 128
 }
 ```
+
+## Customization
+
+- The log formatters (`CustomLogFormatter`, `LambdaLogFormatter`) control the output structure.
+- The log level is determined at runtime by the `getLogLevel` function, which checks the `LOG_LEVEL` environment variable.

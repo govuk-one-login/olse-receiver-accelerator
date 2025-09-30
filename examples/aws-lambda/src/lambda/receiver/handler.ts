@@ -31,9 +31,6 @@ export const handler = async (
     const secretArn = process.env['RECEIVER_SECRET_ARN']
     if (!secretArn) {
       logger.error('RECEIVER_SECRET_ARN environment variable is not set')
-      logger.error('Missing JWKS_URL enviornment variable', {
-        variable: 'JWKS_URL'
-      })
       return {
         statusCode: 500,
         headers: { 'Content-Type': 'application/json' },
