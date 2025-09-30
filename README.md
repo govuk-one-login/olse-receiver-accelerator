@@ -62,6 +62,9 @@ export RECEIVER_SECRET_ARN='receiver-secret-arn'
 export VERIFICATION_ENDPOINT='https://verification-endpoint'
 export JWKS_ENDPOINT='https://jwks-endpoint'
 export MOCK_TX_SECRET_ARN='mock-tx-secret-arn'
+
+export KMS_KEY_ID='kms-key-id'
+export AWS_REGION='eu-west-2
 ```
 
 ## Running Tests
