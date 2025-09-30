@@ -30,8 +30,8 @@
   },
   "homepage": "https://github.com/govuk-one-login/olse-receiver-accelerator#readme",
   "devDependencies": {
-    "@aws-sdk/client-cognito-identity-provider": "^3.865.0",
-    "@aws-sdk/client-secrets-manager": "^3.848.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.899.0",
+    "@aws-sdk/client-secrets-manager": "^3.899.0",
     "@eslint/js": "^9.33.0",
     "@types/aws-lambda": "^8.10.152",
     "@types/express": "^5.0.3",
@@ -68,15 +68,15 @@
     "node": ">=22.0.0"
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity-provider": "^3.862.0",
-    "@aws-sdk/client-kms": "^3.862.0",
-    "@aws-lambda-powertools/logger": "^2.25.1",
-    "@aws-sdk/client-cloudformation": "^3.856.0",
-    "@aws-sdk/client-secrets-manager": "^3.848.0",
-    "@aws-sdk/client-ssm": "^3.886.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.899.0",
+    "@aws-sdk/client-kms": "^3.899.0",
+    "@aws-lambda-powertools/logger": "^2.27.0",
+    "@aws-sdk/client-cloudformation": "^3.899.0",
+    "@aws-sdk/client-secrets-manager": "^3.899.0",
+    "@aws-sdk/client-ssm": "^3.899.0",
     "aws-jwt-verify": "^5.1.0",
     "express": "^5.1.0",
     "fs": "^0.0.1-security",
-    "jose": "^6.0.12"
+    "jose": "^6.1.0"
   }
 }
