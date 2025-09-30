@@ -1,26 +1,40 @@
-import { SignJWT, importJWK, JWK } from 'jose'
+import { SignJWT, importJWK, JWK, CryptoKey } from 'jose'
 import * as fs from 'fs'
 import { generateJWTPayload } from '../types'
-import { ConfigurationKeys } from '../config/ConfigurationKeys'
-import { config } from '../../../examples/express-container/config/globalConfig'
+import { getSecret } from '../../../common/secretsManager/secretsManager'
+import { ConfigurationKeys } from '../../../common/config/configurationKeys'
+import { config } from '../../../common/config/config'
 
 const getPrivateKey = async () => {
-  const privateKey = config.getOrDefault(
-    ConfigurationKeys.PRIVATE_KEY_PATH,
-    './keys/authPrivate.key'
-  )
+  const privateKey = config.get(ConfigurationKeys.PRIVATE_KEY_PATH)
   const privateKeyJwk = JSON.parse(fs.readFileSync(privateKey, 'utf8')) as JWK
-  // const privateKeyJwk = JSON.parse(
-  //   fs.readFileSync('./keys/authPrivate.key', 'utf8')
-  // ) as JWK
-  return await importJWK(privateKeyJwk, 'PS256')
+  return await importJWK(privateKeyJwk, 'RS256')
+}
+
+export const getPrivateKeyFromSecretsManager = async (
+  keySecretName: string
+): Promise<CryptoKey> => {
+  const keySecretString = await getSecret(keySecretName)
+  if (!keySecretString) {
+    throw new Error('Unable to get private key from Secrets Manager')
+  }
+  const secretData = JSON.parse(keySecretString) as { privateKey: string }
+  if (!secretData.privateKey) {
+    throw new Error('Private key not found in secret')
+  }
+
+  const privateKeyJwk = JSON.parse(secretData.privateKey) as JWK
+  return (await importJWK(privateKeyJwk, 'RS256')) as CryptoKey
 }
 
 // generates for 1 hour
 export const generateJWT = async (
-  payload: generateJWTPayload
+  payload: generateJWTPayload,
+  privateKeySecretName?: string
 ): Promise<string> => {
-  const privateKey = await getPrivateKey()
+  const PRIVATE_KEY_SECRET =
+    privateKeySecretName ?? process.env['PRIVATE_KEY_SECRET'] ?? 'default'
+  const privateKey = await getPrivateKeyFromSecretsManager(PRIVATE_KEY_SECRET)
 
   const basePayload = new SignJWT(payload.payload)
     .setProtectedHeader({ alg: payload.alg })
@@ -40,7 +54,7 @@ export const generateBasicJWT = async (): Promise<string> => {
   const privateKey = await getPrivateKey()
 
   return await new SignJWT()
-    .setProtectedHeader({ alg: 'PS256' })
+    .setProtectedHeader({ alg: 'RS256' })
     .setIssuedAt()
     .setExpirationTime('1h')
     .sign(privateKey)

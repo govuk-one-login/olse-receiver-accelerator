@@ -1,8 +1,7 @@
 import { Request } from 'express'
 import { generateJWT } from './jwt'
 import { getAuthInput } from './getAuthInput'
-import { config } from '../../../examples/express-container/config/globalConfig'
-import { ConfigurationKeys } from '../config/ConfigurationKeys'
+import { ConfigurationKeys } from '../../../common/config/configurationKeys'
 import { baseLogger as logger } from '../../../common/logging/logger'
 
 interface ValidResponse {
@@ -30,13 +29,13 @@ export const auth = async (req: Request): Promise<Result> => {
   }
 
   if (
-    client_id === config.get(ConfigurationKeys.CLIENT_ID) &&
-    client_secret === config.get(ConfigurationKeys.CLIENT_SECRET)
+    client_id === process.env[ConfigurationKeys.CLIENT_ID] &&
+    client_secret === process.env[ConfigurationKeys.CLIENT_SECRET]
   ) {
     try {
       logger.debug('Generating jwt token')
       const token = await generateJWT({
-        alg: 'PS256',
+        alg: 'RS256',
         audience: 'https://transmitter.example.com',
         issuer: 'https://receiver.example.com',
         jti: '123456',

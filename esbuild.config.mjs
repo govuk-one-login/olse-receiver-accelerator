@@ -1,6 +1,6 @@
 // esbuild.config.js
 import esbuild from 'esbuild'
-import { readFileSync } from 'fs'
+import { existsSync, readFileSync, cpSync, mkdirSync } from 'fs'
 import { dirname, join } from 'path'
 import { yamlParse } from 'yaml-cfn'
 
@@ -23,10 +23,24 @@ async function main() {
     console.log('Running esbuild for container')
     await buildForContainer()
   } else if (process.env['AWS_LAMBDA_REFERENCE'] === 'true') {
-    console.log('Running esbuild for container')
+    console.log('Running esbuild for AWS Lambda reference')
     await buildFor_AWS_LAMBDA_REFERENCE()
   } else {
     throw new Error('Invalid build target')
+  }
+}
+
+function copySchemas(outdir) {
+  const schemasSource = 'schemas'
+  const schemasTarget = join(outdir, 'schemas')
+  if (existsSync(schemasSource)) {
+    if (!existsSync(outdir)) {
+      mkdirSync(outdir, { recursive: true })
+      console.log('Copied schemas to', schemasTarget)
+    }
+    cpSync(schemasSource, schemasTarget, { recursive: true })
+  } else {
+    console.warn('No schemas folder found to copy')
   }
 }
 
@@ -36,35 +50,33 @@ async function buildFor_AWS_LAMBDA_REFERENCE() {
     readFileSync(join(dirname('.'), `${baseLambdaPath}/template.yaml`), 'utf-8')
   )
 
-  const awsResources = Object.values(Resources)
-  const lambdas = awsResources.filter(
+  const lambdas = Object.values(Resources).filter(
     (resource) => resource.Type === 'AWS::Serverless::Function'
   )
 
-  const entries = lambdas.reduce((entryPoints, lambda) => {
+  const entries = []
+  for (const lambda of lambdas) {
     const codeUri = lambda.Properties.CodeUri
-
+    const handler = lambda.Properties.Handler
     const sourcePath = codeUri.startsWith('dist/')
       ? codeUri.substring(5)
       : codeUri
-
-    const handlerPath = join('.', sourcePath, 'handler.ts')
-    if (!entryPoints.includes(handlerPath)) {
-      entryPoints.push(handlerPath)
-    }
-
-    return entryPoints
-  }, [])
+    const handlerPath = handler.split('.')[0]
+    const entry = join('.', sourcePath, `${handlerPath}.ts`)
+    if (!entries.includes(entry)) entries.push(entry)
+  }
 
   console.log('entries')
   console.log(entries)
+  const outdir = `dist/${baseLambdaPath}/src`
   const finalConfig = {
     ...baseEsBuildConfig,
     format: 'cjs', // Override ESM format for AWS Lambda
     entryPoints: entries,
-    outdir: `dist/${baseLambdaPath}/src`
+    outdir
   }
   await esbuild.build(finalConfig)
+  copySchemas(outdir)
 }
 
 async function buildForContainer() {

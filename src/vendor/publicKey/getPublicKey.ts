@@ -1,4 +1,3 @@
-// import { readFile } from "fs/promises"
 import * as jose from 'jose'
 
 export const getPublicKeyFromRemote = (url: string) => {

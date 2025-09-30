@@ -1,17 +1,13 @@
-import {
-  GetPublicKeyCommand,
-  KMSClient,
-  SignCommand
-} from '@aws-sdk/client-kms'
-import { SET } from './mockApiTxInterfaces'
-import { KmsPublicKeyData } from './mockApiTxInterfaces'
+import { GetPublicKeyCommand, SignCommand } from '@aws-sdk/client-kms'
+import { SET, KmsPublicKeyData } from './mockApiTxInterfaces'
 import { getEnv } from './utils'
+import { getKMSClient } from '../sdk/sdkClient'
 
-export async function signedJWTWithKMS(payload: SET): Promise<string> {
-  const kmsClient = new KMSClient({
-    region: process.env['AWS_REGION'] ?? 'eu-west-2'
-  })
+export type JWTPayload = SET
 
+export const signedJWTWithKMS = async (
+  payload: JWTPayload
+): Promise<string> => {
   const header = {
     alg: 'RS256',
     typ: 'secevent+jwt',
@@ -26,21 +22,15 @@ export async function signedJWTWithKMS(payload: SET): Promise<string> {
   )
 
   const signingInput = `${encodedHeader}.${encodedPayload}`
-
-  const kmsKeyId = process.env['KMS_KEY_ID']
-
-  if (!kmsKeyId) {
-    throw new Error('KMS_KEY_ID environment variable not set')
-  }
-
+  const KMS_KEY_ID = getEnv('KMS_KEY_ID')
   const signCommand = new SignCommand({
-    KeyId: kmsKeyId,
+    KeyId: KMS_KEY_ID,
     Message: Buffer.from(signingInput),
     MessageType: 'RAW',
-    SigningAlgorithm: 'RSASSA_PSS_SHA_256'
+    SigningAlgorithm: 'RSASSA_PKCS1_V1_5_SHA_256'
   })
 
-  const signResult = await kmsClient.send(signCommand)
+  const signResult = await getKMSClient().send(signCommand)
   if (!signResult.Signature) {
     throw new Error('KMS signing failed')
   }
@@ -49,18 +39,12 @@ export async function signedJWTWithKMS(payload: SET): Promise<string> {
   return `${signingInput}.${signature}`
 }
 
-export async function getKmsPublicKey(
+export const getKmsPublicKey = async (
   keyArn: string
-): Promise<KmsPublicKeyData> {
-  const kmsClient = new KMSClient({
-    region: process.env['AWS_REGION'] ?? 'eu-west-2'
-  })
-
-  const getKeyCommand = new GetPublicKeyCommand({
-    KeyId: keyArn
-  })
-
-  const response = await kmsClient.send(getKeyCommand)
+): Promise<KmsPublicKeyData> => {
+  const response = await getKMSClient().send(
+    new GetPublicKeyCommand({ KeyId: keyArn })
+  )
 
   if (!response.PublicKey || !response.KeyId) {
     throw new Error(`Failed to retrieve public key for ${keyArn}`)

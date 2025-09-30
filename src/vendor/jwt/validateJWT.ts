@@ -1,5 +1,5 @@
 import * as jose from 'jose'
-import { getPublicKeyFromRemote } from '../getPublicKey'
+import { getPublicKeyFromRemote } from '../publicKey/getPublicKey'
 
 export async function validateJWT(
   jwt: string,

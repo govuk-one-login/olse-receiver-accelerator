@@ -1,8 +1,8 @@
 import {
   verificationSignalWithoutState,
   verificationSignalWithState
-} from '../../tests/testConstants'
-import { validateSignalAgainstSchemas } from './validateSchema'
+} from '../../../tests/testConstants'
+import { validateSignalAgainstSchemas } from '../validateSchema/validateSchema'
 
 describe('validateSignalAgainstSchema', () => {
   test('it should return valid: true if signal does match one of the given schema', async () => {

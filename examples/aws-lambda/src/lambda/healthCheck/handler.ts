@@ -3,54 +3,79 @@ import {
   APIGatewayProxyResult,
   Context
 } from 'aws-lambda'
-import { sendVerificationSignal } from '../../../../express-container/verification/sendVerification'
-import { config } from '../../../../express-container/config/globalConfig'
-import { ConfigurationKeys } from '../../../../express-container/config/ConfigurationKeys'
+import { ConfigurationKeys } from '../../../../../common/config/configurationKeys'
+import { getParameter } from '../../../../../common/ssm/ssm'
+import { getEnv } from '../../mock-transmitter/utils'
+import { getTokenFromCognito } from '../../../../../common/cognito/getTokenFromCognito'
 import { lambdaLogger as logger } from '../../../../../common/logging/logger'
-
-const pause = (timeInMs: number) => {
-  return new Promise((resolve) => setTimeout(resolve, timeInMs))
-}
-
-const VERIFICATION_ENDPOINT_URL = config.getOrDefault(
-  ConfigurationKeys.VERIFICATION_ENDPOINT_URL,
-  'https://rp.co.uk/verify'
-)
-const STREAM_ID = config.getOrDefault(
-  ConfigurationKeys.STREAM_ID,
-  'default-stream-id'
-)
 
 export const handler = async (
   event: APIGatewayProxyEvent,
   _context: Context
 ): Promise<APIGatewayProxyResult> => {
   try {
-    logger.info('Processing verification request', { event: event })
+    logger.info('Processing verification request', { event })
 
-    // add a pause to prevent eslint from raising issues around the lack of an await function
-    await pause(10)
+    const stackName = getEnv(ConfigurationKeys.AWS_STACK_NAME)
+    const verificationEndpointUrl = await getParameter(
+      `/${stackName}/mock-verification-endpoint`
+    )
+    logger.debug('Verification endpoint url resolved', {
+      verificationEndpointUrl
+    })
+
+    const mockTxSecretArn = getEnv('MOCK_TX_SECRET_ARN')
+    const access_token = await getTokenFromCognito(mockTxSecretArn)
+
+    const verificationRequest = {
+      stream_id: 'health-check-stream',
+      state: 'health-check-state'
+    }
 
     logger.debug('Sending verification signal')
-    const response = await sendVerificationSignal(
-      VERIFICATION_ENDPOINT_URL,
-      STREAM_ID
-    )
-    logger.info('Verification sginal sent successfully', { response: response })
-    // Return successful response
+    const response = await fetch(verificationEndpointUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: `Bearer ${access_token}`
+      },
+      body: JSON.stringify(verificationRequest)
+    })
+    logger.info('Verification signal sent', {
+      status: response.status,
+      ok: response.ok
+    })
+
+    if (response.status !== 204) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          success: false,
+          status: response.status,
+          message: 'Health check failed'
+        })
+      }
+    }
+
     return {
       statusCode: 200,
-      body: JSON.stringify(response)
+      body: JSON.stringify({
+        success: true,
+        status: response.status,
+        message: 'Health check passed'
+      })
     }
   } catch (error) {
-    // Handle any errors
     logger.error('Error processing request:', {
       error: error instanceof Error ? error.message : String(error)
     })
     return {
       statusCode: 500,
       body: JSON.stringify({
-        error: 'Internal server error'
+        success: false,
+        status: 500,
+        message: 'Health check failed'
       })
     }
   }

@@ -4,22 +4,28 @@ import { when } from 'jest-when'
 import * as jose from 'jose'
 import request from 'supertest'
 import { generateJWT } from '../../src/vendor/auth/jwt'
-import { getPublicKeyFromRemote } from '../../src/vendor/getPublicKey'
+import { getPublicKeyFromRemote } from '../../src/vendor/publicKey/getPublicKey'
 import { app } from './express'
 import * as signalRouting from '../../common/signalRouting/signalRouter'
 import { stopVerificationSignals } from './verification/startHealthCheck'
-import { config } from './config/globalConfig'
-import { ConfigurationKeys } from './config/ConfigurationKeys'
+import { ConfigurationKeys } from '../../common/config/configurationKeys'
 import { baseLogger } from '../../common/logging/logger'
+import { getSecret } from '../../common/secretsManager/secretsManager'
 
-jest.mock('../../src/vendor/getPublicKey', () => ({
+jest.mock('../../src/vendor/publicKey/getPublicKey', () => ({
   getPublicKeyFromRemote: jest.fn()
 }))
 
 const loggerErrorSpy = jest.spyOn(baseLogger, 'error').mockImplementation()
 
+jest.mock('../../common/secretsManager/secretsManager', () => ({
+  getSecret: jest.fn()
+}))
+
+const mockGetSecret = jest.mocked(getSecret)
+
 const sampleVerificationEvent = {
-  alg: 'PS256',
+  alg: 'RS256',
   audience: 'https://aud.example.com',
   issuer: 'https://issuer.example.com',
   jti: '123456',
@@ -50,16 +56,23 @@ describe('Express server /v1 endpoint', () => {
     process.env[ConfigurationKeys.CLIENT_ID] = 'test_client'
     process.env[ConfigurationKeys.CLIENT_SECRET] = 'test_secret'
     process.env[ConfigurationKeys.PRIVATE_KEY_PATH] = './keys/authPrivate.key'
-    process.env[ConfigurationKeys.PUBLIC_KEY_PATH] = './keys/authPrivate.key'
-    process.env['JWKS_URL'] = 'https://example.com/jwks'
-    await config.initialise()
+    process.env[ConfigurationKeys.PUBLIC_KEY_PATH] = './keys/authPublic.key'
+    process.env[ConfigurationKeys.JWKS_URL] = 'https://example.com/jwks'
+    process.env[ConfigurationKeys.AWS_REGION] = 'eu-west-2'
 
     publicKeyString = readFileSync('./keys/authPublic.key', {
       encoding: 'utf8'
     })
     // eslint-disable-next-line
     publicKeyJson = JSON.parse(publicKeyString as any)
-    key = await jose.importJWK(publicKeyJson as jose.JWK, 'PS256')
+    key = await jose.importJWK(publicKeyJson as jose.JWK, 'RS256')
+
+    const privateKeyString = readFileSync('./keys/authPrivate.key', {
+      encoding: 'utf8'
+    })
+    mockGetSecret.mockResolvedValue(
+      JSON.stringify({ privateKey: privateKeyString })
+    )
   })
 
   afterEach(() => {
@@ -101,7 +114,8 @@ describe('Express server /v1 endpoint', () => {
   })
 
   it('should return 401 when CLIENT_ID env var is missing', async () => {
-    config.delete(ConfigurationKeys.CLIENT_ID)
+    // eslint-disable-next-line
+    delete process.env[ConfigurationKeys.CLIENT_ID]
 
     const response = await request(app)
       .post('/v1/token')
@@ -117,7 +131,8 @@ describe('Express server /v1 endpoint', () => {
   })
 
   it('should return 401 when CLIENT_SECRET env var is missing', async () => {
-    config.delete(ConfigurationKeys.CLIENT_SECRET)
+    // eslint-disable-next-line
+    delete process.env[ConfigurationKeys.CLIENT_SECRET]
 
     const response = await request(app).post('/v1/token').query({
       client_id: 'test_client',
@@ -130,8 +145,8 @@ describe('Express server /v1 endpoint', () => {
   })
 
   it('should return 200 with valid credentials', async () => {
-    config.set(ConfigurationKeys.CLIENT_ID, 'test_client')
-    config.set(ConfigurationKeys.CLIENT_SECRET, 'test_secret')
+    process.env['CLIENT_ID'] = 'test_client'
+    process.env['CLIENT_SECRET'] = 'test_secret'
     const response = await request(app).post('/v1/token').query({
       client_id: 'test_client',
       client_secret: 'test_secret',
@@ -216,7 +231,7 @@ describe('Express server /v1 endpoint', () => {
     // @ts-expect-error ignore type errors
     when(getPublicKeyFromRemote).mockReturnValue(key)
     const jwt = await generateJWT({
-      alg: 'PS256',
+      alg: 'RS256',
       audience: 'https://aud.example.com',
       issuer: 'https://issuer.example.com',
       jti: '123456',

@@ -1,7 +1,7 @@
-import { config } from '../config/awsConfig'
+import { config } from '../../../common/config/config'
 import { generateJWT } from '../../../src/vendor/auth/jwt'
 import { generateJWTPayload } from '../../../src/vendor/types'
-import { ConfigurationKeys } from '../config/ConfigurationKeys'
+import { ConfigurationKeys } from '../../../common/config/configurationKeys'
 import { baseLogger as logger } from '../../../common/logging/logger'
 
 export async function createVerificationJwt(
@@ -9,16 +9,13 @@ export async function createVerificationJwt(
   streamId: string
 ): Promise<string> {
   try {
-    const ISSUER = config.getOrDefault(
-      ConfigurationKeys.ISSUER,
-      'default-issuer'
-    )
+    const ISSUER = config.get(ConfigurationKeys.ISSUER)
 
     const jwtPayload: generateJWTPayload = {
       payload: {
         streamId: streamId
       },
-      alg: 'PS256',
+      alg: 'RS256',
       issuer: ISSUER,
       jti: `verification-${String(Date.now())}`,
       audience: relyingPartyUrl,

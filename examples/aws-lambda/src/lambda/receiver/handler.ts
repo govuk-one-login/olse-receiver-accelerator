@@ -1,18 +1,23 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { getPublicKeyFromRemote } from '../../../../../src/vendor/getPublicKey'
+import { getPublicKeyFromRemote } from '../../../../../src/vendor/publicKey/getPublicKey'
 import { validateJWTWithRemoteKey } from '../../../../../src/vendor/jwt/validateJWT'
-import { validateSignalAgainstSchemas } from '../../../../../src/vendor/validateSchema'
+import { validateSignalAgainstSchemas } from '../../../../../src/vendor/validateSchema/validateSchema'
 import { handleSignalRouting } from '../../../../../common/signalRouting/signalRouter'
 import { httpErrorResponseMessages } from '../../../../../common/constants'
+import { ConfigurationKeys } from '../../../../../common/config/configurationKeys'
+import { getParameter } from '../../../../../common/ssm/ssm'
+import { getEnv } from '../../mock-transmitter/utils'
 import { lambdaLogger as logger } from '../../../../../common/logging/logger'
 
 export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   try {
+    logger.info('Received event:', { event })
     const jwt = event.body
     logger.info('Processing signal receiver request')
     if (!jwt) {
+      logger.error('No JWT found in request body')
       logger.warn('Request missing body')
       return {
         statusCode: 400,
@@ -23,9 +28,9 @@ export const handler = async (
         })
       }
     }
-
-    const jwksUrl = process.env['JWKS_URL']
-    if (!jwksUrl) {
+    const secretArn = process.env['RECEIVER_SECRET_ARN']
+    if (!secretArn) {
+      logger.error('RECEIVER_SECRET_ARN environment variable is not set')
       logger.error('Missing JWKS_URL enviornment variable', {
         variable: 'JWKS_URL'
       })
@@ -34,13 +39,16 @@ export const handler = async (
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           err: 'internal_error',
-          description: 'JWKS_URL environment variable is required'
+          description: 'RECEIVER_SECRET_ARN environment variable is required'
         })
       }
     }
 
-    logger.debug('Retriving public key', { jwksUrl })
+    const stackName = getEnv(ConfigurationKeys.AWS_STACK_NAME)
+    const jwksUrl = await getParameter(`/${stackName}/jwks-url`)
+
     const publicKey = getPublicKeyFromRemote(jwksUrl)
+    logger.debug('Fetched public key from JWKS URL')
 
     let verifiedJwtBody
     try {
@@ -59,7 +67,6 @@ export const handler = async (
     }
 
     const jwtPayload = verifiedJwtBody.payload
-
     if (typeof jwtPayload === 'undefined') {
       logger.warn('JWT payload is undefined')
       return {
@@ -73,10 +80,10 @@ export const handler = async (
       }
     }
 
-    logger.debug('Validating signal against schemas')
     const schemaValidationResult =
       await validateSignalAgainstSchemas(jwtPayload)
 
+    logger.debug('Schema validation result:', { schemaValidationResult })
     if (!schemaValidationResult.valid) {
       logger.warn('Schema validationg failed', { Error })
       return {
@@ -87,7 +94,6 @@ export const handler = async (
     }
     logger.info('Schema validated successfully')
 
-    logger.debug('Routing signal', { schema: schemaValidationResult.schema })
     const result = await handleSignalRouting(
       jwtPayload,
       schemaValidationResult.schema

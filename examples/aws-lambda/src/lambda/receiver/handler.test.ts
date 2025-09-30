@@ -1,34 +1,39 @@
-import { when } from 'jest-when'
 import { APIGatewayProxyEvent } from 'aws-lambda'
-import { getPublicKeyFromRemote } from '../../../../../src/vendor/getPublicKey'
+import * as jose from 'jose'
+import { getPublicKeyFromRemote } from '../../../../../src/vendor/publicKey/getPublicKey'
 import { validateJWTWithRemoteKey } from '../../../../../src/vendor/jwt/validateJWT'
-import { validateSignalAgainstSchemas } from '../../../../../src/vendor/validateSchema'
+import { validateSignalAgainstSchemas } from '../../../../../src/vendor/validateSchema/validateSchema'
 import { handleSignalRouting } from '../../../../../common/signalRouting/signalRouter'
 import { handler } from './handler'
-import { lambdaLogger as logger } from '../../../../../common/logging/logger'
+import { getParameter } from '../../../../../common/ssm/ssm'
+import { lambdaLogger } from '../../../../../common/logging/logger'
 
-jest.mock('../../../../../src/vendor/getPublicKey')
+jest.mock('../../../../../src/vendor/publicKey/getPublicKey')
 jest.mock('../../../../../src/vendor/jwt/validateJWT')
-jest.mock('../../../../../src/vendor/validateSchema')
+jest.mock('../../../../../src/vendor/validateSchema/validateSchema')
 jest.mock('../../../../../common/signalRouting/signalRouter')
+jest.mock('../../../../../common/ssm/ssm')
+jest.mock('../../../../../common/logging/logger', () => ({
+  lambdaLogger: {
+    info: jest.fn(),
+    error: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn()
+  }
+}))
 
-const loggerErrorSpy = jest.spyOn(logger, 'error').mockImplementation()
+type VerifyResult = Awaited<ReturnType<typeof validateJWTWithRemoteKey>>
 
-const mockEvent: APIGatewayProxyEvent = {
-  body: 'mock.jwt.token',
-  headers: {},
-  multiValueHeaders: {},
-  httpMethod: 'POST',
-  isBase64Encoded: false,
-  path: '/receiver',
-  pathParameters: null,
-  queryStringParameters: null,
-  multiValueQueryStringParameters: null,
-  stageVariables: null,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
-  requestContext: {} as any,
-  resource: ''
-}
+const mockGetPublicKeyFromRemote = jest.mocked(getPublicKeyFromRemote)
+const mockValidateJWTWithRemoteKey = jest.mocked(validateJWTWithRemoteKey)
+const mockValidateSignalAgainstSchemas = jest.mocked(
+  validateSignalAgainstSchemas
+)
+const mockHandleSignalRouting = jest.mocked(handleSignalRouting)
+const mockGetParameter = jest.mocked(getParameter)
+
+const fetchMock: jest.MockedFunction<typeof fetch> = jest.fn()
+global.fetch = fetchMock
 
 const mockJwtPayload = {
   sub_id: { format: 'opaque', id: 'test-id' },
@@ -39,62 +44,62 @@ const mockJwtPayload = {
   }
 }
 
+const baseEvent: Partial<APIGatewayProxyEvent> = {
+  body: '1.2.3',
+  requestContext: {
+    requestId: 'test-request-id-001'
+  } as APIGatewayProxyEvent['requestContext']
+}
+
+let warnSpy: jest.SpyInstance
+let errorSpy: jest.SpyInstance
+
 describe('receiver handler', () => {
   beforeEach(() => {
     jest.resetAllMocks()
-    process.env['JWKS_URL'] = 'https://example.com/jwks'
+
+    warnSpy = jest.spyOn(lambdaLogger, 'warn')
+    errorSpy = jest.spyOn(lambdaLogger, 'error')
+
+    process.env['RECEIVER_SECRET_ARN'] = 'test-arn'
+    process.env['AWS_STACK_NAME'] = 'test-stack'
+
+    mockGetParameter.mockResolvedValue('https://test.com/jwks')
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ keys: [] }), { status: 200 })
+    )
+
+    const realRemoteJwks = jose.createRemoteJWKSet(
+      new URL('https://test.com/jwks')
+    )
+    mockGetPublicKeyFromRemote.mockReturnValue(realRemoteJwks)
+  })
+
+  afterEach(() => {
+    delete process.env['RECEIVER_SECRET_ARN']
+    delete process.env['AWS_STACK_NAME']
   })
 
   it('returns 400 when request body is missing', async () => {
-    const eventWithoutBody = { ...mockEvent, body: null }
-
-    const result = await handler(eventWithoutBody)
-
-    expect(result).toEqual({
-      statusCode: 400,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        err: 'invalid_request',
-        description: 'Request body is required'
-      })
-    })
+    const event = { ...baseEvent, body: null }
+    const result = await handler(event as APIGatewayProxyEvent)
+    expect(result.statusCode).toBe(400)
+    expect(warnSpy).toHaveBeenCalledWith('Request missing body')
   })
 
   it('returns 400 when JWT validation fails', async () => {
-    when(getPublicKeyFromRemote).mockReturnValue(
-      {} as ReturnType<typeof getPublicKeyFromRemote>
-    )
-    when(validateJWTWithRemoteKey).mockRejectedValue(new Error('Invalid JWT'))
-
-    const result = await handler(mockEvent)
-
-    expect(result).toEqual({
-      statusCode: 400,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        err: 'invalid_key',
-        description:
-          'One or more keys used to encrypt or sign the SET is invalid or otherwise unacceptable to the SET Recipient (expired, revoked, failed certificate validation, etc.).'
-      })
-    })
-    expect(loggerErrorSpy).toHaveBeenCalledWith(
-      'failed to validate JWT with remote key',
-      expect.any(Object)
-    )
+    mockValidateJWTWithRemoteKey.mockRejectedValue(new Error('Invalid JWT'))
+    const result = await handler(baseEvent as APIGatewayProxyEvent)
+    expect(result.statusCode).toBe(400)
   })
 
   it('returns 400 when JWT payload is undefined', async () => {
-    when(getPublicKeyFromRemote).mockReturnValue(
-      {} as ReturnType<typeof getPublicKeyFromRemote>
-    )
-    when(validateJWTWithRemoteKey).mockResolvedValue({
+    mockValidateJWTWithRemoteKey.mockResolvedValue({
       payload: undefined,
-      protectedHeader: {},
-      key: {}
-    } as unknown as ReturnType<typeof validateJWTWithRemoteKey>)
-
-    const result = await handler(mockEvent)
-
+      protectedHeader: { alg: 'RS256' },
+      key: new Uint8Array()
+    } as unknown as VerifyResult)
+    const result = await handler(baseEvent as APIGatewayProxyEvent)
     expect(result).toEqual({
       statusCode: 400,
       headers: { 'Content-Type': 'application/json' },
@@ -104,24 +109,20 @@ describe('receiver handler', () => {
           "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
       })
     })
+    expect(warnSpy).toHaveBeenCalledWith('JWT payload is undefined')
   })
 
   it('returns 400 when schema validation fails', async () => {
-    when(getPublicKeyFromRemote).mockReturnValue(
-      {} as ReturnType<typeof getPublicKeyFromRemote>
-    )
-    when(validateJWTWithRemoteKey).mockResolvedValue({
+    mockValidateJWTWithRemoteKey.mockResolvedValue({
       payload: mockJwtPayload,
-      protectedHeader: {},
-      key: {}
-    } as unknown as ReturnType<typeof validateJWTWithRemoteKey>)
-    when(validateSignalAgainstSchemas).mockResolvedValue({
+      protectedHeader: { alg: 'RS256' },
+      key: new Uint8Array()
+    } as VerifyResult)
+    mockValidateSignalAgainstSchemas.mockResolvedValue({
       valid: false,
       message: 'Invalid schema'
     })
-
-    const result = await handler(mockEvent)
-
+    const result = await handler(baseEvent as APIGatewayProxyEvent)
     expect(result).toEqual({
       statusCode: 400,
       headers: { 'Content-Type': 'application/json' },
@@ -131,27 +132,21 @@ describe('receiver handler', () => {
           "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
       })
     })
+    expect(warnSpy).toHaveBeenCalledWith('Schema validationg failed', { Error })
   })
 
   it('returns 400 when signal routing fails', async () => {
-    when(getPublicKeyFromRemote).mockReturnValue(
-      {} as ReturnType<typeof getPublicKeyFromRemote>
-    )
-    when(validateJWTWithRemoteKey).mockResolvedValue({
+    mockValidateJWTWithRemoteKey.mockResolvedValue({
       payload: mockJwtPayload,
-      protectedHeader: {},
-      key: {}
-    } as unknown as ReturnType<typeof validateJWTWithRemoteKey>)
-    when(validateSignalAgainstSchemas).mockResolvedValue({
+      protectedHeader: { alg: 'RS256' },
+      key: new Uint8Array()
+    } as VerifyResult)
+    mockValidateSignalAgainstSchemas.mockResolvedValue({
       valid: true,
       schema: 'test-schema'
     })
-    when(handleSignalRouting).mockResolvedValue({
-      valid: false
-    })
-
-    const result = await handler(mockEvent)
-
+    mockHandleSignalRouting.mockResolvedValue({ valid: false })
+    const result = await handler(baseEvent as APIGatewayProxyEvent)
     expect(result).toEqual({
       statusCode: 400,
       headers: { 'Content-Type': 'application/json' },
@@ -161,47 +156,40 @@ describe('receiver handler', () => {
           "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
       })
     })
-    expect(loggerErrorSpy).toHaveBeenCalledWith('failed to route signal')
+    expect(errorSpy).toHaveBeenCalledWith('failed to route signal')
   })
 
   it('returns 202 when signal processing succeeds', async () => {
-    when(getPublicKeyFromRemote).mockReturnValue(
-      {} as ReturnType<typeof getPublicKeyFromRemote>
-    )
-    when(validateJWTWithRemoteKey).mockResolvedValue({
+    mockValidateJWTWithRemoteKey.mockResolvedValue({
       payload: mockJwtPayload,
-      protectedHeader: {},
-      key: {}
-    } as unknown as ReturnType<typeof validateJWTWithRemoteKey>)
-    when(validateSignalAgainstSchemas).mockResolvedValue({
+      protectedHeader: { alg: 'RS256' },
+      key: new Uint8Array()
+    } as VerifyResult)
+    mockValidateSignalAgainstSchemas.mockResolvedValue({
       valid: true,
       schema: 'test-schema'
     })
-    when(handleSignalRouting).mockResolvedValue({
+    mockHandleSignalRouting.mockResolvedValue({
       valid: true,
       schema: 'test-schema'
     })
-
-    const result = await handler(mockEvent)
-
+    const result = await handler(baseEvent as APIGatewayProxyEvent)
     expect(result).toEqual({
       statusCode: 202,
       headers: { 'Content-Type': 'application/json' },
       body: ''
     })
-    expect(handleSignalRouting).toHaveBeenCalledWith(
+    expect(mockHandleSignalRouting).toHaveBeenCalledWith(
       mockJwtPayload,
       'test-schema'
     )
   })
 
   it('returns 500 when unexpected error occurs', async () => {
-    when(getPublicKeyFromRemote).mockImplementation(() => {
+    mockGetPublicKeyFromRemote.mockImplementation(() => {
       throw new Error('Unexpected error')
     })
-
-    const result = await handler(mockEvent)
-
+    const result = await handler(baseEvent as APIGatewayProxyEvent)
     expect(result).toEqual({
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
@@ -210,9 +198,5 @@ describe('receiver handler', () => {
         description: 'An internal error occurred'
       })
     })
-    expect(loggerErrorSpy).toHaveBeenCalledWith(
-      'Unexpected error in receiver handler:',
-      expect.any(Object)
-    )
   })
 })

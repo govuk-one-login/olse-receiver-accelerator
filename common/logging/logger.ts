@@ -46,7 +46,7 @@ class LambdaLogFormatter extends LogFormatter {
   }
 }
 
-function getLogLevel(): LogLevel {
+const getLogLevel = (): LogLevel => {
   const envLevel = process.env['LOG_LEVEL']
   const validLevels: LogLevel[] = ['ERROR', 'WARN', 'INFO', 'DEBUG']
 

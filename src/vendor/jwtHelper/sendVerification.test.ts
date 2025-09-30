@@ -1,21 +1,11 @@
 import { sendVerificationSignal } from './sendVerification'
 import { createVerificationJwt } from './createVerificationJWT'
-import { SignJWT } from 'jose'
 
 jest.mock('./createVerificationJWT')
 jest.mock('jose')
 jest.mock('crypto')
 
-const signJwtChain = {
-  setProtectedHeaders: jest.fn().mockReturnThis(),
-  setExpirationTime: jest.fn().mockReturnThis(),
-  sign: jest.fn().mockResolvedValue('signed-token')
-}
-
-;(SignJWT as unknown as jest.Mock).mockImplementation(() => signJwtChain)
-
-const mockedCreateVerificationJwt =
-  createVerificationJwt as unknown as jest.Mock
+const mockedCreateVerificationJwt = jest.mocked(createVerificationJwt)
 describe('sendVerificationSignal', () => {
   const mockRelyingPartyUrl = 'https://gds.co.uk'
   const mockStreamId = 'test-stream-id-1'
