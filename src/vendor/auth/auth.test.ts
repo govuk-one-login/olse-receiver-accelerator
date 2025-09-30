@@ -31,7 +31,7 @@ describe('auth', () => {
     delete process.env['AWS_REGION']
   })
 
-  test('handle invalid_request error and log correct message', async () => {
+  it('handle invalid_request error and log correct message', async () => {
     mockGetAuthInput.mockReturnValue({
       client_id: 'test_client_id',
       client_secret: 'test_client_secret',
@@ -51,7 +51,7 @@ describe('auth', () => {
     })
   })
 
-  test('handle invalid_grant error and log correct message', async () => {
+  it('handle invalid_grant error and log correct message', async () => {
     mockGetAuthInput.mockReturnValue({
       client_id: 'test_client_id',
       client_secret: 'test_client_secret',
@@ -71,7 +71,7 @@ describe('auth', () => {
     })
   })
 
-  test('return invalid_client for wrong credentials', async () => {
+  it('return invalid_client for wrong credentials', async () => {
     mockGetAuthInput.mockReturnValue({
       client_id: 'wrong_id',
       client_secret: 'wrong_secret',

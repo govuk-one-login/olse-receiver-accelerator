@@ -14,7 +14,7 @@ export const handler = async (
   _context: Context
 ): Promise<APIGatewayProxyResult> => {
   try {
-    logger.info('Processing verification request', { event })
+    logger.info('Processing verification request', { event: event })
 
     const stackName = getEnv(ConfigurationKeys.AWS_STACK_NAME)
     const verificationEndpointUrl = await getParameter(

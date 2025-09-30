@@ -5,7 +5,7 @@ import {
 import { validateSignalAgainstSchemas } from '../validateSchema/validateSchema'
 
 describe('validateSignalAgainstSchema', () => {
-  test('it should return valid: true if signal does match one of the given schema', async () => {
+  it('it should return valid: true if signal does match one of the given schema', async () => {
     expect(
       await validateSignalAgainstSchemas(verificationSignalWithState)
     ).toStrictEqual({
@@ -14,7 +14,7 @@ describe('validateSignalAgainstSchema', () => {
     })
   })
 
-  test('it should return valid: true if signal does match one of the given schema without an optional field', async () => {
+  it('it should return valid: true if signal does match one of the given schema without an optional field', async () => {
     expect(
       await validateSignalAgainstSchemas(verificationSignalWithoutState)
     ).toStrictEqual({
@@ -23,7 +23,7 @@ describe('validateSignalAgainstSchema', () => {
     })
   })
 
-  test('it should return valid: false if signal does not match one of the given schema', async () => {
+  it('it should return valid: false if signal does not match one of the given schema', async () => {
     const signalSet = {
       description: 'description',
       iss: 2
