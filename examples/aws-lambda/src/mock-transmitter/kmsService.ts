@@ -3,11 +3,7 @@ import { SET, KmsPublicKeyData } from './mockApiTxInterfaces'
 import { getEnv } from './utils'
 import { getKMSClient } from '../sdk/sdkClient'
 
-export type JWTPayload = SET
-
-export const signedJWTWithKMS = async (
-  payload: JWTPayload
-): Promise<string> => {
+export const signedJWTWithKMS = async (payload: SET): Promise<string> => {
   const header = {
     alg: 'RS256',
     typ: 'secevent+jwt',

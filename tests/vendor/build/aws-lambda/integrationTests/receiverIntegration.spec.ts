@@ -42,9 +42,7 @@ describe('handler V1', () => {
     if (apiUrl === '') {
       throw new Error('RECEIVER_ENDPOINT environment variable is not set')
     }
-    const token = await getTokenFromCognito(process.env['RECEIVER_SECRET_ARN'] ?? '')
-    console.log('Bearer ' + token)
-    console.log('url : ' + apiUrl)
+
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {

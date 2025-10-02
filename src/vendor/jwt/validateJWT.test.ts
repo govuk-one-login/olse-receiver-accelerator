@@ -2,7 +2,7 @@ import * as jose from 'jose'
 import { validateJWT } from './validateJWT'
 
 describe('validateJWT', () => {
-  test('should return false if JWT is not valid', async () => {
+  it('should return false if JWT is not valid', async () => {
     const alg = 'RS256'
     const jwk = {
       kty: 'RSA',
@@ -22,7 +22,7 @@ describe('validateJWT', () => {
     expect(protectedHeader).toBeDefined()
   })
 
-  test('should return false if JWT is not valid', async () => {
+  it('should return false if JWT is not valid', async () => {
     const alg = 'RS256'
     const jwk = {
       kty: 'RSA',

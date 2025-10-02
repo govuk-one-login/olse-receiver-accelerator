@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import bodyParser from 'body-parser'
 import express, { Request, Response } from 'express'
 import { readFileSync } from 'fs'

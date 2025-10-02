@@ -1,48 +1,49 @@
+import { config } from '../../../common/config/config'
 import { generateJWTPayload } from '../types'
 import { generateJWT } from './jwt'
-import { getSecret } from '../../../common/secretsManager/secretsManager'
+import * as fs from 'fs'
 
-jest.mock('../../../common/secretsManager/secretsManager')
+jest.mock('fs')
 
-const mockedGetSecret = jest.mocked(getSecret)
+const mockFs = fs as jest.Mocked<typeof fs>
 
 const payload: generateJWTPayload = {
-  alg: 'RS256',
+  alg: 'PS256',
   audience: 'https://audience.example.com',
   issuer: 'https://issuer.example.com',
   jti: '123456',
   payload: {},
   useExpClaim: true
 }
-
 describe('generateJWT', () => {
   afterEach(() => {
     jest.clearAllMocks()
   })
 
-  test('should throw error when private key is missing from Secrets Manager', async () => {
-    mockedGetSecret.mockResolvedValue(undefined)
+  it('should throw error when private key file cannot be read', async () => {
+    jest.spyOn(config, 'get').mockReturnValue('/test-path.key')
+    mockFs.readFileSync.mockImplementation(() => {
+      throw Object.assign(new Error('ENOENT: no such file or directory'), {
+        code: 'ENOENT'
+      })
+    })
+
     await expect(generateJWT(payload)).rejects.toThrow(
-      'Unable to get private key from Secrets Manager'
+      'Failed to load private key'
     )
   })
 
-  test('should throw error when private key secret contains invalid JSON', async () => {
-    mockedGetSecret.mockResolvedValue('not-json')
+  it('should throw error when private key file contains invalid JSON', async () => {
+    jest.spyOn(config, 'get').mockReturnValue('/path/to/key.json')
+    mockFs.readFileSync.mockReturnValue('invalid json')
+
     await expect(generateJWT(payload)).rejects.toThrow()
   })
 
-  test('should throw error when privateKey field is missing in secret', async () => {
-    mockedGetSecret.mockResolvedValue(JSON.stringify({}))
-    await expect(generateJWT(payload)).rejects.toThrow(
-      'Private key not found in secret'
-    )
-  })
+  it('should throw error when private key is invalid for signing', async () => {
+    jest.spyOn(config, 'get').mockReturnValue('/path/to/key.json')
+    mockFs.readFileSync.mockReturnValue(JSON.stringify({ invalid: 'key' }))
 
-  test('should throw error when privateKey field is invalid JSON', async () => {
-    mockedGetSecret.mockResolvedValue(
-      JSON.stringify({ privateKey: 'not-json' })
-    )
     await expect(generateJWT(payload)).rejects.toThrow()
   })
 })
