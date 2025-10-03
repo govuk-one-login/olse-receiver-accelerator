@@ -34,6 +34,36 @@ describe('SET Verification Event Integration Tests', () => {
                 headers: {
                     'Authorization': 'Bearer ' + token,
                     'Content-Type': 'application/secevent+jwt'
+                },
+                body: JSON.stringify(verificationPayload)
+            }
+        )
+
+        expect(response.ok).toBe(true)
+        console.log(response.status)
+        expect(response.status).toBe(204)
+    }, 10000)
+
+    it('call verification endpoint with content-type json', async () => {
+        if (process.env['MOCK_TX_SECRET_ARN'] === undefined) {
+            throw new Error('MOCK_TX_SECRET_ARN environment variable is not set')
+        }
+        console.log(process.env['MOCK_TX_SECRET_ARN'])
+        const token = await getTokenFromCognito(process.env['MOCK_TX_SECRET_ARN'] ?? '')
+        console.log('Bearer ' + token)
+
+        const verificationPayload = {
+            stream_id: 'test-stream-001',
+            state: 'test-state-001'
+        }
+
+        const response = await fetch(
+            `${apiUrl}/verify`,
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
                     // would content-type json fail? isnt secevent+jwt the happy path?
                 },
                 body: JSON.stringify(verificationPayload)

@@ -69,7 +69,7 @@ describe('handler V1', () => {
         Authorization: 'Bearer ' + token,
         'Content-Type': 'application/secevent+jwt'
       },
-      body: 'eyJhbGciOiJSUzI1NiIsInR5cCI6InNlY2V2ZW50K2p3dCIsImtpZCI6ImFybjphd3M6a21zOmV1LXdlc3QtMjo4NjczMjI3Nzk2NjI6a2V5LzI0Y'
+      body: 'eyJhbGciOiJSUzI1NiIsInR5cCI6InNlY2V2ZW50K2p3dCIsImtpZCI6ImFybjphd3M6a21zOmV1LXdlc3QtMjo4NjczMjI3Nzk2NjI6a2V5LzI0Y-invalidJWT'
     })
     expect(response.status).toStrictEqual(400)
     // is the correct error response?
