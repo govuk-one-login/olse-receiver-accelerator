@@ -33,6 +33,98 @@ describe('SET Verification Event Integration Tests', () => {
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/secevent+jwt'
+                    // would content-type json fail? isnt secevent+jwt the happy path?
+                },
+                body: JSON.stringify(verificationPayload)
+            }
+        )
+
+        expect(response.ok).toBe(true)
+        console.log(response.status)
+        expect(response.status).toBe(204)
+    }, 10000)
+
+    it('call verification endpoint with no content-type header', async () => {
+        if (process.env['MOCK_TX_SECRET_ARN'] === undefined) {
+            throw new Error('MOCK_TX_SECRET_ARN environment variable is not set')
+        }
+        console.log(process.env['MOCK_TX_SECRET_ARN'])
+        const token = await getTokenFromCognito(process.env['MOCK_TX_SECRET_ARN'] ?? '')
+        console.log('Bearer ' + token)
+
+        const verificationPayload = {
+            stream_id: 'test-stream-001',
+            state: 'test-state-001'
+        }
+
+        const response = await fetch(
+            `${apiUrl}/verify`,
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+                body: JSON.stringify(verificationPayload)
+            }
+        )
+
+        expect(response.ok).toBe(true)
+        console.log(response.status)
+        expect(response.status).toBe(204)
+        // should this fail? it doesnt seem to care about content-type at all
+    }, 10000)
+
+    it('call verification endpoint with invalid content-type header', async () => {
+        if (process.env['MOCK_TX_SECRET_ARN'] === undefined) {
+            throw new Error('MOCK_TX_SECRET_ARN environment variable is not set')
+        }
+        console.log(process.env['MOCK_TX_SECRET_ARN'])
+        const token = await getTokenFromCognito(process.env['MOCK_TX_SECRET_ARN'] ?? '')
+        console.log('Bearer ' + token)
+
+        const verificationPayload = {
+            stream_id: 'test-stream-001',
+            state: 'test-state-001'
+        }
+
+        const response = await fetch(
+            `${apiUrl}/verify`,
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'blah'
+                },
+                body: JSON.stringify(verificationPayload)
+            }
+        )
+
+        expect(response.ok).toBe(true)
+        console.log(response.status)
+        expect(response.status).toBe(204)
+        // should this fail? it doesnt seem to care about content-type at all
+    }, 10000)
+
+    it('verification endpoint returns 4xx when called with missing state field', async () => {
+        if (process.env['MOCK_TX_SECRET_ARN'] === undefined) {
+            throw new Error('MOCK_TX_SECRET_ARN environment variable is not set')
+        }
+        console.log(process.env['MOCK_TX_SECRET_ARN'])
+        const token = await getTokenFromCognito(process.env['MOCK_TX_SECRET_ARN'] ?? '')
+        console.log('Bearer ' + token)
+
+        const verificationPayload = {
+            stream_id: 'test-stream-001',
+            // state: 'test-state-001'
+        }
+
+        const response = await fetch(
+            `${apiUrl}/verify`,
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(verificationPayload)
@@ -42,6 +134,40 @@ describe('SET Verification Event Integration Tests', () => {
         expect(response.ok).toBe(true)
         console.log(response.status)
         expect(response.status).toBe(204)
+        // should this fail???
+    }, 10000)
+    // add more unhappy scenarios - nab from shared signals
+
+    it('verification endpoint returns 400 when called with missing stream_id field', async () => {
+        if (process.env['MOCK_TX_SECRET_ARN'] === undefined) {
+            throw new Error('MOCK_TX_SECRET_ARN environment variable is not set')
+        }
+        console.log(process.env['MOCK_TX_SECRET_ARN'])
+        const token = await getTokenFromCognito(process.env['MOCK_TX_SECRET_ARN'] ?? '')
+        console.log('Bearer ' + token)
+
+        const verificationPayload = {
+            // stream_id: 'test-stream-001',
+            state: 'test-state-001'
+        }
+
+        const response = await fetch(
+            `${apiUrl}/verify`,
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(verificationPayload)
+            }
+        )
+
+        expect(response.ok).toBe(false)
+        console.log(response)
+        console.log(response.status)
+        expect(response.status).toBe(400)
+        // should it be 400?
     }, 10000)
 
     it('should return 401 when invalid token provided to verify endpoint', async () => {
