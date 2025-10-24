@@ -217,7 +217,7 @@ describe('SET Verification Event Unhappy Path Integration Tests', () => {
         expect(response.status).toBe(400)
     }, 10000)
 
-    it('verification endpoint returns 4xx when request body contains state field with non-allowed characters', async () => {
+    it('verification endpoint returns 400 when request body contains state field with non-allowed characters', async () => {
         if (process.env['MOCK_TX_SECRET_ARN'] === undefined) {
             throw new Error('MOCK_TX_SECRET_ARN environment variable is not set')
         }
@@ -247,8 +247,6 @@ describe('SET Verification Event Unhappy Path Integration Tests', () => {
         expect(response.status).toBe(204)
         // should this fail???
     }, 10000)
-
-    // when the request body contains stream_id that differs from the authorizer client_id, the user receives a 403 forbidden response
     
     it('send event where the request body contains stream_id that differs from the authorizer client_id, the user receives a 403 forbidden response', async () => {
         if (process.env['MOCK_TX_SECRET_ARN'] === undefined) {
