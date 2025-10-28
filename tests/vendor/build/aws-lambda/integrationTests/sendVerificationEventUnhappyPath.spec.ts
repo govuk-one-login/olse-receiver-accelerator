@@ -134,6 +134,37 @@ describe('SET Verification Event Unhappy Path Integration Tests', () => {
         // should this fail???
     }, 10000)
 
+    it('verification endpoint returns 400 when request body contains state field with non-allowed characters', async () => {
+        if (process.env['MOCK_TX_SECRET_ARN'] === undefined) {
+            throw new Error('MOCK_TX_SECRET_ARN environment variable is not set')
+        }
+        console.log(process.env['MOCK_TX_SECRET_ARN'])
+        const token = await getTokenFromCognito(process.env['MOCK_TX_SECRET_ARN'] ?? '')
+        console.log('Bearer ' + token)
+
+        const verificationPayload = {
+            stream_id: 'test-stream-001',
+            state: 'test-state-001-!?#$%^'
+        }
+
+        const response = await fetch(
+            `${apiUrl}/verify`,
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(verificationPayload)
+            }
+        )
+
+        expect(response.ok).toBe(true)
+        console.log(response.status)
+        expect(response.status).toBe(204)
+        // should this fail???
+    }, 10000)
+
     it('verification endpoint returns 400 when request body is undefined', async () => {
         if (process.env['MOCK_TX_SECRET_ARN'] === undefined) {
             throw new Error('MOCK_TX_SECRET_ARN environment variable is not set')
@@ -216,37 +247,6 @@ describe('SET Verification Event Unhappy Path Integration Tests', () => {
         console.log(response.status)
         expect(response.status).toBe(400)
     }, 10000)
-
-    it('verification endpoint returns 400 when request body contains state field with non-allowed characters', async () => {
-        if (process.env['MOCK_TX_SECRET_ARN'] === undefined) {
-            throw new Error('MOCK_TX_SECRET_ARN environment variable is not set')
-        }
-        console.log(process.env['MOCK_TX_SECRET_ARN'])
-        const token = await getTokenFromCognito(process.env['MOCK_TX_SECRET_ARN'] ?? '')
-        console.log('Bearer ' + token)
-
-        const verificationPayload = {
-            stream_id: 'test-stream-001',
-            state: 'test-state-001-!?#$%^'
-        }
-
-        const response = await fetch(
-            `${apiUrl}/verify`,
-            {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + token,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(verificationPayload)
-            }
-        )
-
-        expect(response.ok).toBe(true)
-        console.log(response.status)
-        expect(response.status).toBe(204)
-        // should this fail???
-    }, 10000)
     
     it('send event where the request body contains stream_id that differs from the authorizer client_id, the user receives a 403 forbidden response', async () => {
         if (process.env['MOCK_TX_SECRET_ARN'] === undefined) {
@@ -288,7 +288,6 @@ describe('SET Verification Event Unhappy Path Integration Tests', () => {
         console.log('Bearer ' + token)
 
         const verificationPayload = {
-            // stream_id: 'test-stream-001',
             state: 'test-state-001'
         }
 
@@ -346,7 +345,6 @@ describe('SET Verification Event Unhappy Path Integration Tests', () => {
             stream_id: 'test-stream-001',
             state: 'test-state-001'
         }
-        // no stream id validation atm
 
         const response = await fetch(
             `${apiUrl}/verify`,
@@ -376,7 +374,6 @@ describe('SET Verification Event Unhappy Path Integration Tests', () => {
             stream_id: 'test-stream-001',
             state: 'test-state-001'
         }
-        // no stream id validation atm
 
         const response = await fetch(
             `${apiUrl}/verify`,
@@ -407,7 +404,6 @@ describe('SET Verification Event Unhappy Path Integration Tests', () => {
             stream_id: 'test-stream-001',
             state: 'test-state-001'
         }
-        // no stream id validation atm
 
         const response = await fetch(
             `${apiUrl}/verify`,
