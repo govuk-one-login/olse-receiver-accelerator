@@ -1,0 +1,91 @@
+{
+  "$schema": "https://raw.githubusercontent.com/govuk-one-login/quality-gates/refs/tags/v0.1.0/schemas/schema.json",
+  "services": [
+    {
+      "quality-gates": [
+        {
+          "check-types": ["code style and linting"],
+          "config": {
+            "file": ".github/workflows/ensure-sha-pinned-actions.yaml",
+            "path": "jobs.harden_security"
+          },
+          "phase": "pre-merge",
+          "provider": "GitHub"
+        },
+        {
+          "check-types": ["code style and linting"],
+          "config": {
+            "file": ".github/workflows/ci.yml",
+            "path": "jobs.Run-CI-Checks"
+          },
+          "phase": "pre-merge",
+          "provider": "GitHub"
+        },
+        {
+          "check-types": ["unit", "vulnerability detection"],
+          "config": {
+            "file": ".github/workflows/vendor.yml",
+            "path": "jobs.vendor"
+          },
+          "phase": "pre-merge",
+          "provider": "GitHub"
+        },
+        {
+          "check-types": ["unit"],
+          "config": {
+            "file": ".github/workflows/ci.yml",
+            "path": "jobs.Run-Vendor-Checks"
+          },
+          "phase": "pre-merge",
+          "provider": "GitHub"
+        },
+        {
+          "check-types": ["unit"],
+          "config": {
+            "file": ".github/workflows/ci.yml",
+            "path": "jobs.Run-Implementor-Checks"
+          },
+          "phase": "pre-merge",
+          "provider": "GitHub"
+        },
+        {
+          "check-types": ["integration"],
+          "config": {
+            "file": ".github/workflows/ci.yml",
+            "path": "jobs.deploy-vendor-feature-branch-to-aws"
+          },
+          "phase": "build",
+          "provider": "GitHub"
+        },
+        {
+          "check-types": ["stack"],
+          "config": {
+            "file": ".github/workflows/upload-vendor-testing-image-to-ecr.yaml",
+            "path": "jobs.upload-testing-artifact"
+          },
+          "phase": "build",
+          "provider": "GitHub"
+        },
+        {
+          "check-types": ["stack"],
+          "config": {
+            "file": ".github/workflows/ci.yml",
+            "path": "jobs.deploy-vendor-testing-image-to-aws"
+          },
+          "phase": "build",
+          "provider": "GitHub"
+        },
+        {
+          "check-types": ["stack"],
+          "config": {
+            "file": ".github/workflows/ci.yml",
+            "path": "jobs.deploy-vendor-main-branch-to-aws"
+          },
+          "phase": "build",
+          "provider": "GitHub"
+        }
+      ],
+      "service-tag": "olse-receiver-accelerator"
+    }
+  ]
+}
