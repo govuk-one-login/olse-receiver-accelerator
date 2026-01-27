@@ -19,18 +19,23 @@ RUN apk update && \
       mandoc \
       curl
 
+RUN addgroup -S appgroup && \
+    adduser -S -G appgroup appuser
+
 WORKDIR /test-app
 
-COPY --from=builder /build-app/node_modules ./node_modules
+COPY --from=builder --chown=appuser:appgroup /build-app/node_modules ./node_modules
 
-COPY tests/run-tests.sh /
-COPY package.json package-lock.json tsconfig.json ./
+COPY --chown=appuser:appgroup tests/run-tests.sh /
+COPY --chown=appuser:appgroup package.json package-lock.json tsconfig.json ./
 
-COPY tests ./tests
-COPY src ./src
-COPY examples ./examples
+COPY --chown=appuser:appgroup tests ./tests
+COPY --chown=appuser:appgroup src ./src
+COPY --chown=appuser:appgroup examples ./examples
 
 RUN chmod +x /run-tests.sh
 WORKDIR /test-app/tests
+
+USER appuser
 
 ENTRYPOINT ["/run-tests.sh"]
