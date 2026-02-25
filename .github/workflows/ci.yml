@@ -59,20 +59,21 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/deploy-vendor-feature-branch-to-aws.yml
 
-  deploy-vendor-testing-image-to-aws:
-    name: Main Branch
-    needs: [Run-CI-Checks, Run-Vendor-Checks, Run-Implementor-Checks]
-    permissions:
-      id-token: write
-      contents: read
-    secrets: inherit
-    uses: ./.github/workflows/upload-vendor-testing-image-to-ecr.yaml
+  # TODO: RE-ENABLE
+  # deploy-vendor-testing-image-to-aws:
+  #   name: Main Branch
+  #   needs: [Run-CI-Checks, Run-Vendor-Checks, Run-Implementor-Checks]
+  #   permissions:
+  #     id-token: write
+  #     contents: read
+  #   secrets: inherit
+  #   uses: ./.github/workflows/upload-vendor-testing-image-to-ecr.yaml
 
-  deploy-vendor-main-branch-to-aws:
-    name: Main Branch
-    needs: [deploy-vendor-testing-image-to-aws]
-    permissions:
-      id-token: write
-      contents: read
-    secrets: inherit
-    uses: ./.github/workflows/deploy-vendor-main-branch-to-aws.yml
+  # deploy-vendor-main-branch-to-aws:
+  #   name: Main Branch
+  #   needs: [deploy-vendor-testing-image-to-aws]
+  #   permissions:
+  #     id-token: write
+  #     contents: read
+  #   secrets: inherit
+  #   uses: ./.github/workflows/deploy-vendor-main-branch-to-aws.yml
