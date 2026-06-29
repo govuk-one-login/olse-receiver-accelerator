@@ -1,6 +1,5 @@
 import { webcrypto } from 'crypto'
 import { readFileSync } from 'fs'
-import { when } from 'jest-when'
 import * as jose from 'jose'
 import request from 'supertest'
 import { generateJWT } from '../../src/vendor/auth/jwt'
@@ -12,17 +11,17 @@ import { ConfigurationKeys } from '../../common/config/configurationKeys'
 import { baseLogger } from '../../common/logging/logger'
 import { getSecret } from '../../common/secretsManager/secretsManager'
 
-jest.mock('../../src/vendor/publicKey/getPublicKey', () => ({
-  getPublicKeyFromRemote: jest.fn()
+vi.mock('../../src/vendor/publicKey/getPublicKey', () => ({
+  getPublicKeyFromRemote: vi.fn()
 }))
 
-const loggerErrorSpy = jest.spyOn(baseLogger, 'error').mockImplementation()
+const loggerErrorSpy = vi.spyOn(baseLogger, 'error')
 
-jest.mock('../../common/secretsManager/secretsManager', () => ({
-  getSecret: jest.fn()
+vi.mock('../../common/secretsManager/secretsManager', () => ({
+  getSecret: vi.fn()
 }))
 
-const mockGetSecret = jest.mocked(getSecret)
+const mockGetSecret = vi.mocked(getSecret)
 
 const sampleVerificationEvent = {
   alg: 'RS256',
@@ -49,9 +48,9 @@ let key: webcrypto.CryptoKey | Uint8Array
 
 describe('Express server /v1 endpoint', () => {
   beforeEach(async () => {
-    jest.resetAllMocks()
-    jest.clearAllMocks()
-    jest.useFakeTimers()
+    vi.resetAllMocks()
+    vi.clearAllMocks()
+    vi.useFakeTimers()
 
     process.env[ConfigurationKeys.CLIENT_ID] = 'test_client'
     process.env[ConfigurationKeys.CLIENT_SECRET] = 'test_secret'
@@ -77,7 +76,7 @@ describe('Express server /v1 endpoint', () => {
 
   afterEach(() => {
     stopVerificationSignals()
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   it('should return 400 for invalid grant type', async () => {
@@ -161,7 +160,7 @@ describe('Express server /v1 endpoint', () => {
 
   it('should return 202 for when sent a SET with a valid JWT and payload', async () => {
     // @ts-expect-error ignore type errors
-    when(getPublicKeyFromRemote).mockReturnValue(key)
+    vi.mocked(getPublicKeyFromRemote).mockReturnValue(key)
     const jwt = await generateJWT(sampleVerificationEvent)
 
     const tokenResponse = await request(app).post('/v1/token').query({
@@ -172,9 +171,8 @@ describe('Express server /v1 endpoint', () => {
 
     expect(tokenResponse.status).toBe(200)
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const accessToken = tokenResponse.body
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     const token = accessToken.access_token as string
 
     const response = await request(app)
@@ -188,10 +186,10 @@ describe('Express server /v1 endpoint', () => {
 
   it('should return 400 for when sent signal routing has failed', async () => {
     // @ts-expect-error ignore type errors
-    when(getPublicKeyFromRemote).mockReturnValue(key)
+    vi.mocked(getPublicKeyFromRemote).mockReturnValue(key)
 
-    const routeSpy = jest.spyOn(signalRouting, 'handleSignalRouting')
-    when(routeSpy).mockResolvedValue({ valid: false })
+    const routeSpy = vi.spyOn(signalRouting, 'handleSignalRouting')
+    vi.mocked(routeSpy).mockResolvedValue({ valid: false })
 
     const jwt = await generateJWT(sampleVerificationEvent)
 
@@ -203,9 +201,8 @@ describe('Express server /v1 endpoint', () => {
 
     expect(tokenResponse.status).toBe(200)
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const accessToken = tokenResponse.body
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     const token = accessToken.access_token as string
 
     const response = await request(app)
@@ -229,7 +226,7 @@ describe('Express server /v1 endpoint', () => {
 
   it('should return 400 and invalid signal for when sent a SET with an invalid SET payload', async () => {
     // @ts-expect-error ignore type errors
-    when(getPublicKeyFromRemote).mockReturnValue(key)
+    vi.mocked(getPublicKeyFromRemote).mockReturnValue(key)
     const jwt = await generateJWT({
       alg: 'RS256',
       audience: 'https://aud.example.com',
@@ -257,9 +254,8 @@ describe('Express server /v1 endpoint', () => {
 
     expect(tokenResponse.status).toBe(200)
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const accessToken = tokenResponse.body
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     const token = accessToken.access_token as string
 
     const response = await request(app)
@@ -288,9 +284,8 @@ describe('Express server /v1 endpoint', () => {
 
     expect(tokenResponse.status).toBe(200)
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const accessToken = tokenResponse.body
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     const token = accessToken.access_token as string
 
     const response = await request(app)
@@ -314,7 +309,7 @@ describe('Express server /v1 endpoint', () => {
 
   it('should return 401 for expired auth token', async () => {
     // @ts-expect-error ignore type errors
-    when(getPublicKeyFromRemote).mockReturnValue(key)
+    vi.mocked(getPublicKeyFromRemote).mockReturnValue(key)
     const jwt = await generateJWT(sampleVerificationEvent)
 
     const tokenResponse = await request(app).post('/v1/token').query({
@@ -324,10 +319,10 @@ describe('Express server /v1 endpoint', () => {
     })
 
     expect(tokenResponse.status).toBe(200)
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     const token = tokenResponse.body.access_token as string
 
-    jest.advanceTimersByTime(3600000 + 1)
+    vi.advanceTimersByTime(3600000 + 1)
 
     const response = await request(app)
       .post('/v1/Events')

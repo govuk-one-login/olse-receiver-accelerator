@@ -1,5 +1,5 @@
-import { baseLogger as logger } from '../../../common/logging/logger.ts'
-import { createVerificationJwt } from './createVerificationJWT.ts'
+import { baseLogger as logger } from '../../../common/logging/logger'
+import { createVerificationJwt } from './createVerificationJWT'
 
 export async function sendVerificationSignal(
   relyingPartyUrl: string,

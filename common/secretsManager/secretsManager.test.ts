@@ -1,17 +1,20 @@
+import { type SecretsManagerClient } from '@aws-sdk/client-secrets-manager'
 import { getSecret } from './secretsManager'
 
-const mockSend = jest.fn()
+const mockSend = vi.fn()
 
-jest.mock('@aws-sdk/client-secrets-manager', () => ({
-  SecretsManagerClient: jest.fn().mockImplementation(() => ({
-    send: mockSend
-  })),
-  GetSecretValueCommand: jest.fn()
+vi.mock('@aws-sdk/client-secrets-manager', () => ({
+  SecretsManagerClient: vi.fn().mockImplementation(function (
+    this: SecretsManagerClient
+  ) {
+    this.send = mockSend
+  }),
+  GetSecretValueCommand: vi.fn()
 }))
 
 describe('getSecretFromSecretsManager', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
   it('should return secret string successfully', async () => {
     const mockSecretValue = 'test-secret-value-001'

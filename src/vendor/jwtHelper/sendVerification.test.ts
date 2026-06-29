@@ -1,23 +1,23 @@
 import { sendVerificationSignal } from './sendVerification'
 import { createVerificationJwt } from './createVerificationJWT'
 
-jest.mock('./createVerificationJWT')
-jest.mock('jose')
-jest.mock('crypto')
+vi.mock('./createVerificationJWT')
+vi.mock('jose')
+vi.mock('crypto')
 
-const mockedCreateVerificationJwt = jest.mocked(createVerificationJwt)
+const mockedCreateVerificationJwt = vi.mocked(createVerificationJwt)
 describe('sendVerificationSignal', () => {
   const mockRelyingPartyUrl = 'https://gds.co.uk'
   const mockStreamId = 'test-stream-id-1'
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     mockedCreateVerificationJwt.mockResolvedValue('state-jwt')
   })
 
   it('returns true when response.ok is true', async () => {
-    global.fetch = jest.fn().mockResolvedValue({ ok: true } as Response)
+    global.fetch = vi.fn().mockResolvedValue({ ok: true } as Response)
 
     const result = await sendVerificationSignal(
       mockRelyingPartyUrl,
@@ -36,7 +36,7 @@ describe('sendVerificationSignal', () => {
   })
 
   it('returns false when response.ok is false', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
+    global.fetch = vi.fn().mockResolvedValue({
       ok: false,
       status: 400,
       statusText: 'Bad Request'
@@ -48,7 +48,7 @@ describe('sendVerificationSignal', () => {
   })
 
   it('returns false when an error is thrown', async () => {
-    global.fetch = jest.fn().mockRejectedValue(new Error('some error'))
+    global.fetch = vi.fn().mockRejectedValue(new Error('some error'))
 
     await expect(
       sendVerificationSignal(mockRelyingPartyUrl, mockStreamId)

@@ -9,26 +9,25 @@ import { getTokenFromCognito } from '../../../../../common/cognito/getTokenFromC
 import { getParameter } from '../../../../../common/ssm/ssm'
 import { getEnv } from '../utils'
 import { ConfigurationKeys } from '../../../../../common/config/configurationKeys'
+import { type Mock } from 'vitest'
 
-jest.mock('./requestParser')
-jest.mock('./constructVerificationSecurityEvent')
-jest.mock('../kmsService')
-jest.mock('./validation')
-jest.mock('../../../../../common/cognito/getTokenFromCognito')
-jest.mock('../../../../../common/ssm/ssm')
-jest.mock('../utils')
+vi.mock('./requestParser')
+vi.mock('./constructVerificationSecurityEvent')
+vi.mock('../kmsService')
+vi.mock('./validation')
+vi.mock('../../../../../common/cognito/getTokenFromCognito')
+vi.mock('../../../../../common/ssm/ssm')
+vi.mock('../utils')
 
-const mockParseRequest = jest.mocked(getVerificationRequest)
-const mockBuildSecurityEvent = jest.mocked(
-  constructVerificationFullSecurityEvent
-)
-const mockSignWithKms = jest.mocked(signedJWTWithKMS)
-const mockCheckValidationError = jest.mocked(isValidationError)
-const mockGetCognitoToken = jest.mocked(getTokenFromCognito)
-const mockGetSsmParameter = jest.mocked(getParameter)
-const mockReadEnv = jest.mocked(getEnv)
+const mockParseRequest = vi.mocked(getVerificationRequest)
+const mockBuildSecurityEvent = vi.mocked(constructVerificationFullSecurityEvent)
+const mockSignWithKms = vi.mocked(signedJWTWithKMS)
+const mockCheckValidationError = vi.mocked(isValidationError)
+const mockGetCognitoToken = vi.mocked(getTokenFromCognito)
+const mockGetSsmParameter = vi.mocked(getParameter)
+const mockReadEnv = vi.mocked(getEnv)
 
-const fetchMock: jest.MockedFunction<typeof fetch> = jest.fn()
+const fetchMock: Mock<typeof fetch> = vi.fn()
 global.fetch = fetchMock
 
 const mockEvent: Partial<APIGatewayProxyEvent> = {
@@ -37,7 +36,7 @@ const mockEvent: Partial<APIGatewayProxyEvent> = {
 
 describe('transmitter handler', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     process.env['RECEIVER_SECRET_ARN'] = 'arn'
     mockReadEnv.mockImplementation((key: string) => {
       if (key === ConfigurationKeys.AWS_STACK_NAME) return 'test-stack'

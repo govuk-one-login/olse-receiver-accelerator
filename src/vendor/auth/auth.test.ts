@@ -5,18 +5,18 @@ import { getAuthInput } from './getAuthInput'
 import { ConfigurationKeys } from '../../../common/config/configurationKeys'
 import { baseLogger as logger } from '../../../common/logging/logger'
 
-jest.mock('./jwt')
-jest.mock('./getAuthInput')
+vi.mock('./jwt')
+vi.mock('./getAuthInput')
 
-const mockGenerateJWT = jest.mocked(generateJWT)
-const mockGetAuthInput = jest.mocked(getAuthInput)
-const loggerWarnSpy = jest.spyOn(logger, 'warn').mockImplementation()
+const mockGenerateJWT = vi.mocked(generateJWT)
+const mockGetAuthInput = vi.mocked(getAuthInput)
+const loggerWarnSpy = vi.spyOn(logger, 'warn')
 
 describe('auth', () => {
   let mockReq: Request
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockReq = {} as Request
 
     process.env[ConfigurationKeys.CLIENT_ID] = 'test_client_id'

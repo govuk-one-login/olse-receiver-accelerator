@@ -2,10 +2,10 @@ import { getKmsPublicKey } from '../kmsService'
 import { getEnv } from '../utils'
 import { handler, jwkArray } from './handler'
 
-jest.mock('../utils')
-jest.mock('../kmsService')
-jest.mock('./createJwksFromRawPublicKey', () => ({
-  createJwkFromRawPublicKey: jest.fn(() => ({
+vi.mock('../utils')
+vi.mock('../kmsService')
+vi.mock('./createJwksFromRawPublicKey', () => ({
+  createJwkFromRawPublicKey: vi.fn(() => ({
     kty: 'RSA',
     kid: 'test-key-id-001',
     n: 'keyModulus456',
@@ -13,12 +13,12 @@ jest.mock('./createJwksFromRawPublicKey', () => ({
   }))
 }))
 
-const mockGetEnv = jest.mocked(getEnv)
-const mockGetKmsPublicKey = jest.mocked(getKmsPublicKey)
+const mockGetEnv = vi.mocked(getEnv)
+const mockGetKmsPublicKey = vi.mocked(getKmsPublicKey)
 
 describe('JWKS handler', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     jwkArray.length = 0
   })
 

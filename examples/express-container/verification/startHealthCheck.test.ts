@@ -3,14 +3,14 @@ import { ConfigurationKeys } from '../../../common/config/configurationKeys'
 import { baseLogger as logger } from '../../../common/logging/logger'
 import { sendVerificationSignal } from '../../../src/vendor/jwtHelper/sendVerification'
 
-jest.mock('../../../src/vendor/jwtHelper/sendVerification', () => ({
-  sendVerificationSignal: jest.fn()
+vi.mock('../../../src/vendor/jwtHelper/sendVerification', () => ({
+  sendVerificationSignal: vi.fn()
 }))
 
-const mockSendVerificationSignal = jest.mocked(sendVerificationSignal)
-const loggerInfoSpy = jest.spyOn(logger, 'info').mockImplementation()
+const mockSendVerificationSignal = vi.mocked(sendVerificationSignal)
+const loggerInfoSpy = vi.spyOn(logger, 'info')
 
-jest.useFakeTimers()
+vi.useFakeTimers()
 
 process.env[ConfigurationKeys.VERIFICATION_INTERVAL] = '15'
 process.env[ConfigurationKeys.VERIFICATION_ENDPOINT_URL] =
@@ -19,13 +19,13 @@ process.env[ConfigurationKeys.STREAM_ID] = 'stream_id'
 
 describe('startHealthCheck', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
-    jest.clearAllTimers()
+    vi.clearAllMocks()
+    vi.clearAllTimers()
     mockSendVerificationSignal.mockResolvedValue(true)
   })
 
   afterEach(() => {
-    jest.clearAllTimers()
+    vi.clearAllTimers()
   })
 
   it('returns true when scheduling succeeds', () => {

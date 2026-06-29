@@ -25,7 +25,7 @@ export async function validateSignalAgainstSchemas(
   const schemaList = await readdir(absoluteSchemaPath)
   for (const schemaName of schemaList) {
     const filePath = absoluteSchemaPath + '/' + schemaName
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
     const schema: AnySchema = await JSON.parse(
       readFileSync(filePath, { encoding: 'utf8' })
     )

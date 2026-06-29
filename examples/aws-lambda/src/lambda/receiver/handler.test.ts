@@ -7,32 +7,31 @@ import { handleSignalRouting } from '../../../../../common/signalRouting/signalR
 import { handler } from './handler'
 import { getParameter } from '../../../../../common/ssm/ssm'
 import { lambdaLogger } from '../../../../../common/logging/logger'
+import { type Mock } from 'vitest'
 
-jest.mock('../../../../../src/vendor/publicKey/getPublicKey')
-jest.mock('../../../../../src/vendor/jwt/validateJWT')
-jest.mock('../../../../../src/vendor/validateSchema/validateSchema')
-jest.mock('../../../../../common/signalRouting/signalRouter')
-jest.mock('../../../../../common/ssm/ssm')
-jest.mock('../../../../../common/logging/logger', () => ({
+vi.mock('../../../../../src/vendor/publicKey/getPublicKey')
+vi.mock('../../../../../src/vendor/jwt/validateJWT')
+vi.mock('../../../../../src/vendor/validateSchema/validateSchema')
+vi.mock('../../../../../common/signalRouting/signalRouter')
+vi.mock('../../../../../common/ssm/ssm')
+vi.mock('../../../../../common/logging/logger', () => ({
   lambdaLogger: {
-    info: jest.fn(),
-    error: jest.fn(),
-    warn: jest.fn(),
-    debug: jest.fn()
+    info: vi.fn(),
+    error: vi.fn(),
+    warn: vi.fn(),
+    debug: vi.fn()
   }
 }))
 
 type VerifyResult = Awaited<ReturnType<typeof validateJWTWithRemoteKey>>
 
-const mockGetPublicKeyFromRemote = jest.mocked(getPublicKeyFromRemote)
-const mockValidateJWTWithRemoteKey = jest.mocked(validateJWTWithRemoteKey)
-const mockValidateSignalAgainstSchemas = jest.mocked(
-  validateSignalAgainstSchemas
-)
-const mockHandleSignalRouting = jest.mocked(handleSignalRouting)
-const mockGetParameter = jest.mocked(getParameter)
+const mockGetPublicKeyFromRemote = vi.mocked(getPublicKeyFromRemote)
+const mockValidateJWTWithRemoteKey = vi.mocked(validateJWTWithRemoteKey)
+const mockValidateSignalAgainstSchemas = vi.mocked(validateSignalAgainstSchemas)
+const mockHandleSignalRouting = vi.mocked(handleSignalRouting)
+const mockGetParameter = vi.mocked(getParameter)
 
-const fetchMock: jest.MockedFunction<typeof fetch> = jest.fn()
+const fetchMock: Mock<typeof fetch> = vi.fn()
 global.fetch = fetchMock
 
 const mockJwtPayload = {
@@ -51,15 +50,15 @@ const baseEvent: Partial<APIGatewayProxyEvent> = {
   } as APIGatewayProxyEvent['requestContext']
 }
 
-let warnSpy: jest.SpyInstance
-let errorSpy: jest.SpyInstance
+let warnSpy: Mock
+let errorSpy: Mock
 
 describe('receiver handler', () => {
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
 
-    warnSpy = jest.spyOn(lambdaLogger, 'warn')
-    errorSpy = jest.spyOn(lambdaLogger, 'error')
+    warnSpy = vi.spyOn(lambdaLogger, 'warn')
+    errorSpy = vi.spyOn(lambdaLogger, 'error')
 
     process.env['RECEIVER_SECRET_ARN'] = 'test-arn'
     process.env['AWS_STACK_NAME'] = 'test-stack'

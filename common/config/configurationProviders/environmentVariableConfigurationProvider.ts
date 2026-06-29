@@ -1,7 +1,6 @@
 import { AbstractConfigurationProvider } from './abstractConfigurationProvider'
 
 export class EnvironmentVariableConfigurationProvider extends AbstractConfigurationProvider {
-  // eslint-disable-next-line @typescript-eslint/require-await
   override async getAll(): Promise<Map<string, string>> {
     return new Map()
   }

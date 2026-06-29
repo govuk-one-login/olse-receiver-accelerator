@@ -3,9 +3,9 @@ import { generateJWTPayload } from '../types'
 import { generateJWT } from './jwt'
 import * as fs from 'fs'
 
-jest.mock('fs')
+vi.mock('fs')
 
-const mockFs = fs as jest.Mocked<typeof fs>
+const mockFs = vi.spyOn(fs, 'readFileSync')
 
 const payload: generateJWTPayload = {
   alg: 'PS256',
@@ -17,12 +17,12 @@ const payload: generateJWTPayload = {
 }
 describe('generateJWT', () => {
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should throw error when private key file cannot be read', async () => {
-    jest.spyOn(config, 'get').mockReturnValue('/test-path.key')
-    mockFs.readFileSync.mockImplementation(() => {
+    vi.spyOn(config, 'get').mockReturnValue('/test-path.key')
+    mockFs.mockImplementation(() => {
       throw Object.assign(new Error('ENOENT: no such file or directory'), {
         code: 'ENOENT'
       })
@@ -34,15 +34,15 @@ describe('generateJWT', () => {
   })
 
   it('should throw error when private key file contains invalid JSON', async () => {
-    jest.spyOn(config, 'get').mockReturnValue('/path/to/key.json')
-    mockFs.readFileSync.mockReturnValue('invalid json')
+    vi.spyOn(config, 'get').mockReturnValue('/path/to/key.json')
+    mockFs.mockReturnValue('invalid json')
 
     await expect(generateJWT(payload)).rejects.toThrow()
   })
 
   it('should throw error when private key is invalid for signing', async () => {
-    jest.spyOn(config, 'get').mockReturnValue('/path/to/key.json')
-    mockFs.readFileSync.mockReturnValue(JSON.stringify({ invalid: 'key' }))
+    vi.spyOn(config, 'get').mockReturnValue('/path/to/key.json')
+    mockFs.mockReturnValue(JSON.stringify({ invalid: 'key' }))
 
     await expect(generateJWT(payload)).rejects.toThrow()
   })

@@ -4,8 +4,8 @@ import { handleSignalRouting } from './signalRouter'
 
 describe('handleSetRouting', () => {
   beforeEach(() => {
-    jest.resetAllMocks()
-    jest.clearAllMocks()
+    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should return success for valid verificationSignal', async () => {
