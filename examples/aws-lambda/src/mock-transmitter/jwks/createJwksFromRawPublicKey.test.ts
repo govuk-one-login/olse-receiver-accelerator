@@ -4,9 +4,9 @@ import {
   uint8ArrayToBase64
 } from './createJwksFromRawPublicKey'
 
-jest.mock('crypto')
+vi.mock('crypto')
 
-const mockCreatePublicKey = jest.mocked(createPublicKey)
+const mockCreatePublicKey = vi.mocked(createPublicKey)
 
 describe('uint8ArrayToBase64', () => {
   it('converts uint8 to base 64', () => {
@@ -19,7 +19,7 @@ describe('createJwkFromRawPublicKey', () => {
   it('creates jwk successfully', () => {
     const mockJwk = { kty: 'RSA', n: 'test-001' }
     mockCreatePublicKey.mockReturnValue({
-      export: jest.fn().mockReturnValue(mockJwk)
+      export: vi.fn().mockReturnValue(mockJwk)
     } as unknown as KeyObject)
 
     const result = createJwkFromRawPublicKey(

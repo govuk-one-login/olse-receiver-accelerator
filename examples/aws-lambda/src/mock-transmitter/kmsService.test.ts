@@ -1,17 +1,18 @@
-import { KMSClient } from '@aws-sdk/client-kms'
+import { type KMSClient } from '@aws-sdk/client-kms'
 import { signedJWTWithKMS, getKmsPublicKey } from './kmsService'
 import { SET } from './mockApiTxInterfaces'
+import { getKMSClient } from '../sdk/sdkClient'
 
-jest.mock('@aws-sdk/client-kms')
+vi.mock('@aws-sdk/client-kms')
+vi.mock('../sdk/sdkClient')
 
-const mockKMSClient = jest.mocked(KMSClient)
-const mockSend = jest.fn()
+const mockSend = vi.fn()
+vi.mocked(getKMSClient).mockReturnValue({
+  send: mockSend
+} as unknown as KMSClient)
 
 beforeEach(() => {
-  jest.clearAllMocks()
-  mockKMSClient.mockImplementation(
-    () => ({ send: mockSend }) as unknown as KMSClient
-  )
+  vi.clearAllMocks()
   process.env['AWS_REGION'] = 'eu-west-2'
   process.env['KMS_KEY_ID'] = 'test-key-001'
 })

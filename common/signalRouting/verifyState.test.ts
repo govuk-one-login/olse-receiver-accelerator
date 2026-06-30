@@ -2,26 +2,24 @@ import { CryptoKey, JWTVerifyResult } from 'jose'
 import { getPublicKeyFromJWK } from '../../src/vendor/publicKey/getPublicKey'
 import { validateJWT } from '../../src/vendor/jwt/validateJWT'
 import { verifyStateJwt } from './verifyState'
-import * as fs from 'fs'
 import { ConfigurationKeys } from '../../common/config/configurationKeys'
 import { config } from '../config/config'
+import { readFileSync } from 'fs'
 
-jest.mock('../../src/vendor/jwt/validateJWT')
-jest.mock('../../src/vendor/publicKey/getPublicKey')
+vi.mock('../../src/vendor/jwt/validateJWT')
+vi.mock('../../src/vendor/publicKey/getPublicKey')
+vi.mock('fs')
 
-const mockValidateJWT = jest.mocked(validateJWT)
-const mockGetPublicKeyFromJWK = jest.mocked(getPublicKeyFromJWK)
+const mockValidateJWT = vi.mocked(validateJWT)
+const mockGetPublicKeyFromJWK = vi.mocked(getPublicKeyFromJWK)
+const mockReadFileSync = vi.mocked(readFileSync)
 
 describe('verifyStateJwt', () => {
-  let readFileSpy: jest.SpyInstance
-
   beforeEach(async () => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     process.env[ConfigurationKeys.ISSUER] = 'test-issuer'
 
-    readFileSpy = jest.spyOn(fs, 'readFileSync').mockImplementation(() => {
-      return '{"someKey":"someKeyValue"}' as unknown as string
-    })
+    mockReadFileSync.mockReturnValue('{"someKey":"someKeyValue"}')
 
     mockGetPublicKeyFromJWK.mockResolvedValue({} as CryptoKey)
     await config.initialise()
@@ -36,7 +34,7 @@ describe('verifyStateJwt', () => {
     const result = await verifyStateJwt('header.payload.signature')
 
     expect(result).toEqual(mockPayload)
-    expect(readFileSpy).toHaveBeenCalled()
+    expect(mockReadFileSync).toHaveBeenCalled()
   })
 
   it('returns null for invalid JWT', async () => {

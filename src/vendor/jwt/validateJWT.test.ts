@@ -22,7 +22,7 @@ describe('validateJWT', () => {
     expect(protectedHeader).toBeDefined()
   })
 
-  it('should return false if JWT is not valid', async () => {
+  it('should throw if JWT is not valid', async () => {
     const alg = 'RS256'
     const jwk = {
       kty: 'RSA',
@@ -33,7 +33,7 @@ describe('validateJWT', () => {
     const jwt =
       'LCJhdWQiOiJ1cm46ZXhhbXBsZTphdWRpZW5jZSJ9.gXrPZ3yM_60dMXGE69dusbpzYASNA-XIOwsb5D5xYnSxyj6_D6OR'
 
-    void expect(async () => {
+    await expect(async () => {
       void (await validateJWT(jwt, publicKey, {
         issuer: 'urn:example:issuer',
         audience: 'urn:example:audience'

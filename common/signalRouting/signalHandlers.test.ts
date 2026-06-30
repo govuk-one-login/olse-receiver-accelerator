@@ -1,15 +1,13 @@
 import { handleVerificationSignal } from './signalHandlers'
+import { baseLogger as logger } from '../../common/logging/logger'
 
-jest.mock('./verifyState')
+vi.mock('./verifyState')
 
-const consoleSpy = {
-  log: jest.spyOn(console, 'log').mockImplementation(),
-  error: jest.spyOn(console, 'error').mockImplementation()
-}
+const loggerInfoSpy = vi.spyOn(logger, 'info')
 
 describe('handleVerificationSignal', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('returns valid for verification signal without state', async () => {
@@ -23,7 +21,7 @@ describe('handleVerificationSignal', () => {
     const result = await handleVerificationSignal(jwtPayload)
 
     expect(result).toEqual({ valid: true })
-    expect(consoleSpy.log).toHaveBeenCalledWith(
+    expect(loggerInfoSpy).toHaveBeenCalledWith(
       'Verification signal without state received'
     )
   })

@@ -1,5 +1,5 @@
 // esbuild.config.js
-import esbuild from 'esbuild'
+import { build, context } from 'esbuild'
 import { existsSync, readFileSync, cpSync, mkdirSync } from 'fs'
 import { dirname, join } from 'path'
 import { yamlParse } from 'yaml-cfn'
@@ -71,11 +71,16 @@ async function buildFor_AWS_LAMBDA_REFERENCE() {
   const outdir = `dist/${baseLambdaPath}/src`
   const finalConfig = {
     ...baseEsBuildConfig,
-    format: 'cjs', // Override ESM format for AWS Lambda
+    format: 'esm',
     entryPoints: entries,
-    outdir
+    outdir,
+    outExtension: { '.js': '.mjs' },
+    // Shims require into ESM output for dependencies that use require() internally (e.g. aws-xray-sdk-core)
+    banner: {
+      js: "import { createRequire } from 'module'; const require = createRequire(import.meta.url);"
+    }
   }
-  await esbuild.build(finalConfig)
+  await build(finalConfig)
   copySchemas(outdir)
 }
 
@@ -87,12 +92,12 @@ async function buildForContainer() {
     outfile: `dist/${basePath}/server.js`
   }
   try {
-    const context = await esbuild.context(finalConfig)
+    const ctx = await context(finalConfig)
 
     // Single build
-    await context.rebuild()
+    await ctx.rebuild()
     console.log('Build complete!')
-    await context.dispose()
+    await ctx.dispose()
   } catch (error) {
     console.error('Build failed:', error)
     process.exit(1)

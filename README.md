@@ -77,7 +77,7 @@ npm run test:vendor:build
 
 ## Configuration
 
-- Jest config: `tests/vendor/build/build.jest.config.mjs`
+- Vitest config: `vitest.config.ts`
 
 ## Troubleshooting
 

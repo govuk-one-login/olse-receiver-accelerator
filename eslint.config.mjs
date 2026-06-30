@@ -1,35 +1,37 @@
 // @ts-check
+
 import eslint from '@eslint/js'
+import { defineConfig } from 'eslint/config'
 import tseslint from 'typescript-eslint'
 import eslintConfigPrettier from 'eslint-config-prettier/flat'
+import globals from 'globals'
 
-export default tseslint.config(
-  {
-    ignores: ['dist/', '**/*.mjs', 'coverage']
-  },
+export default defineConfig(
+  { ignores: ['dist'] },
   eslint.configs.recommended,
-  tseslint.configs.recommendedTypeChecked,
+  tseslint.configs.strict,
+  tseslint.configs.stylistic,
+  eslintConfigPrettier,
   {
-    languageOptions: {
-      parserOptions: {
-        projectService: {
-          allowDefaultProject: ['*.mjs']
-        },
-        tsconfigRootDir: import.meta.dirname
-      }
-    },
     rules: {
-      'no-unused-vars': [
-        'error',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
-      ],
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
-      ]
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_'
+        }
+      ],
+      'preserve-caught-error': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'off'
     }
   },
-  tseslint.configs.strictTypeChecked,
-  tseslint.configs.stylisticTypeChecked,
-  eslintConfigPrettier
+  {
+    files: ['**/*.mjs'],
+    languageOptions: {
+      globals: {
+        ...globals.node
+      }
+    }
+  }
 )

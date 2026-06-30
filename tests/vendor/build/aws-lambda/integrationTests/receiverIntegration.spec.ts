@@ -9,11 +9,13 @@ describe('handler V1', () => {
     if (apiUrl === '') {
       throw new Error('RECEIVER_ENDPOINT environment variable is not set')
     }
- if (apiUrl === '') {
+    if (apiUrl === '') {
       throw new Error('RECEIVER_ENDPOINT environment variable is not set')
     }
 
-    const token = await getTokenFromCognito(process.env['RECEIVER_SECRET_ARN'] ?? '')
+    const token = await getTokenFromCognito(
+      process.env['RECEIVER_SECRET_ARN'] ?? ''
+    )
 
     const testSet: SET = {
       iss: 'https://gds.co.uk',
@@ -43,7 +45,9 @@ describe('handler V1', () => {
 
   it('handler returns 400 when malformed JWT in request body', async () => {
     const apiUrl = process.env['RECEIVER_ENDPOINT'] ?? ''
-    const token = await getTokenFromCognito(process.env['RECEIVER_SECRET_ARN'] ?? '')
+    const token = await getTokenFromCognito(
+      process.env['RECEIVER_SECRET_ARN'] ?? ''
+    )
 
     console.log('Bearer ' + token)
     const response = await fetch(apiUrl, {
@@ -60,7 +64,9 @@ describe('handler V1', () => {
 
   it('handler returns 400 when invalid JWT in request body', async () => {
     const apiUrl = process.env['RECEIVER_ENDPOINT'] ?? ''
-    const token = await getTokenFromCognito(process.env['RECEIVER_SECRET_ARN'] ?? '')
+    const token = await getTokenFromCognito(
+      process.env['RECEIVER_SECRET_ARN'] ?? ''
+    )
 
     console.log('Bearer ' + token)
     const response = await fetch(apiUrl, {
@@ -111,12 +117,14 @@ describe('handler V1', () => {
     }
 
     const jwt = await signedJWTWithKMS(testSet)
-    const token = await getTokenFromCognito(process.env['RECEIVER_SECRET_ARN'] ?? '')
+    const token = await getTokenFromCognito(
+      process.env['RECEIVER_SECRET_ARN'] ?? ''
+    )
     console.log('Bearer ' + token)
     console.log('url : ' + apiUrl)
     const response = await fetch(apiUrl, {
       method: 'POST',
-    body: jwt
+      body: jwt
     })
     console.log(response)
     console.log(await response.json())
@@ -125,7 +133,9 @@ describe('handler V1', () => {
 
   it('handler returns 202? when Content-type is set to application/json', async () => {
     const apiUrl = process.env['RECEIVER_ENDPOINT'] ?? ''
-    const token = await getTokenFromCognito(process.env['RECEIVER_SECRET_ARN'] ?? '')
+    const token = await getTokenFromCognito(
+      process.env['RECEIVER_SECRET_ARN'] ?? ''
+    )
 
     const testSet: SET = {
       iss: 'https://gds.co.uk',
@@ -156,7 +166,9 @@ describe('handler V1', () => {
 
   it('handler returns 202? when request is missing a required field', async () => {
     const apiUrl = process.env['RECEIVER_ENDPOINT'] ?? ''
-    const token = await getTokenFromCognito(process.env['RECEIVER_SECRET_ARN'] ?? '')
+    const token = await getTokenFromCognito(
+      process.env['RECEIVER_SECRET_ARN'] ?? ''
+    )
 
     const testSet: SET = {
       iss: 'https://gds.co.uk',
@@ -184,5 +196,4 @@ describe('handler V1', () => {
     expect(response.status).toStrictEqual(202)
     // this should fail????
   }, 10000)
-
 })

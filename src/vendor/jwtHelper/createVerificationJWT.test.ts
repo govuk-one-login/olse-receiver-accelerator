@@ -2,23 +2,23 @@ import { createVerificationJwt } from './createVerificationJWT'
 import { generateJWT } from '../../../src/vendor/auth/jwt'
 import { baseLogger } from '../../../common/logging/logger'
 
-const loggerErrorSpy = jest.spyOn(baseLogger, 'error').mockImplementation()
+const loggerErrorSpy = vi.spyOn(baseLogger, 'error')
 
-jest.mock('../../../src/vendor/auth/jwt', () => ({
-  generateJWT: jest.fn()
+vi.mock('../../../src/vendor/auth/jwt', () => ({
+  generateJWT: vi.fn()
 }))
 
-jest.mock('../../../common/config/config', () => ({
+vi.mock('../../../common/config/config', () => ({
   config: {
-    get: jest.fn().mockReturnValue('https://gds.co.uk')
+    get: vi.fn().mockReturnValue('https://gds.co.uk')
   }
 }))
 
-const mockGenerateJWT = jest.mocked(generateJWT)
+const mockGenerateJWT = vi.mocked(generateJWT)
 
 describe('createVerificationJwt', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockGenerateJWT.mockResolvedValue('mock.jwt.token')
   })
 

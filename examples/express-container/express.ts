@@ -90,7 +90,7 @@ v1Router.post(
       let verifiedJwtBody
       try {
         logger.debug('Validating JWT with remote key')
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
         const jwt = req.body
         verifiedJwtBody = await validateJWTWithRemoteKey(
           jwt as string,

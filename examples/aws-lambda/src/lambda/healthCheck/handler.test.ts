@@ -4,24 +4,25 @@ import { createDefaultApiRequest } from '../../../../awsPayloads/defaultApiReque
 import { mockLambdaContext } from '../../../../awsPayloads/mockLambdaContext'
 import { getEnv } from '../../mock-transmitter/utils'
 import { handler } from './handler'
+import { type Mock } from 'vitest'
 
-jest.mock('../../../../../common/ssm/ssm')
-jest.mock('../../../../../common/cognito/getTokenFromCognito')
-jest.mock('../../mock-transmitter/kmsService')
-jest.mock('../../mock-transmitter/utils')
+vi.mock('../../../../../common/ssm/ssm')
+vi.mock('../../../../../common/cognito/getTokenFromCognito')
+vi.mock('../../mock-transmitter/kmsService')
+vi.mock('../../mock-transmitter/utils')
 
-const mockGetParameter = jest.mocked(getParameter)
-const mockGetEnv = jest.mocked(getEnv)
-const mockGetTokenFromCognito = jest.mocked(getTokenFromCognito)
+const mockGetParameter = vi.mocked(getParameter)
+const mockGetEnv = vi.mocked(getEnv)
+const mockGetTokenFromCognito = vi.mocked(getTokenFromCognito)
 
 process.env['AWS_REGION'] = 'eu-west-2'
 
-global.fetch = jest.fn()
-const mockFetch = global.fetch as jest.Mock
+global.fetch = vi.fn()
+const mockFetch = global.fetch as Mock
 
 describe('handler', () => {
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
 
     mockGetEnv.mockImplementation((key: string) => {
       if (key === 'AWS_STACK_NAME') return 'test-stack'
