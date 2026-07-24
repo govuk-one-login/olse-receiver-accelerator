@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/govuk-one-login/quality-gates/refs/tags/v0.14.0/schemas/schema.json",
+  "$schema": "https://raw.githubusercontent.com/govuk-one-login/quality-gates/refs/tags/v0.15.0/schemas/schema.json",
   "services": [
     {
       "product": "One Login Signal Exchange",
@@ -7,60 +7,72 @@
       "promotionType": "securePipelines",
       "automated": [
         {
-          "checkTypes": [
-            "code style and linting"
-          ],
           "phase": "pre-merge",
           "provider": "GitHub",
           "config": {
             "file": ".github/workflows/ensure-sha-pinned-actions.yaml",
             "path": "$.jobs.harden_security"
-          }
+          },
+          "checks": [
+            {
+              "name": "code style and linting"
+            }
+          ]
         },
         {
-          "checkTypes": [
-            "code style and linting"
-          ],
           "phase": "pre-merge",
           "provider": "GitHub",
           "config": {
             "file": ".github/workflows/ci.yml",
             "path": "$.jobs.Run-CI-Checks"
-          }
+          },
+          "checks": [
+            {
+              "name": "code style and linting"
+            }
+          ]
         },
         {
-          "checkTypes": [
-            "unit",
-            "vulnerability detection"
-          ],
           "phase": "pre-merge",
           "provider": "GitHub",
           "config": {
             "file": ".github/workflows/vendor.yml",
             "path": "$.jobs.vendor"
-          }
+          },
+          "checks": [
+            {
+              "name": "unit"
+            },
+            {
+              "name": "vulnerability detection"
+            }
+          ]
         },
         {
-          "checkTypes": [
-            "unit"
-          ],
           "phase": "pre-merge",
           "provider": "GitHub",
           "config": {
             "file": ".github/workflows/ci.yml",
             "path": "$.jobs.Run-Vendor-Checks"
-          }
+          },
+          "checks": [
+            {
+              "name": "unit"
+            }
+          ]
         },
         {
-          "checkTypes": [
-            "unit"
-          ],
           "phase": "pre-merge",
           "provider": "GitHub",
           "config": {
             "file": ".github/workflows/ci.yml",
             "path": "$.jobs.Run-Implementor-Checks"
-          }
+          },
+          "checks": [
+            {
+              "name": "unit"
+            }
+          ]
         }
       ]
     }
