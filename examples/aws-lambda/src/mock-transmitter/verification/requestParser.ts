@@ -1,5 +1,5 @@
-import { APIGatewayProxyEvent } from 'aws-lambda'
-import { SETVerificationRequest } from '../mockApiTxInterfaces'
+import type { APIGatewayProxyEvent } from 'aws-lambda'
+import type { SETVerificationRequest } from '../mockApiTxInterfaces'
 import { validateBody } from './validation'
 
 export function getVerificationRequest(

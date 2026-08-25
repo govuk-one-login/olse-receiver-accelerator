@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import bodyParser from 'body-parser'
-import express, { Request, Response } from 'express'
+import express, { type Request, type Response } from 'express'
 import { readFileSync } from 'fs'
 import * as jose from 'jose'
 import { auth } from '../../src/vendor/auth/auth'
