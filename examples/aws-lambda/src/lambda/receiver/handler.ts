@@ -1,4 +1,4 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { getPublicKeyFromRemote } from '../../../../../src/vendor/publicKey/getPublicKey'
 import { validateJWTWithRemoteKey } from '../../../../../src/vendor/jwt/validateJWT'
 import { validateSignalAgainstSchemas } from '../../../../../src/vendor/validateSchema/validateSchema'

@@ -1,6 +1,6 @@
 import { config } from '../../../common/config/config'
 import { generateJWT } from '../../../src/vendor/auth/jwt'
-import { generateJWTPayload } from '../../../src/vendor/types'
+import type { generateJWTPayload } from '../../../src/vendor/types'
 import { ConfigurationKeys } from '../../../common/config/configurationKeys'
 import { baseLogger as logger } from '../../../common/logging/logger'
 
