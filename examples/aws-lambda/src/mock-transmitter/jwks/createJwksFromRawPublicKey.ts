@@ -1,4 +1,4 @@
-import { createPublicKey, JsonWebKey } from 'crypto'
+import { createPublicKey, type JsonWebKey } from 'crypto'
 
 export function createJwkFromRawPublicKey(
   publicKeyData: Uint8Array,

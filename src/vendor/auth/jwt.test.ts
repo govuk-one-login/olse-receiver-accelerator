@@ -1,5 +1,5 @@
 import { config } from '../../../common/config/config'
-import { generateJWTPayload } from '../types'
+import type { generateJWTPayload } from '../types'
 import { generateJWT } from './jwt'
 import * as fs from 'fs'
 
