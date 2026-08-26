@@ -1,19 +1,19 @@
+import { ConfigurationKeys } from "../../../common/config/configurationKeys";
 import type { Request } from "express";
 import { auth } from "./auth";
 import { generateJWT } from "./jwt";
 import { getAuthInput } from "./getAuthInput";
-import { ConfigurationKeys } from "../../../common/config/configurationKeys";
 import { baseLogger as logger } from "../../../common/logging/logger";
 
-vi.mock("./jwt");
-vi.mock("./getAuthInput");
+vi.mock(import("./jwt"));
+vi.mock(import("./getAuthInput"));
 
 const mockGenerateJWT = vi.mocked(generateJWT);
 const mockGetAuthInput = vi.mocked(getAuthInput);
 const loggerWarnSpy = vi.spyOn(logger, "warn");
 
 describe("auth", () => {
-  let mockReq: Request;
+  let mockReq: Request = {} as Request;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -25,7 +25,7 @@ describe("auth", () => {
   });
 
   afterEach(() => {
-    // clean up but used to avoid lint error for deleting dynamically computed property keys
+    // Clean up but used to avoid lint error for deleting dynamically computed property keys
     delete process.env["CLIENT_ID"];
     delete process.env["CLIENT_SECRET"];
     delete process.env["AWS_REGION"];
@@ -44,10 +44,10 @@ describe("auth", () => {
     expect(loggerWarnSpy).toHaveBeenCalledWith(
       "Invalid request: The request is missing required parameters or is malformed",
     );
-    expect(result).toEqual({
-      valid: false,
+    expect(result).toStrictEqual({
       error: "invalid_request",
       response_code: 400,
+      valid: false,
     });
   });
 
@@ -64,10 +64,10 @@ describe("auth", () => {
     expect(loggerWarnSpy).toHaveBeenCalledWith(
       "Invalid grant: The provided authorisation grant is invalid or expired",
     );
-    expect(result).toEqual({
-      valid: false,
+    expect(result).toStrictEqual({
       error: "invalid_grant",
       response_code: 400,
+      valid: false,
     });
   });
 
@@ -80,10 +80,10 @@ describe("auth", () => {
 
     const result = await auth(mockReq);
 
-    expect(result).toEqual({
-      valid: false,
+    expect(result).toStrictEqual({
       error: "invalid_client",
       response_code: 401,
+      valid: false,
     });
   });
 });

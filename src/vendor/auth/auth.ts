@@ -1,7 +1,8 @@
+// oxlint-disable import/prefer-default-export
+import { ConfigurationKeys } from "../../../common/config/configurationKeys";
 import type { Request } from "express";
 import { generateJWT } from "./jwt";
 import { getAuthInput } from "./getAuthInput";
-import { ConfigurationKeys } from "../../../common/config/configurationKeys";
 import { baseLogger as logger } from "../../../common/logging/logger";
 
 interface ValidResponse {
@@ -25,7 +26,7 @@ export const auth = async (req: Request): Promise<Result> => {
   const { client_id, client_secret, grant_type } = getAuthInput(req);
   if (grant_type !== "client_credentials") {
     logger.warn("Invalid grant type");
-    return { valid: false, error: "invalid_grant", response_code: 400 };
+    return { error: "invalid_grant", response_code: 400, valid: false };
   }
 
   if (
@@ -39,14 +40,14 @@ export const auth = async (req: Request): Promise<Result> => {
         audience: "https://transmitter.example.com",
         issuer: "https://receiver.example.com",
         jti: "123456",
-        useExpClaim: true,
         payload: {},
+        useExpClaim: true,
       });
 
       logger.info("Authentication successful");
       return {
+        data: { access_token: token, expires_in: 3600, token_type: "Bearer" },
         valid: true,
-        data: { token_type: "Bearer", access_token: token, expires_in: 3600 },
       };
     } catch (error) {
       if (error instanceof Error) {
@@ -54,16 +55,16 @@ export const auth = async (req: Request): Promise<Result> => {
           logger.warn(
             "Invalid request: The request is missing required parameters or is malformed",
           );
-          return { valid: false, error: "invalid_request", response_code: 400 };
+          return { error: "invalid_request", response_code: 400, valid: false };
         } else if (error.message === "invalid_grant") {
           logger.warn("Invalid grant: The provided authorisation grant is invalid or expired");
-          return { valid: false, error: "invalid_grant", response_code: 400 };
+          return { error: "invalid_grant", response_code: 400, valid: false };
         }
       }
-      return { valid: false, error: "invalid_request", response_code: 400 };
+      return { error: "invalid_request", response_code: 400, valid: false };
     }
   } else {
     logger.warn("Supplied client id or secret did not match expected values");
-    return { valid: false, error: "invalid_client", response_code: 401 };
+    return { error: "invalid_client", response_code: 401, valid: false };
   }
 };

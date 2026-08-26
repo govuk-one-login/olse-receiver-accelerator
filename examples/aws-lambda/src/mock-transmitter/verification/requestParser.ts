@@ -6,7 +6,7 @@ export function getVerificationRequest(event: APIGatewayProxyEvent): SETVerifica
   const requestBody = validateBody(event.body);
 
   return {
-    stream_id: requestBody.stream_id,
     state: requestBody.state,
+    stream_id: requestBody.stream_id,
   };
 }

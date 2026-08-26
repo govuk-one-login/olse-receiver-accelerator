@@ -1,38 +1,45 @@
 import type { APIGatewayProxyResult } from "aws-lambda";
 
 const commonHeaders = {
-  "Content-Type": "application/json",
   "Cache-Control": "no-store",
+  "Content-Type": "application/json",
 };
 
-export const NO_CONTENT_RESPONSE: APIGatewayProxyResult = {
-  statusCode: 204,
-  headers: commonHeaders,
+const NO_CONTENT_RESPONSE: APIGatewayProxyResult = {
   body: "",
+  headers: commonHeaders,
+  statusCode: 204,
 };
 
-export const INVALID_REQUEST_RESPONSE: APIGatewayProxyResult = {
-  statusCode: 400,
-  headers: commonHeaders,
+const INVALID_REQUEST_RESPONSE: APIGatewayProxyResult = {
   body: JSON.stringify({
     error: "invalid_request",
     error_description: "The request is missing required params or contains invalid values",
   }),
+  headers: commonHeaders,
+  statusCode: 400,
 };
 
-export const VERIFICATION_FORBIDDEN_RESPONSE: APIGatewayProxyResult = {
-  statusCode: 403,
-  headers: commonHeaders,
+const VERIFICATION_FORBIDDEN_RESPONSE: APIGatewayProxyResult = {
   body: JSON.stringify({
     error: "access_denied",
   }),
+  headers: commonHeaders,
+  statusCode: 403,
 };
 
-export const INTERNAL_SERVER_ERROR_RESPONSE: APIGatewayProxyResult = {
-  statusCode: 500,
-  headers: commonHeaders,
+const INTERNAL_SERVER_ERROR_RESPONSE: APIGatewayProxyResult = {
   body: JSON.stringify({
     error: "server_error",
     error_description: "An internal server error occured",
   }),
+  headers: commonHeaders,
+  statusCode: 500,
+};
+
+export {
+  NO_CONTENT_RESPONSE,
+  INVALID_REQUEST_RESPONSE,
+  VERIFICATION_FORBIDDEN_RESPONSE,
+  INTERNAL_SERVER_ERROR_RESPONSE,
 };

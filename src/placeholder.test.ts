@@ -1,3 +1,4 @@
+// oxlint-disable no-magic-numbers
 import { add } from "./placeholder";
 
 describe("placeholder test for implementor unit test", () => {

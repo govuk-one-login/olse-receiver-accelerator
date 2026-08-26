@@ -1,7 +1,7 @@
+import { ConfigurationKeys } from "../../../common/config/configurationKeys";
 import { config } from "../../../common/config/config";
 import { generateJWT } from "../../../src/vendor/auth/jwt";
 import type { generateJWTPayload } from "../../../src/vendor/types";
-import { ConfigurationKeys } from "../../../common/config/configurationKeys";
 import { baseLogger as logger } from "../../../common/logging/logger";
 
 export async function createVerificationJwt(
@@ -12,13 +12,13 @@ export async function createVerificationJwt(
     const ISSUER = config.get(ConfigurationKeys.ISSUER);
 
     const jwtPayload: generateJWTPayload = {
+      alg: "RS256",
+      audience: relyingPartyUrl,
+      issuer: ISSUER,
+      jti: `verification-${String(Date.now())}`,
       payload: {
         streamId: streamId,
       },
-      alg: "RS256",
-      issuer: ISSUER,
-      jti: `verification-${String(Date.now())}`,
-      audience: relyingPartyUrl,
       useExpClaim: true,
     };
 
@@ -27,6 +27,6 @@ export async function createVerificationJwt(
     logger.error("Error creating verification JWT:", {
       error: error instanceof Error ? error.message : String(error),
     });
-    throw new Error("Failed to create verification JWT");
+    throw new Error("Failed to create verification JWT", { cause: error });
   }
 }
