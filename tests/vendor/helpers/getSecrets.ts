@@ -9,9 +9,9 @@ export interface Secrets {
 
 export const getSecrets = async (secretArn: string): Promise<Secrets> => {
   const command = new GetSecretValueCommand({ SecretId: secretArn });
-  const response = await getSecretsManagerClient().send(command);
+  const response = await getSecretsManagerClient()?.send(command);
 
-  if (!response.SecretString) {
+  if (!response?.SecretString) {
     throw new Error(`Secret "${secretArn}" is empty or not found`);
   }
 

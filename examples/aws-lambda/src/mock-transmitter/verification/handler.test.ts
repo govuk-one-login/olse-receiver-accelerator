@@ -1,23 +1,24 @@
-import type { APIGatewayProxyEvent } from "aws-lambda";
-import { handler } from "./handler";
-import { getVerificationRequest } from "./requestParser";
-import { constructVerificationFullSecurityEvent } from "./constructVerificationSecurityEvent";
-import { signedJWTWithKMS } from "../kmsService";
-import { isValidationError } from "./validation";
+// oxlint-disable no-magic-numbers
 import type { SET, SETVerificationRequest } from "../mockApiTxInterfaces";
-import { getTokenFromCognito } from "../../../../../common/cognito/getTokenFromCognito";
-import { getParameter } from "../../../../../common/ssm/ssm";
-import { getEnv } from "../utils";
+import type { APIGatewayProxyEvent } from "aws-lambda";
 import { ConfigurationKeys } from "../../../../../common/config/configurationKeys";
-import { type Mock } from "vitest";
+import type { Mock } from "vitest";
+import { constructVerificationFullSecurityEvent } from "./constructVerificationSecurityEvent";
+import { getEnv } from "../utils";
+import { getParameter } from "../../../../../common/ssm/ssm";
+import { getTokenFromCognito } from "../../../../../common/cognito/getTokenFromCognito";
+import { getVerificationRequest } from "./requestParser";
+import { handler } from "./handler";
+import { isValidationError } from "./validation";
+import { signedJWTWithKMS } from "../kmsService";
 
-vi.mock("./requestParser");
-vi.mock("./constructVerificationSecurityEvent");
-vi.mock("../kmsService");
-vi.mock("./validation");
-vi.mock("../../../../../common/cognito/getTokenFromCognito");
-vi.mock("../../../../../common/ssm/ssm");
-vi.mock("../utils");
+vi.mock(import("./requestParser"));
+vi.mock(import("./constructVerificationSecurityEvent"));
+vi.mock(import("../kmsService"));
+vi.mock(import("./validation"));
+vi.mock(import("../../../../../common/cognito/getTokenFromCognito"));
+vi.mock(import("../../../../../common/ssm/ssm"));
+vi.mock(import("../utils"));
 
 const mockParseRequest = vi.mocked(getVerificationRequest);
 const mockBuildSecurityEvent = vi.mocked(constructVerificationFullSecurityEvent);
@@ -28,7 +29,7 @@ const mockGetSsmParameter = vi.mocked(getParameter);
 const mockReadEnv = vi.mocked(getEnv);
 
 const fetchMock: Mock<typeof fetch> = vi.fn();
-global.fetch = fetchMock;
+globalThis.fetch = fetchMock;
 
 const mockEvent: Partial<APIGatewayProxyEvent> = {
   requestContext: { requestId: "test-request-id-001" },
@@ -39,7 +40,9 @@ describe("transmitter handler", () => {
     vi.clearAllMocks();
     process.env["RECEIVER_SECRET_ARN"] = "arn";
     mockReadEnv.mockImplementation((key: string) => {
-      if (key === ConfigurationKeys.AWS_STACK_NAME) return "test-stack";
+      if (key === ConfigurationKeys.AWS_STACK_NAME) {
+        return "test-stack";
+      }
       throw new Error(`Unexpected key: ${key}`);
     });
     mockGetSsmParameter.mockResolvedValue("https://receiver.example.com/events");
@@ -54,20 +57,21 @@ describe("transmitter handler", () => {
 
   it("sends a verification event successfully", async () => {
     const request: SETVerificationRequest = {
-      stream_id: "user-123",
+      // oxlint-disable-next-line no-undefined
       state: undefined,
+      stream_id: "user-123",
     };
     const securityEvent: SET = {
-      jti: "jti-123",
-      iss: "issuer",
       aud: "audience",
-      iat: Math.floor(Date.now() / 1000),
-      sub_id: { format: "opaque", id: "user-123" },
       events: {
         "https://schemas.openid.net/secevent/ssf/event-type/verification": {
           state: "abc",
         },
       },
+      iat: Math.floor(Date.now() / 1000),
+      iss: "issuer",
+      jti: "jti-123",
+      sub_id: { format: "opaque", id: "user-123" },
     };
     mockParseRequest.mockReturnValue(request);
     mockBuildSecurityEvent.mockReturnValue(securityEvent);

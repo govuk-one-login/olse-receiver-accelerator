@@ -1,3 +1,4 @@
+// oxlint-disable unicorn/no-null
 import { isValidationError, validateBody } from "./validation";
 
 describe("isValidationError", () => {
@@ -16,14 +17,14 @@ describe("isValidationError", () => {
 describe("validateBody", () => {
   it("validates correct body", () => {
     const body = JSON.stringify({
-      stream_id: "test-stream-id-001",
       state: "test-state-001",
+      stream_id: "test-stream-id-001",
     });
     const result = validateBody(body);
 
-    expect(result).toEqual({
-      stream_id: "test-stream-id-001",
+    expect(result).toStrictEqual({
       state: "test-state-001",
+      stream_id: "test-stream-id-001",
     });
   });
 
@@ -46,7 +47,7 @@ describe("validateBody", () => {
   });
 
   it("throws error when invalid state", () => {
-    const body = JSON.stringify({ stream_id: "test-stream-id-001", state: 123 });
+    const body = JSON.stringify({ state: 123, stream_id: "test-stream-id-001" });
     expect(() => validateBody(body)).toThrow("INVALID_STATE");
   });
 });

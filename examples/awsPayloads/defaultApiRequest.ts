@@ -1,9 +1,9 @@
 import type { APIGatewayProxyEvent } from "aws-lambda";
 
 export const createDefaultApiRequest = (path = "/"): APIGatewayProxyEvent => ({
-  httpMethod: "get",
   body: "",
   headers: {},
+  httpMethod: "get",
   isBase64Encoded: false,
   multiValueHeaders: {},
   multiValueQueryStringParameters: {},
@@ -45,7 +45,7 @@ export const createDefaultApiRequest = (path = "/"): APIGatewayProxyEvent => ({
     path: "/hello",
     protocol: "HTTP/1.1",
     requestId: "c6af9ac6-7b61-11e6-9a41-93e8deadbeef",
-    requestTimeEpoch: 1428582896000,
+    requestTimeEpoch: 1_428_582_896_000,
     resourceId: "123456",
     resourcePath: "/hello",
     stage: "dev",

@@ -1,10 +1,13 @@
-import { createPublicKey, type JsonWebKey } from "crypto";
+import type { JsonWebKey } from "node:crypto";
+import { createPublicKey } from "node:crypto";
 
-export function createJwkFromRawPublicKey(publicKeyData: Uint8Array, keyId: string): JsonWebKey {
+const uint8ArrayToBase64 = (uint8Array: Uint8Array): string =>
+  Buffer.from(uint8Array).toString("base64");
+
+function createJwkFromRawPublicKey(publicKeyData: Uint8Array, keyId: string): JsonWebKey {
   const stringPublicKey = uint8ArrayToBase64(publicKeyData);
 
-  const formattedPublicKey =
-    "-----BEGIN PUBLIC KEY-----\n" + stringPublicKey + "\n-----END PUBLIC KEY-----";
+  const formattedPublicKey = `-----BEGIN PUBLIC KEY-----\n${stringPublicKey}\n-----END PUBLIC KEY-----`;
 
   try {
     const jsonWebKey = createPublicKey(formattedPublicKey).export({
@@ -14,10 +17,8 @@ export function createJwkFromRawPublicKey(publicKeyData: Uint8Array, keyId: stri
     jsonWebKey["kid"] = keyId;
     return jsonWebKey;
   } catch {
-    throw Error("Could not create Public Key. Imported key may be in an incorrect format");
+    throw new Error("Could not create Public Key. Imported key may be in an incorrect format");
   }
 }
 
-export const uint8ArrayToBase64 = (uint8Array: Uint8Array) => {
-  return Buffer.from(uint8Array).toString("base64");
-};
+export { createJwkFromRawPublicKey, uint8ArrayToBase64 };

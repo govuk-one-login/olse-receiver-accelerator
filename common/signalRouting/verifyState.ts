@@ -1,9 +1,9 @@
-import { getPublicKeyFromJWK } from "../../src/vendor/publicKey/getPublicKey";
-import { validateJWT } from "../../src/vendor/jwt/validateJWT";
-import { readFileSync } from "fs";
-import { config } from "../config/config";
 import { ConfigurationKeys } from "../config/configurationKeys";
+import { config } from "../config/config";
+import { getPublicKeyFromJWK } from "../../src/vendor/publicKey/getPublicKey";
 import { baseLogger as logger } from "../logging/logger";
+import { readFileSync } from "node:fs";
+import { validateJWT } from "../../src/vendor/jwt/validateJWT";
 
 export const verifyStateJwt = async (stateJwt: string): Promise<Record<string, unknown> | null> => {
   try {
@@ -20,6 +20,7 @@ export const verifyStateJwt = async (stateJwt: string): Promise<Record<string, u
     logger.error("Failed to verify state JWT:", {
       error: error instanceof Error ? error.message : String(error),
     });
+    // oxlint-disable-next-line unicorn/no-null
     return null;
   }
 };

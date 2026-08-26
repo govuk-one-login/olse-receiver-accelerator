@@ -3,9 +3,10 @@ import { config } from "../../../common/config/config";
 import { baseLogger as logger } from "../../../common/logging/logger";
 import { sendVerificationSignal } from "../../../src/vendor/jwtHelper/sendVerification";
 
+// oxlint-disable-next-line init-declarations
 let verificationTimer: NodeJS.Timeout | undefined;
 
-export function startHealthCheck(): boolean {
+function startHealthCheck(): boolean {
   if (verificationTimer) {
     return true;
   }
@@ -27,8 +28,10 @@ export function startHealthCheck(): boolean {
   }
 }
 
-export function stopVerificationSignals(): void {
+function stopVerificationSignals(): void {
   if (verificationTimer) {
     clearInterval(verificationTimer);
   }
 }
+
+export { startHealthCheck, stopVerificationSignals };
