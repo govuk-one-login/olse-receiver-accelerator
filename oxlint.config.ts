@@ -24,6 +24,6 @@ export default defineConfig({
     "node/no-process-env": "off",
     "oxc/no-async-await": "off",
     "typescript/no-unsafe-type-assertion": "off",
-    "vitest/require-to-throw-message": "off"
+    "vitest/require-to-throw-message": "off",
   },
 });

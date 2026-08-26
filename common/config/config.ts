@@ -1,3 +1,3 @@
-import { EnvironmentVariableConfigurationProvider } from './configurationProviders/environmentVariableConfigurationProvider'
+import { EnvironmentVariableConfigurationProvider } from "./configurationProviders/environmentVariableConfigurationProvider";
 
-export const config = new EnvironmentVariableConfigurationProvider()
+export const config = new EnvironmentVariableConfigurationProvider();

@@ -1,335 +1,330 @@
-import { webcrypto } from 'crypto'
-import { readFileSync } from 'fs'
-import * as jose from 'jose'
-import request from 'supertest'
-import { generateJWT } from '../../src/vendor/auth/jwt'
-import { getPublicKeyFromRemote } from '../../src/vendor/publicKey/getPublicKey'
-import { app } from './express'
-import * as signalRouting from '../../common/signalRouting/signalRouter'
-import { stopVerificationSignals } from './verification/startHealthCheck'
-import { ConfigurationKeys } from '../../common/config/configurationKeys'
-import { baseLogger } from '../../common/logging/logger'
-import { getSecret } from '../../common/secretsManager/secretsManager'
+import { webcrypto } from "crypto";
+import { readFileSync } from "fs";
+import * as jose from "jose";
+import request from "supertest";
+import { generateJWT } from "../../src/vendor/auth/jwt";
+import { getPublicKeyFromRemote } from "../../src/vendor/publicKey/getPublicKey";
+import { app } from "./express";
+import * as signalRouting from "../../common/signalRouting/signalRouter";
+import { stopVerificationSignals } from "./verification/startHealthCheck";
+import { ConfigurationKeys } from "../../common/config/configurationKeys";
+import { baseLogger } from "../../common/logging/logger";
+import { getSecret } from "../../common/secretsManager/secretsManager";
 
-vi.mock('../../src/vendor/publicKey/getPublicKey', () => ({
-  getPublicKeyFromRemote: vi.fn()
-}))
+vi.mock("../../src/vendor/publicKey/getPublicKey", () => ({
+  getPublicKeyFromRemote: vi.fn(),
+}));
 
-const loggerErrorSpy = vi.spyOn(baseLogger, 'error')
+const loggerErrorSpy = vi.spyOn(baseLogger, "error");
 
-vi.mock('../../common/secretsManager/secretsManager', () => ({
-  getSecret: vi.fn()
-}))
+vi.mock("../../common/secretsManager/secretsManager", () => ({
+  getSecret: vi.fn(),
+}));
 
-const mockGetSecret = vi.mocked(getSecret)
+const mockGetSecret = vi.mocked(getSecret);
 
 const sampleVerificationEvent = {
-  alg: 'RS256',
-  audience: 'https://aud.example.com',
-  issuer: 'https://issuer.example.com',
-  jti: '123456',
+  alg: "RS256",
+  audience: "https://aud.example.com",
+  issuer: "https://issuer.example.com",
+  jti: "123456",
   useExpClaim: false,
   payload: {
     sub_id: {
-      format: 'opaque',
-      id: 'f67e39a0a4d34d56b3aa1bc4cff0069f'
+      format: "opaque",
+      id: "f67e39a0a4d34d56b3aa1bc4cff0069f",
     },
     events: {
-      'https://schemas.openid.net/secevent/ssf/event-type/verification': {
-        state: 'VGhpcyBpcyBhbiBleGFtcGxlIHN0YXRlIHZhbHVlLgo='
-      }
-    }
-  }
-}
+      "https://schemas.openid.net/secevent/ssf/event-type/verification": {
+        state: "VGhpcyBpcyBhbiBleGFtcGxlIHN0YXRlIHZhbHVlLgo=",
+      },
+    },
+  },
+};
 
-let publicKeyString
-let publicKeyJson
-let key: webcrypto.CryptoKey | Uint8Array
+let publicKeyString;
+let publicKeyJson;
+let key: webcrypto.CryptoKey | Uint8Array;
 
-describe('Express server /v1 endpoint', () => {
+describe("Express server /v1 endpoint", () => {
   beforeEach(async () => {
-    vi.resetAllMocks()
-    vi.clearAllMocks()
-    vi.useFakeTimers()
+    vi.resetAllMocks();
+    vi.clearAllMocks();
+    vi.useFakeTimers();
 
-    process.env[ConfigurationKeys.CLIENT_ID] = 'test_client'
-    process.env[ConfigurationKeys.CLIENT_SECRET] = 'test_secret'
-    process.env[ConfigurationKeys.PRIVATE_KEY_PATH] = './keys/authPrivate.key'
-    process.env[ConfigurationKeys.PUBLIC_KEY_PATH] = './keys/authPublic.key'
-    process.env[ConfigurationKeys.JWKS_URL] = 'https://example.com/jwks'
-    process.env[ConfigurationKeys.AWS_REGION] = 'eu-west-2'
+    process.env[ConfigurationKeys.CLIENT_ID] = "test_client";
+    process.env[ConfigurationKeys.CLIENT_SECRET] = "test_secret";
+    process.env[ConfigurationKeys.PRIVATE_KEY_PATH] = "./keys/authPrivate.key";
+    process.env[ConfigurationKeys.PUBLIC_KEY_PATH] = "./keys/authPublic.key";
+    process.env[ConfigurationKeys.JWKS_URL] = "https://example.com/jwks";
+    process.env[ConfigurationKeys.AWS_REGION] = "eu-west-2";
 
-    publicKeyString = readFileSync('./keys/authPublic.key', {
-      encoding: 'utf8'
-    })
+    publicKeyString = readFileSync("./keys/authPublic.key", {
+      encoding: "utf8",
+    });
     // eslint-disable-next-line
-    publicKeyJson = JSON.parse(publicKeyString as any)
-    key = await jose.importJWK(publicKeyJson as jose.JWK, 'RS256')
+    publicKeyJson = JSON.parse(publicKeyString as any);
+    key = await jose.importJWK(publicKeyJson as jose.JWK, "RS256");
 
-    const privateKeyString = readFileSync('./keys/authPrivate.key', {
-      encoding: 'utf8'
-    })
-    mockGetSecret.mockResolvedValue(
-      JSON.stringify({ privateKey: privateKeyString })
-    )
-  })
+    const privateKeyString = readFileSync("./keys/authPrivate.key", {
+      encoding: "utf8",
+    });
+    mockGetSecret.mockResolvedValue(JSON.stringify({ privateKey: privateKeyString }));
+  });
 
   afterEach(() => {
-    stopVerificationSignals()
-    vi.useRealTimers()
-  })
+    stopVerificationSignals();
+    vi.useRealTimers();
+  });
 
-  it('should return 400 for invalid grant type', async () => {
-    const response = await request(app).post('/v1/token').query({
-      client_id: 'test_client',
-      client_secret: 'test_secret',
-      grant_type: 'invalid_grant'
-    })
+  it("should return 400 for invalid grant type", async () => {
+    const response = await request(app).post("/v1/token").query({
+      client_id: "test_client",
+      client_secret: "test_secret",
+      grant_type: "invalid_grant",
+    });
 
-    expect(response.status).toBe(400)
-    expect(response.body).toEqual({ error: 'invalid_grant' })
-  })
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: "invalid_grant" });
+  });
 
-  it('should return 401 for incorrect client_id', async () => {
-    const response = await request(app).post('/v1/token').query({
-      client_id: 'wrong_client',
-      client_secret: 'test_secret',
-      grant_type: 'client_credentials'
-    })
+  it("should return 401 for incorrect client_id", async () => {
+    const response = await request(app).post("/v1/token").query({
+      client_id: "wrong_client",
+      client_secret: "test_secret",
+      grant_type: "client_credentials",
+    });
 
-    expect(response.status).toBe(401)
-    expect(response.body).toEqual({ error: 'invalid_client' })
-  })
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({ error: "invalid_client" });
+  });
 
-  it('should return 401 for incorrect client_secret', async () => {
-    const response = await request(app).post('/v1/token').query({
-      client_id: 'test_client',
-      client_secret: 'wrong_secret',
-      grant_type: 'client_credentials'
-    })
+  it("should return 401 for incorrect client_secret", async () => {
+    const response = await request(app).post("/v1/token").query({
+      client_id: "test_client",
+      client_secret: "wrong_secret",
+      grant_type: "client_credentials",
+    });
 
-    expect(response.status).toBe(401)
-    expect(response.body).toEqual({ error: 'invalid_client' })
-  })
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({ error: "invalid_client" });
+  });
 
-  it('should return 401 when CLIENT_ID env var is missing', async () => {
+  it("should return 401 when CLIENT_ID env var is missing", async () => {
     // eslint-disable-next-line
-    delete process.env[ConfigurationKeys.CLIENT_ID]
+    delete process.env[ConfigurationKeys.CLIENT_ID];
 
     const response = await request(app)
-      .post('/v1/token')
-      .set('content-type', 'application/secevent+jwt')
+      .post("/v1/token")
+      .set("content-type", "application/secevent+jwt")
       .query({
-        client_id: 'test_client',
-        client_secret: 'test_secret',
-        grant_type: 'client_credentials'
-      })
+        client_id: "test_client",
+        client_secret: "test_secret",
+        grant_type: "client_credentials",
+      });
 
-    expect(response.status).toBe(401)
-    expect(response.body).toEqual({ error: 'invalid_client' })
-  })
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({ error: "invalid_client" });
+  });
 
-  it('should return 401 when CLIENT_SECRET env var is missing', async () => {
+  it("should return 401 when CLIENT_SECRET env var is missing", async () => {
     // eslint-disable-next-line
-    delete process.env[ConfigurationKeys.CLIENT_SECRET]
+    delete process.env[ConfigurationKeys.CLIENT_SECRET];
 
-    const response = await request(app).post('/v1/token').query({
-      client_id: 'test_client',
-      client_secret: 'test_secret',
-      grant_type: 'client_credentials'
-    })
+    const response = await request(app).post("/v1/token").query({
+      client_id: "test_client",
+      client_secret: "test_secret",
+      grant_type: "client_credentials",
+    });
 
-    expect(response.status).toBe(401)
-    expect(response.body).toEqual({ error: 'invalid_client' })
-  })
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({ error: "invalid_client" });
+  });
 
-  it('should return 200 with valid credentials', async () => {
-    process.env['CLIENT_ID'] = 'test_client'
-    process.env['CLIENT_SECRET'] = 'test_secret'
-    const response = await request(app).post('/v1/token').query({
-      client_id: 'test_client',
-      client_secret: 'test_secret',
-      grant_type: 'client_credentials'
-    })
+  it("should return 200 with valid credentials", async () => {
+    process.env["CLIENT_ID"] = "test_client";
+    process.env["CLIENT_SECRET"] = "test_secret";
+    const response = await request(app).post("/v1/token").query({
+      client_id: "test_client",
+      client_secret: "test_secret",
+      grant_type: "client_credentials",
+    });
 
-    expect(response.status).toBe(200)
-    expect(response.body).toHaveProperty('access_token')
-    expect(response.body).toHaveProperty('token_type', 'Bearer')
-    expect(response.body).toHaveProperty('expires_in', 3600)
-  })
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("access_token");
+    expect(response.body).toHaveProperty("token_type", "Bearer");
+    expect(response.body).toHaveProperty("expires_in", 3600);
+  });
 
-  it('should return 202 for when sent a SET with a valid JWT and payload', async () => {
+  it("should return 202 for when sent a SET with a valid JWT and payload", async () => {
     // @ts-expect-error ignore type errors
-    vi.mocked(getPublicKeyFromRemote).mockReturnValue(key)
-    const jwt = await generateJWT(sampleVerificationEvent)
+    vi.mocked(getPublicKeyFromRemote).mockReturnValue(key);
+    const jwt = await generateJWT(sampleVerificationEvent);
 
-    const tokenResponse = await request(app).post('/v1/token').query({
-      client_id: 'test_client',
-      client_secret: 'test_secret',
-      grant_type: 'client_credentials'
-    })
+    const tokenResponse = await request(app).post("/v1/token").query({
+      client_id: "test_client",
+      client_secret: "test_secret",
+      grant_type: "client_credentials",
+    });
 
-    expect(tokenResponse.status).toBe(200)
+    expect(tokenResponse.status).toBe(200);
 
-    const accessToken = tokenResponse.body
+    const accessToken = tokenResponse.body;
 
-    const token = accessToken.access_token as string
+    const token = accessToken.access_token as string;
 
     const response = await request(app)
-      .post('/v1/Events')
-      .set('content-type', 'application/secevent+jwt')
-      .set('Authorization', `Bearer ${token}`)
-      .send(jwt)
+      .post("/v1/Events")
+      .set("content-type", "application/secevent+jwt")
+      .set("Authorization", `Bearer ${token}`)
+      .send(jwt);
 
-    expect(response.status).toBe(202)
-  })
+    expect(response.status).toBe(202);
+  });
 
-  it('should return 400 for when sent signal routing has failed', async () => {
+  it("should return 400 for when sent signal routing has failed", async () => {
     // @ts-expect-error ignore type errors
-    vi.mocked(getPublicKeyFromRemote).mockReturnValue(key)
+    vi.mocked(getPublicKeyFromRemote).mockReturnValue(key);
 
-    const routeSpy = vi.spyOn(signalRouting, 'handleSignalRouting')
-    vi.mocked(routeSpy).mockResolvedValue({ valid: false })
+    const routeSpy = vi.spyOn(signalRouting, "handleSignalRouting");
+    vi.mocked(routeSpy).mockResolvedValue({ valid: false });
 
-    const jwt = await generateJWT(sampleVerificationEvent)
+    const jwt = await generateJWT(sampleVerificationEvent);
 
-    const tokenResponse = await request(app).post('/v1/token').query({
-      client_id: 'test_client',
-      client_secret: 'test_secret',
-      grant_type: 'client_credentials'
-    })
+    const tokenResponse = await request(app).post("/v1/token").query({
+      client_id: "test_client",
+      client_secret: "test_secret",
+      grant_type: "client_credentials",
+    });
 
-    expect(tokenResponse.status).toBe(200)
+    expect(tokenResponse.status).toBe(200);
 
-    const accessToken = tokenResponse.body
+    const accessToken = tokenResponse.body;
 
-    const token = accessToken.access_token as string
+    const token = accessToken.access_token as string;
 
     const response = await request(app)
-      .post('/v1/Events')
-      .set('content-type', 'application/secevent+jwt')
-      .set('Authorization', `Bearer ${token}`)
-      .send(jwt)
+      .post("/v1/Events")
+      .set("content-type", "application/secevent+jwt")
+      .set("Authorization", `Bearer ${token}`)
+      .send(jwt);
 
-    expect(response.status).toBe(400)
+    expect(response.status).toBe(400);
     expect(response.body).toStrictEqual({
-      err: 'invalid_request',
+      err: "invalid_request",
       description:
-        "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
-    })
+        "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition.",
+    });
 
-    expect(loggerErrorSpy).toHaveBeenCalledWith(
-      'failed to route signal',
-      expect.any(Object)
-    )
-  })
+    expect(loggerErrorSpy).toHaveBeenCalledWith("failed to route signal", expect.any(Object));
+  });
 
-  it('should return 400 and invalid signal for when sent a SET with an invalid SET payload', async () => {
+  it("should return 400 and invalid signal for when sent a SET with an invalid SET payload", async () => {
     // @ts-expect-error ignore type errors
-    vi.mocked(getPublicKeyFromRemote).mockReturnValue(key)
+    vi.mocked(getPublicKeyFromRemote).mockReturnValue(key);
     const jwt = await generateJWT({
-      alg: 'RS256',
-      audience: 'https://aud.example.com',
-      issuer: 'https://issuer.example.com',
-      jti: '123456',
+      alg: "RS256",
+      audience: "https://aud.example.com",
+      issuer: "https://issuer.example.com",
+      jti: "123456",
       useExpClaim: false,
       payload: {
         foo: {
-          format: 'opaque',
-          id: 'f67e39a0a4d34d56b3aa1bc4cff0069f'
+          format: "opaque",
+          id: "f67e39a0a4d34d56b3aa1bc4cff0069f",
         },
         events: {
-          'https://schemas.openid.net/secevent/ssf/event-type/verification': {
-            state: 'VGhpcyBpcyBhbiBleGFtcGxlIHN0YXRlIHZhbHVlLgo='
-          }
-        }
-      }
-    })
+          "https://schemas.openid.net/secevent/ssf/event-type/verification": {
+            state: "VGhpcyBpcyBhbiBleGFtcGxlIHN0YXRlIHZhbHVlLgo=",
+          },
+        },
+      },
+    });
 
-    const tokenResponse = await request(app).post('/v1/token').query({
-      client_id: 'test_client',
-      client_secret: 'test_secret',
-      grant_type: 'client_credentials'
-    })
+    const tokenResponse = await request(app).post("/v1/token").query({
+      client_id: "test_client",
+      client_secret: "test_secret",
+      grant_type: "client_credentials",
+    });
 
-    expect(tokenResponse.status).toBe(200)
+    expect(tokenResponse.status).toBe(200);
 
-    const accessToken = tokenResponse.body
+    const accessToken = tokenResponse.body;
 
-    const token = accessToken.access_token as string
+    const token = accessToken.access_token as string;
 
     const response = await request(app)
-      .post('/v1/Events')
-      .set('content-type', 'application/secevent+jwt')
-      .set('Authorization', `Bearer ${token}`)
-      .send(jwt)
+      .post("/v1/Events")
+      .set("content-type", "application/secevent+jwt")
+      .set("Authorization", `Bearer ${token}`)
+      .send(jwt);
 
-    expect(response.status).toBe(400)
+    expect(response.status).toBe(400);
     expect(response.body).toStrictEqual({
-      err: 'invalid_request',
+      err: "invalid_request",
       description:
-        "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition."
-    })
-  })
+        "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition.",
+    });
+  });
 
-  it('should return 400 and invalid jwt for when sent a jwt that cannot be validated', async () => {
+  it("should return 400 and invalid jwt for when sent a jwt that cannot be validated", async () => {
     const jwt =
-      'LCJhdWQiOiJ1cm46ZXhhbXBsZTphdWRpZW5jZSJ9.gXrPZ3yM_60dMXGE69dusbpzYASNA-XIOwsb5D5xYnSxyj6_D6OR'
+      "LCJhdWQiOiJ1cm46ZXhhbXBsZTphdWRpZW5jZSJ9.gXrPZ3yM_60dMXGE69dusbpzYASNA-XIOwsb5D5xYnSxyj6_D6OR";
 
-    const tokenResponse = await request(app).post('/v1/token').query({
-      client_id: 'test_client',
-      client_secret: 'test_secret',
-      grant_type: 'client_credentials'
-    })
+    const tokenResponse = await request(app).post("/v1/token").query({
+      client_id: "test_client",
+      client_secret: "test_secret",
+      grant_type: "client_credentials",
+    });
 
-    expect(tokenResponse.status).toBe(200)
+    expect(tokenResponse.status).toBe(200);
 
-    const accessToken = tokenResponse.body
+    const accessToken = tokenResponse.body;
 
-    const token = accessToken.access_token as string
+    const token = accessToken.access_token as string;
 
     const response = await request(app)
-      .post('/v1/Events')
-      .set('content-type', 'application/secevent+jwt')
-      .set('Authorization', `Bearer ${token}`)
-      .send(jwt)
+      .post("/v1/Events")
+      .set("content-type", "application/secevent+jwt")
+      .set("Authorization", `Bearer ${token}`)
+      .send(jwt);
 
-    expect(response.status).toBe(400)
+    expect(response.status).toBe(400);
     expect(response.body).toStrictEqual({
-      err: 'invalid_key',
+      err: "invalid_key",
       description:
-        'One or more keys used to encrypt or sign the SET is invalid or otherwise unacceptable to the SET Recipient (expired, revoked, failed certificate validation, etc.).'
-    })
+        "One or more keys used to encrypt or sign the SET is invalid or otherwise unacceptable to the SET Recipient (expired, revoked, failed certificate validation, etc.).",
+    });
 
     expect(loggerErrorSpy).toHaveBeenCalledWith(
-      'Failed to validate JWT with remote key',
-      expect.any(Object)
-    )
-  })
+      "Failed to validate JWT with remote key",
+      expect.any(Object),
+    );
+  });
 
-  it('should return 401 for expired auth token', async () => {
+  it("should return 401 for expired auth token", async () => {
     // @ts-expect-error ignore type errors
-    vi.mocked(getPublicKeyFromRemote).mockReturnValue(key)
-    const jwt = await generateJWT(sampleVerificationEvent)
+    vi.mocked(getPublicKeyFromRemote).mockReturnValue(key);
+    const jwt = await generateJWT(sampleVerificationEvent);
 
-    const tokenResponse = await request(app).post('/v1/token').query({
-      client_id: 'test_client',
-      client_secret: 'test_secret',
-      grant_type: 'client_credentials'
-    })
+    const tokenResponse = await request(app).post("/v1/token").query({
+      client_id: "test_client",
+      client_secret: "test_secret",
+      grant_type: "client_credentials",
+    });
 
-    expect(tokenResponse.status).toBe(200)
+    expect(tokenResponse.status).toBe(200);
 
-    const token = tokenResponse.body.access_token as string
+    const token = tokenResponse.body.access_token as string;
 
-    vi.advanceTimersByTime(3600000 + 1)
+    vi.advanceTimersByTime(3600000 + 1);
 
     const response = await request(app)
-      .post('/v1/Events')
-      .set('content-type', 'application/secevent+jwt')
-      .set('Authorization', `Bearer ${token}`)
-      .send(jwt)
+      .post("/v1/Events")
+      .set("content-type", "application/secevent+jwt")
+      .set("Authorization", `Bearer ${token}`)
+      .send(jwt);
 
-    expect(response.status).toBe(401)
-  })
-})
+    expect(response.status).toBe(401);
+  });
+});

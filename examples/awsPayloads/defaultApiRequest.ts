@@ -1,8 +1,8 @@
-import type { APIGatewayProxyEvent } from 'aws-lambda'
+import type { APIGatewayProxyEvent } from "aws-lambda";
 
-export const createDefaultApiRequest = (path = '/'): APIGatewayProxyEvent => ({
-  httpMethod: 'get',
-  body: '',
+export const createDefaultApiRequest = (path = "/"): APIGatewayProxyEvent => ({
+  httpMethod: "get",
+  body: "",
   headers: {},
   isBase64Encoded: false,
   multiValueHeaders: {},
@@ -11,45 +11,45 @@ export const createDefaultApiRequest = (path = '/'): APIGatewayProxyEvent => ({
   pathParameters: {},
   queryStringParameters: {},
   requestContext: {
-    accountId: '123456789012',
-    apiId: '1234',
+    accountId: "123456789012",
+    apiId: "1234",
     authorizer: {
       claims: {
-        client_id: 'myClientId123'
-      }
-    },
-    httpMethod: 'get',
-    identity: {
-      accessKey: '',
-      accountId: '',
-      apiKey: '',
-      apiKeyId: '',
-      caller: '',
-      clientCert: {
-        clientCertPem: '',
-        issuerDN: '',
-        serialNumber: '',
-        subjectDN: '',
-        validity: { notAfter: '', notBefore: '' }
+        client_id: "myClientId123",
       },
-      cognitoAuthenticationProvider: '',
-      cognitoAuthenticationType: '',
-      cognitoIdentityId: '',
-      cognitoIdentityPoolId: '',
-      principalOrgId: '',
-      sourceIp: '',
-      user: '',
-      userAgent: '',
-      userArn: ''
     },
-    path: '/hello',
-    protocol: 'HTTP/1.1',
-    requestId: 'c6af9ac6-7b61-11e6-9a41-93e8deadbeef',
+    httpMethod: "get",
+    identity: {
+      accessKey: "",
+      accountId: "",
+      apiKey: "",
+      apiKeyId: "",
+      caller: "",
+      clientCert: {
+        clientCertPem: "",
+        issuerDN: "",
+        serialNumber: "",
+        subjectDN: "",
+        validity: { notAfter: "", notBefore: "" },
+      },
+      cognitoAuthenticationProvider: "",
+      cognitoAuthenticationType: "",
+      cognitoIdentityId: "",
+      cognitoIdentityPoolId: "",
+      principalOrgId: "",
+      sourceIp: "",
+      user: "",
+      userAgent: "",
+      userArn: "",
+    },
+    path: "/hello",
+    protocol: "HTTP/1.1",
+    requestId: "c6af9ac6-7b61-11e6-9a41-93e8deadbeef",
     requestTimeEpoch: 1428582896000,
-    resourceId: '123456',
-    resourcePath: '/hello',
-    stage: 'dev'
+    resourceId: "123456",
+    resourcePath: "/hello",
+    stage: "dev",
   },
-  resource: '',
-  stageVariables: {}
-})
+  resource: "",
+  stageVariables: {},
+});

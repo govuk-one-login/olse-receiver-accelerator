@@ -1,31 +1,31 @@
-import type { Request } from 'express'
-import { generateJWT } from './jwt'
-import { getAuthInput } from './getAuthInput'
-import { ConfigurationKeys } from '../../../common/config/configurationKeys'
-import { baseLogger as logger } from '../../../common/logging/logger'
+import type { Request } from "express";
+import { generateJWT } from "./jwt";
+import { getAuthInput } from "./getAuthInput";
+import { ConfigurationKeys } from "../../../common/config/configurationKeys";
+import { baseLogger as logger } from "../../../common/logging/logger";
 
 interface ValidResponse {
-  valid: true
+  valid: true;
   data: {
-    access_token: string
-    token_type: 'Bearer'
-    expires_in: number
-  }
+    access_token: string;
+    token_type: "Bearer";
+    expires_in: number;
+  };
 }
 
 interface InvalidResponse {
-  valid: false
-  error: string
-  response_code: number
+  valid: false;
+  error: string;
+  response_code: number;
 }
 
-type Result = ValidResponse | InvalidResponse
+type Result = ValidResponse | InvalidResponse;
 export const auth = async (req: Request): Promise<Result> => {
-  logger.debug('Process authentication request')
-  const { client_id, client_secret, grant_type } = getAuthInput(req)
-  if (grant_type !== 'client_credentials') {
-    logger.warn('Invalid grant type')
-    return { valid: false, error: 'invalid_grant', response_code: 400 }
+  logger.debug("Process authentication request");
+  const { client_id, client_secret, grant_type } = getAuthInput(req);
+  if (grant_type !== "client_credentials") {
+    logger.warn("Invalid grant type");
+    return { valid: false, error: "invalid_grant", response_code: 400 };
   }
 
   if (
@@ -33,39 +33,37 @@ export const auth = async (req: Request): Promise<Result> => {
     client_secret === process.env[ConfigurationKeys.CLIENT_SECRET]
   ) {
     try {
-      logger.debug('Generating jwt token')
+      logger.debug("Generating jwt token");
       const token = await generateJWT({
-        alg: 'RS256',
-        audience: 'https://transmitter.example.com',
-        issuer: 'https://receiver.example.com',
-        jti: '123456',
+        alg: "RS256",
+        audience: "https://transmitter.example.com",
+        issuer: "https://receiver.example.com",
+        jti: "123456",
         useExpClaim: true,
-        payload: {}
-      })
+        payload: {},
+      });
 
-      logger.info('Authentication successful')
+      logger.info("Authentication successful");
       return {
         valid: true,
-        data: { token_type: 'Bearer', access_token: token, expires_in: 3600 }
-      }
+        data: { token_type: "Bearer", access_token: token, expires_in: 3600 },
+      };
     } catch (error) {
       if (error instanceof Error) {
-        if (error.message === 'invalid_request') {
+        if (error.message === "invalid_request") {
           logger.warn(
-            'Invalid request: The request is missing required parameters or is malformed'
-          )
-          return { valid: false, error: 'invalid_request', response_code: 400 }
-        } else if (error.message === 'invalid_grant') {
-          logger.warn(
-            'Invalid grant: The provided authorisation grant is invalid or expired'
-          )
-          return { valid: false, error: 'invalid_grant', response_code: 400 }
+            "Invalid request: The request is missing required parameters or is malformed",
+          );
+          return { valid: false, error: "invalid_request", response_code: 400 };
+        } else if (error.message === "invalid_grant") {
+          logger.warn("Invalid grant: The provided authorisation grant is invalid or expired");
+          return { valid: false, error: "invalid_grant", response_code: 400 };
         }
       }
-      return { valid: false, error: 'invalid_request', response_code: 400 }
+      return { valid: false, error: "invalid_request", response_code: 400 };
     }
   } else {
-    logger.warn('Supplied client id or secret did not match expected values')
-    return { valid: false, error: 'invalid_client', response_code: 401 }
+    logger.warn("Supplied client id or secret did not match expected values");
+    return { valid: false, error: "invalid_client", response_code: 401 };
   }
-}
+};

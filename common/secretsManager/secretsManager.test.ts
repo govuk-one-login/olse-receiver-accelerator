@@ -1,29 +1,27 @@
-import { type SecretsManagerClient } from '@aws-sdk/client-secrets-manager'
-import { getSecret } from './secretsManager'
+import { type SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
+import { getSecret } from "./secretsManager";
 
-const mockSend = vi.fn()
+const mockSend = vi.fn();
 
-vi.mock('@aws-sdk/client-secrets-manager', () => ({
-  SecretsManagerClient: vi.fn().mockImplementation(function (
-    this: SecretsManagerClient
-  ) {
-    this.send = mockSend
+vi.mock("@aws-sdk/client-secrets-manager", () => ({
+  SecretsManagerClient: vi.fn().mockImplementation(function (this: SecretsManagerClient) {
+    this.send = mockSend;
   }),
-  GetSecretValueCommand: vi.fn()
-}))
+  GetSecretValueCommand: vi.fn(),
+}));
 
-describe('getSecretFromSecretsManager', () => {
+describe("getSecretFromSecretsManager", () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
-  it('should return secret string successfully', async () => {
-    const mockSecretValue = 'test-secret-value-001'
+    vi.clearAllMocks();
+  });
+  it("should return secret string successfully", async () => {
+    const mockSecretValue = "test-secret-value-001";
     mockSend.mockResolvedValue({
-      SecretString: mockSecretValue
-    })
+      SecretString: mockSecretValue,
+    });
 
-    const result = await getSecret('test-secret-name-001')
+    const result = await getSecret("test-secret-name-001");
 
-    expect(result).toBe(mockSecretValue)
-  })
-})
+    expect(result).toBe(mockSecretValue);
+  });
+});

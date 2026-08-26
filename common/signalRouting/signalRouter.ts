@@ -1,25 +1,25 @@
-import { SignalSchema } from '../constants'
-import { handleVerificationSignal } from './signalHandlers'
+import { SignalSchema } from "../constants";
+import { handleVerificationSignal } from "./signalHandlers";
 
 interface validResponse {
-  valid: true
-  schema: string
+  valid: true;
+  schema: string;
 }
 interface invalidResponse {
-  valid: false
+  valid: false;
 }
 
 export const handleSignalRouting = async (
   signalPayload: Record<string, unknown>,
-  schema: string
+  schema: string,
 ): Promise<validResponse | invalidResponse> => {
   switch (schema) {
     case SignalSchema.VERIFICATION_SIGNAL: {
-      const handleResponse = await handleVerificationSignal(signalPayload)
-      if (!handleResponse.valid) return { valid: false }
-      return { valid: true, schema }
+      const handleResponse = await handleVerificationSignal(signalPayload);
+      if (!handleResponse.valid) return { valid: false };
+      return { valid: true, schema };
     }
     default:
-      return { valid: false }
+      return { valid: false };
   }
-}
+};

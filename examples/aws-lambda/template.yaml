@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 
 Transform: AWS::Serverless-2016-10-31
 
@@ -60,28 +60,21 @@ Conditions:
 Globals:
   Function:
     #checkov:skip=CKV_AWS_117: VPC config
-    CodeSigningConfigArn:
-      !If [UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue]
+    CodeSigningConfigArn: !If [UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue]
     Architectures:
       - arm64
     Runtime: nodejs22.x
     Environment:
       Variables:
         LOG_LEVEL: !Ref LogLevel
-    KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
+    KmsKeyArn: "{{resolve:ssm:LambdaKmsKeyArn}}"
     Timeout: 30
     MemorySize: 256
-    PermissionsBoundary:
-      !If [UsePermissionsBoundary, !Ref PermissionsBoundary, !Ref AWS::NoValue]
+    PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundary, !Ref AWS::NoValue]
     Layers:
       - !Sub
-        - '{{resolve:secretsmanager:${SecretArn}:SecretString:NODEJS_LAYER}}'
-        - SecretArn:
-            !FindInMap [
-              EnvironmentConfiguration,
-              !Ref Environment,
-              dynatraceSecretArn
-            ]
+        - "{{resolve:secretsmanager:${SecretArn}:SecretString:NODEJS_LAYER}}"
+        - SecretArn: !FindInMap [EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn]
     # VpcConfig:
     #   SecurityGroupIds:
     #     - Fn::ImportValue: !Sub ${VpcStackName}-AWSServicesEndpointSecurityGroupId
@@ -104,14 +97,14 @@ Resources:
     Type: AWS::Cognito::UserPoolDomain
     Properties:
       UserPoolId: !Ref SSrUserPool
-      Domain: !Sub '${AWS::StackName}-ssr-${Environment}'
+      Domain: !Sub "${AWS::StackName}-ssr-${Environment}"
 
   SSrSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
-      Name: !Sub '${AWS::StackName}-ssr-secrets'
-      Description: 'Secrets for Signal Exchange Receiver'
-      KmsKeyId: '{{resolve:ssm:SecretsKmsKeyArn}}'
+      Name: !Sub "${AWS::StackName}-ssr-secrets"
+      Description: "Secrets for Signal Exchange Receiver"
+      KmsKeyId: "{{resolve:ssm:SecretsKmsKeyArn}}"
       SecretString: !Sub |
         {
           "userPoolClientId": "${SSrUserPoolClient}",
@@ -123,23 +116,23 @@ Resources:
     Type: AWS::Cognito::UserPoolResourceServer
     Properties:
       UserPoolId: !Ref SSrUserPool
-      Identifier: 'signal'
-      Name: !Sub '${AWS::StackName}-signal-resource-server'
+      Identifier: "signal"
+      Name: !Sub "${AWS::StackName}-signal-resource-server"
       Scopes:
-        - ScopeDescription: 'Allows user to post to Events endpoint'
-          ScopeName: 'post'
+        - ScopeDescription: "Allows user to post to Events endpoint"
+          ScopeName: "post"
 
   SSrUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
     DependsOn: SSrSignalResourceServer
     Properties:
       UserPoolId: !Ref SSrUserPool
-      ClientName: !Sub '${AWS::StackName}-app-client'
+      ClientName: !Sub "${AWS::StackName}-app-client"
       GenerateSecret: true
       AllowedOAuthFlows:
         - client_credentials
       AllowedOAuthScopes:
-        - 'signal/post'
+        - "signal/post"
       AllowedOAuthFlowsUserPoolClient: true
 
   #########################
@@ -179,21 +172,21 @@ Resources:
           CognitoAuthorizer:
             UserPoolArn: !GetAtt SSrUserPool.Arn
             AuthorizationScopes:
-              - 'signal/post'
+              - "signal/post"
             Identity:
               Header: Authorization
 
   SharedSignalsApiAccessLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
+      KmsKeyId: "{{resolve:ssm:LogsKmsKeyArn}}"
       LogGroupName: !Sub /aws/apigateway/${AWS::StackName}-endpoint-access-logs
       RetentionInDays: 30
 
   ReceiverFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
+      KmsKeyId: "{{resolve:ssm:LogsKmsKeyArn}}"
       LogGroupName: !Sub /aws/lambda/${AWS::StackName}-receiver
       RetentionInDays: 30
 
@@ -208,7 +201,7 @@ Resources:
       FlexibleTimeWindow:
         Mode: FLEXIBLE
         MaximumWindowInMinutes: 5
-      ScheduleExpression: 'rate(15 minutes)'
+      ScheduleExpression: "rate(15 minutes)"
       State: ENABLED
       Target:
         Arn: !GetAtt HealthCheckFunction.Arn
@@ -218,7 +211,7 @@ Resources:
     Properties:
       Description: EventBridge scheduler role with permissions to invoke health check lambda
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -233,7 +226,7 @@ Resources:
       Policies:
         - PolicyName: InvokeLambda
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -264,19 +257,19 @@ Resources:
             Auth:
               Authorizer: CognitoAuthorizer
               AuthorizationScopes:
-                - 'signal/post'
+                - "signal/post"
 
   ReceiverFunctionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub '${AWS::StackName}-receiver-role'
+      RoleName: !Sub "${AWS::StackName}-receiver-role"
       Description: Execution role for receiver role with permissions to access secrets manager
       PermissionsBoundary: !If
         - UsePermissionsBoundary
         - !Ref PermissionsBoundary
         - !Ref AWS::NoValue
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Sid: AllowLambdaToAssumeRole
             Effect: Allow
@@ -289,7 +282,7 @@ Resources:
       Policies:
         - PolicyName: SecretsManagerAccess
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -297,16 +290,16 @@ Resources:
                 Resource: !Ref SSrSecret
         - PolicyName: SSMParamAccess
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
                   - ssm:GetParameter
                   - ssm:GetParameters
-                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AWS::StackName}/jwks-url'
+                Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AWS::StackName}/jwks-url"
         - PolicyName: CloudWatchLogsAccess
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -316,12 +309,12 @@ Resources:
                 Resource: !GetAtt ReceiverFunctionLogGroup.Arn
         - PolicyName: KmsDecrypt
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
                   - kms:Decrypt
-                Resource: '{{resolve:ssm:SecretsKmsKeyArn}}'
+                Resource: "{{resolve:ssm:SecretsKmsKeyArn}}"
 
   PermissionforAPItoCallReceiverFunction:
     Type: AWS::Lambda::Permission
@@ -329,7 +322,7 @@ Resources:
       FunctionName: !Ref ReceiverFunction
       Action: lambda:InvokeFunction
       Principal: apigateway.amazonaws.com
-      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SharedSignalsApi}/*/*/*'
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SharedSignalsApi}/*/*/*"
 
   HealthCheckFunction:
     #checkov:skip=CKV_AWS_117: VPC config
@@ -341,7 +334,7 @@ Resources:
       FunctionName: !Sub ${AWS::StackName}-healthCheck
       Handler: handler.handler
       Role: !GetAtt HealthCheckFunctionRole.Arn
-      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
+      KmsKeyArn: "{{resolve:ssm:LambdaKmsKeyArn}}"
       Environment:
         Variables:
           AWS_STACK_NAME: !Ref AWS::StackName
@@ -352,13 +345,13 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       Description: Execution role for health check lambda
-      RoleName: !Sub '${AWS::StackName}-healthCheck'
+      RoleName: !Sub "${AWS::StackName}-healthCheck"
       PermissionsBoundary: !If
         - UsePermissionsBoundary
         - !Ref PermissionsBoundary
         - !Ref AWS::NoValue
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Sid: AllowLambdaToAssumeRole
             Effect: Allow
@@ -371,15 +364,15 @@ Resources:
       Policies:
         - PolicyName: SSMParamAccess
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
                   - ssm:GetParameter
-                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AWS::StackName}/*'
+                Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AWS::StackName}/*"
         - PolicyName: KmsAccess
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -388,7 +381,7 @@ Resources:
                 Resource: !GetAtt MockTxKMSKey.Arn
         - PolicyName: SecretsManagerAccess
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -397,10 +390,10 @@ Resources:
               - Effect: Allow
                 Action:
                   - kms:Decrypt
-                Resource: '{{resolve:ssm:SecretsKmsKeyArn}}'
+                Resource: "{{resolve:ssm:SecretsKmsKeyArn}}"
         - PolicyName: CognitoAccess
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -418,21 +411,20 @@ Resources:
       FunctionName: !Sub ${AWS::StackName}-get-jwks-function
       Environment:
         Variables:
-          JWKS_URL:
-            !FindInMap [EnvironmentConfiguration, !Ref Environment, jwksUrl]
+          JWKS_URL: !FindInMap [EnvironmentConfiguration, !Ref Environment, jwksUrl]
       Role: !GetAtt GetJwksFunctionRole.Arn
 
   GetJwksFunctionRole:
     Type: AWS::IAM::Role
     Properties:
       Description: Execution role for JWKS retrieval lambda
-      RoleName: !Sub '${AWS::StackName}-get-jwks-function'
+      RoleName: !Sub "${AWS::StackName}-get-jwks-function"
       PermissionsBoundary: !If
         - UsePermissionsBoundary
         - !Ref PermissionsBoundary
         - !Ref AWS::NoValue
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Sid: AllowLambdaToAssumeRole
             Effect: Allow
@@ -456,7 +448,7 @@ Resources:
       AllowedOAuthFlows:
         - client_credentials
       AllowedOAuthScopes:
-        - 'set-tx-mock/post'
+        - "set-tx-mock/post"
       AllowedOAuthFlowsUserPoolClient: true
       GenerateSecret: true
 
@@ -464,24 +456,24 @@ Resources:
     Type: AWS::Cognito::UserPoolResourceServer
     Properties:
       UserPoolId: !Ref SetMockTxApiUserPool
-      Identifier: 'set-tx-mock'
+      Identifier: "set-tx-mock"
       Name: !Sub ${AWS::StackName}-mock-tx-resource-server
       Scopes:
-        - ScopeName: 'post'
-          ScopeDescription: 'Allow users to post to mock verify endpoint'
+        - ScopeName: "post"
+          ScopeDescription: "Allow users to post to mock verify endpoint"
 
   SetMockTxApiUserPoolDomain:
     Type: AWS::Cognito::UserPoolDomain
     Properties:
       UserPoolId: !Ref SetMockTxApiUserPool
-      Domain: !Sub '${AWS::StackName}-mock-tx-${Environment}'
+      Domain: !Sub "${AWS::StackName}-mock-tx-${Environment}"
 
   SetMockTxApiSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
-      Name: !Sub '${AWS::StackName}-mock-tx-secrets'
-      Description: 'Secrets for Mock Tx Transmitter'
-      KmsKeyId: '{{resolve:ssm:SecretsKmsKeyArn}}'
+      Name: !Sub "${AWS::StackName}-mock-tx-secrets"
+      Description: "Secrets for Mock Tx Transmitter"
+      KmsKeyId: "{{resolve:ssm:SecretsKmsKeyArn}}"
       SecretString: !Sub |
         {
           "userPoolId": "${SetMockTxApiUserPool}",
@@ -494,10 +486,10 @@ Resources:
   MockVerfTxLambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub '${AWS::StackName}-mock-tx-role'
+      RoleName: !Sub "${AWS::StackName}-mock-tx-role"
       Description: Execution role for mock verf transmitter lambda with kms permissions
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -508,7 +500,7 @@ Resources:
       Policies:
         - PolicyName: mockVerfTxLambdaPerms
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -538,12 +530,12 @@ Resources:
               - Effect: Allow
                 Action:
                   - kms:Decrypt
-                Resource: '{{resolve:ssm:SecretsKmsKeyArn}}'
+                Resource: "{{resolve:ssm:SecretsKmsKeyArn}}"
               - Effect: Allow
                 Action:
                   - ssm:GetParameters
                   - ssm:GetParameter
-                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AWS::StackName}/receiver-endpoint'
+                Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AWS::StackName}/receiver-endpoint"
 
   MockVerfTxEventFunction:
     #checkov:skip=CKV_AWS_117: VPC config
@@ -551,9 +543,9 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Description: Lambda that sends mock verification events to receiver endpoint
-      FunctionName: !Sub '${AWS::StackName}-mock-tx-verification'
+      FunctionName: !Sub "${AWS::StackName}-mock-tx-verification"
       Handler: handler.handler
-      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
+      KmsKeyArn: "{{resolve:ssm:LambdaKmsKeyArn}}"
       CodeUri: dist/examples/aws-lambda/src/mock-transmitter/verification/
       Role: !GetAtt MockVerfTxLambdaExecutionRole.Arn
       Environment:
@@ -571,13 +563,13 @@ Resources:
             Auth:
               Authorizer: CognitoAuthorizer
               AuthorizationScopes:
-                - 'set-tx-mock/post'
+                - "set-tx-mock/post"
 
   JwksApiGateway:
     #checkov:skip=CKV_AWS_120
     Type: AWS::Serverless::Api
     Properties:
-      Name: !Sub '${AWS::StackName}-jwks-api-endpoint'
+      Name: !Sub "${AWS::StackName}-jwks-api-endpoint"
       StageName: !Ref Environment
       TracingEnabled: true
       AccessLogSetting:
@@ -599,33 +591,33 @@ Resources:
   JwksApiAccessLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
+      KmsKeyId: "{{resolve:ssm:LogsKmsKeyArn}}"
       LogGroupName: !Sub /aws/apigateway/jwks-api/${AWS::StackName}-endpoint-access-logs
       RetentionInDays: 30
 
   JwksUrlParamter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Sub '/${AWS::StackName}/jwks-url'
+      Name: !Sub "/${AWS::StackName}/jwks-url"
       Type: String
-      Value: !Sub 'https://${JwksApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/jwks.json'
-      Description: 'JWKS URL for JWT validation'
+      Value: !Sub "https://${JwksApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/jwks.json"
+      Description: "JWKS URL for JWT validation"
 
   ReceiverEndpointParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Sub '/${AWS::StackName}/receiver-endpoint'
+      Name: !Sub "/${AWS::StackName}/receiver-endpoint"
       Type: String
-      Value: !Sub 'https://${SharedSignalsApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/api/v1/Events'
-      Description: 'Receiver endpoint URL for verification events'
+      Value: !Sub "https://${SharedSignalsApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/api/v1/Events"
+      Description: "Receiver endpoint URL for verification events"
 
   MockVerificationEndpointParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Sub '/${AWS::StackName}/mock-verification-endpoint'
+      Name: !Sub "/${AWS::StackName}/mock-verification-endpoint"
       Type: String
-      Value: !Sub 'https://${MockTxVerfApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/verify'
-      Description: 'Mock verification endpoint URL used for health checks'
+      Value: !Sub "https://${MockTxVerfApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/verify"
+      Description: "Mock verification endpoint URL used for health checks"
 
   MockVerfTxJWKSEndpointFunction:
     #checkov:skip=CKV_AWS_115:Not setting concurrent execution limits
@@ -633,9 +625,9 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Description: Lambda that exposes JWKS endpoint providing public key for JWT verification
-      FunctionName: !Sub '${AWS::StackName}-mock-tx-jwks'
+      FunctionName: !Sub "${AWS::StackName}-mock-tx-jwks"
       Handler: handler.handler
-      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
+      KmsKeyArn: "{{resolve:ssm:LambdaKmsKeyArn}}"
       CodeUri: dist/examples/aws-lambda/src/mock-transmitter/jwks/
       Role: !GetAtt MockVerfTxLambdaExecutionRole.Arn
       Environment:
@@ -653,7 +645,7 @@ Resources:
     #checkov:skip=CKV_AWS_120:We explicitly don't want caching because we are making POST requests
     Type: AWS::Serverless::Api
     Properties:
-      Name: !Sub '${AWS::StackName}-mock-tx-api-endpoint'
+      Name: !Sub "${AWS::StackName}-mock-tx-api-endpoint"
       StageName: !Ref Environment
       TracingEnabled: true
       AccessLogSetting:
@@ -676,28 +668,28 @@ Resources:
           CognitoAuthorizer:
             UserPoolArn: !GetAtt SetMockTxApiUserPool.Arn
             AuthorizationScopes:
-              - 'set-tx-mock/post'
+              - "set-tx-mock/post"
             Identity:
               Header: Authorization
 
   MockVerfTxEventFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
+      KmsKeyId: "{{resolve:ssm:LogsKmsKeyArn}}"
       LogGroupName: !Sub /aws/apigateway/mock-api/${AWS::StackName}-mock-tx-verification
       RetentionInDays: 30
 
   MockVerfTxJWKSEndpointFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
+      KmsKeyId: "{{resolve:ssm:LogsKmsKeyArn}}"
       LogGroupName: !Sub /aws/apigateway/mock-api/${AWS::StackName}-mock-tx-jwks
       RetentionInDays: 30
 
   MockTxApiAccessLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
+      KmsKeyId: "{{resolve:ssm:LogsKmsKeyArn}}"
       LogGroupName: !Sub /aws/apigateway/mock-api/${AWS::StackName}-endpoint-access-logs
       RetentionInDays: 30
 
@@ -708,25 +700,25 @@ Resources:
       KeyUsage: SIGN_VERIFY
       KeySpec: RSA_4096
       KeyPolicy:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Sid: IAM policy
             Effect: Allow
             Principal:
-              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
-            Action: 'kms:*'
-            Resource: '*'
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action: "kms:*"
+            Resource: "*"
 
 Outputs:
   VerificationEndpoint:
     Description: VERIFICATION_ENDPOINT
-    Value: !Sub 'https://${MockTxVerfApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}'
+    Value: !Sub "https://${MockTxVerfApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}"
   ReceiverEndpoint:
     Description: RECEIVER_ENDPOINT
-    Value: !Sub 'https://${SharedSignalsApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/api/v1/Events'
+    Value: !Sub "https://${SharedSignalsApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/api/v1/Events"
   JwksEndpoint:
     Description: JWKS_ENDPOINT
-    Value: !Sub 'https://${JwksApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/jwks.json'
+    Value: !Sub "https://${JwksApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/jwks.json"
   MockTxSecretArn:
     Description: MOCK_TX_SECRET_ARN
     Value: !Ref SetMockTxApiSecret

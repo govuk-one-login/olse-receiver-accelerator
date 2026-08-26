@@ -35,21 +35,21 @@ If you want to add support for a new configuration source, create a new provider
 
 ```typescript
 // configurationProviders/myCustomProvider.ts
-import { AbstractConfigurationProvider } from './abstractConfigurationProvider'
+import { AbstractConfigurationProvider } from "./abstractConfigurationProvider";
 export class MyCustomProvider extends AbstractConfigurationProvider {
   async getAll() {
     // fetch config from your source
-    return new Map([['CLIENT_ID', 'abc']])
+    return new Map([["CLIENT_ID", "abc"]]);
   }
 }
-export const myCustomProvider = new MyCustomProvider()
+export const myCustomProvider = new MyCustomProvider();
 ```
 
 Then update config.ts:
 
 ```typescript
-import { myCustomProvider } from './configurationProviders/myCustomProvider'
-export const config = myCustomProvider
+import { myCustomProvider } from "./configurationProviders/myCustomProvider";
+export const config = myCustomProvider;
 ```
 
 ## Accessing Configuration

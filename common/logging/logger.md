@@ -46,11 +46,11 @@ OLSEFunction:
 Import the logger you need:
 
 ```typescript
-import { baseLogger } from '../logging/logger'
-import { lambdaLogger } from '../logging/logger'
+import { baseLogger } from "../logging/logger";
+import { lambdaLogger } from "../logging/logger";
 
-baseLogger.info('Message', { context })
-lambdaLogger.error('Error occurred', { error })
+baseLogger.info("Message", { context });
+lambdaLogger.error("Error occurred", { error });
 ```
 
 ## Output Format
