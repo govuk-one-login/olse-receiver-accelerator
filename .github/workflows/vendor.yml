@@ -15,8 +15,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -31,9 +31,9 @@ jobs:
       - name: Run checkov against SAM template
         uses: bridgecrewio/checkov-action@59b9d7edfcad5b87fbe3f473a9a134a721ad03f8 # v12.3119.0
         with:
-          file: 'examples/aws-lambda/template.yaml'
+          file: "examples/aws-lambda/template.yaml"
           framework: cloudformation
-          skip_check: 'CKV_AWS_116'
+          skip_check: "CKV_AWS_116"
 
       - name: Build Lambda
         run: npm run lambda:build

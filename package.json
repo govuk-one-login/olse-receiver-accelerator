@@ -1,34 +1,49 @@
 {
   "name": "olse-receiver-accelerator",
   "version": "0.0.1",
-  "type": "module",
   "description": "A reference repository to help accelerate the development of a GOV.UK One Login Signal Exchange Receiver",
+  "homepage": "https://github.com/govuk-one-login/olse-receiver-accelerator#readme",
+  "bugs": {
+    "url": "https://github.com/govuk-one-login/olse-receiver-accelerator/issues"
+  },
+  "license": "MIT",
+  "author": "GOV.UK One Login",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/govuk-one-login/olse-receiver-accelerator.git"
+  },
+  "type": "module",
   "scripts": {
     "prepare": "husky",
-    "lint": "eslint",
-    "lint:fix": "eslint --fix",
-    "format": "prettier --check .",
-    "format:fix": "prettier --write .",
+    "lint": "oxlint --fix",
+    "lint:check": "oxlint",
+    "lint:cloudformation": "checkov -d . --framework cloudformation --quiet && sam validate --lint && cfn-lint ./**/template.yaml",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
     "type-check": "tsc --noEmit",
     "container:build": "CONTAINER=true node esbuild.config.mjs",
     "container:dev": "nodemon --exec tsx examples/express-container/server.ts",
     "lambda:build": "AWS_LAMBDA_REFERENCE=true node esbuild.config.mjs",
+    "secret_scan": "betterleaks dir . -v",
+    "secret_scan:git": "betterleaks git .",
     "test:vendor": "vitest run --project vendor/unit --config tests/vendor/unit/vitest.config.ts",
     "test:vendor:build": "vitest run --project vendor/build",
     "test:vendor:staging": "vitest run --project vendor/staging",
     "test:unit": "vitest run --project implementor/unit --config tests/implementor/unit/vitest.config.ts",
     "tsFile": "tsx"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/govuk-one-login/olse-receiver-accelerator.git"
+  "dependencies": {
+    "@aws-lambda-powertools/logger": "^2.34.0",
+    "@aws-sdk/client-cloudformation": "^3.1095.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.1095.0",
+    "@aws-sdk/client-kms": "^3.1095.0",
+    "@aws-sdk/client-secrets-manager": "^3.1095.0",
+    "@aws-sdk/client-ssm": "^3.1095.0",
+    "aws-jwt-verify": "^5.2.1",
+    "express": "^5.2.1",
+    "fs": "^0.0.1-security",
+    "jose": "^6.2.4"
   },
-  "author": "GOV.UK One Login",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/govuk-one-login/olse-receiver-accelerator/issues"
-  },
-  "homepage": "https://github.com/govuk-one-login/olse-receiver-accelerator#readme",
   "devDependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.1095.0",
     "@aws-sdk/client-secrets-manager": "^3.1095.0",
@@ -50,8 +65,10 @@
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "husky": "^9.1.7",
-    "lint-staged": "^16.2.7",
     "nodemon": "^3.1.11",
+    "oxfmt": "^0.65.0",
+    "oxlint": "^1.80.0",
+    "oxlint-tsgolint": "^7.0.2001",
     "prettier": "3.7.3",
     "supertest": "^7.1.4",
     "tsx": "^4.22.4",
@@ -60,23 +77,7 @@
     "vitest": "^4.1.9",
     "yaml-cfn": "^0.3.2"
   },
-  "lint-staged": {
-    "*": "npm run format:fix",
-    "*.{js,ts}": "npm run lint:fix"
-  },
   "engines": {
     "node": ">=22.0.0"
-  },
-  "dependencies": {
-    "@aws-lambda-powertools/logger": "^2.34.0",
-    "@aws-sdk/client-cloudformation": "^3.1095.0",
-    "@aws-sdk/client-cognito-identity-provider": "^3.1095.0",
-    "@aws-sdk/client-kms": "^3.1095.0",
-    "@aws-sdk/client-secrets-manager": "^3.1095.0",
-    "@aws-sdk/client-ssm": "^3.1095.0",
-    "aws-jwt-verify": "^5.2.1",
-    "express": "^5.2.1",
-    "fs": "^0.0.1-security",
-    "jose": "^6.2.4"
   }
 }
