@@ -1,22 +1,23 @@
-import { getKmsPublicKey } from "../kmsService";
-import { getEnv } from "../utils";
+// oxlint-disable no-magic-numbers id-length
 import { handler, jwkArray } from "./handler";
+import { getEnv } from "../utils";
+import { getKmsPublicKey } from "../kmsService";
 
-vi.mock("../utils");
-vi.mock("../kmsService");
-vi.mock("./createJwksFromRawPublicKey", () => ({
+vi.mock(import("../utils"));
+vi.mock(import("../kmsService"));
+vi.mock(import("./createJwksFromRawPublicKey"), () => ({
   createJwkFromRawPublicKey: vi.fn(() => ({
-    kty: "RSA",
-    kid: "test-key-id-001",
-    n: "keyModulus456",
     e: "keyExpontent456",
+    kid: "test-key-id-001",
+    kty: "RSA",
+    n: "keyModulus456",
   })),
 }));
 
 const mockGetEnv = vi.mocked(getEnv);
 const mockGetKmsPublicKey = vi.mocked(getKmsPublicKey);
 
-describe("JWKS handler", () => {
+describe("jwks handler", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     jwkArray.length = 0;

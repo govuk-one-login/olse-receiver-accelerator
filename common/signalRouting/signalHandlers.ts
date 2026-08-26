@@ -1,5 +1,5 @@
-import { baseLogger as logger } from "../../common/logging/logger";
 import type { VerificationPayload } from "../interfaces/interfaces";
+import { baseLogger as logger } from "../../common/logging/logger";
 import { verifyStateJwt } from "./verifyState";
 
 interface validResponse {
@@ -24,6 +24,7 @@ export const handleVerificationSignal = async (
     return { valid: true };
   }
 
+  // oxlint-disable-next-line no-magic-numbers
   if (typeof state === "string" && state.split(".").length === 3) {
     logger.info("Verification signal with state recieved", {
       stateFormat: "JWT",
@@ -34,7 +35,7 @@ export const handleVerificationSignal = async (
 
     if (!statePayload) {
       logger.error("Invalid state JWT: ", { statePayload: statePayload });
-      return { valid: false, errorMessage: "invalid_state" };
+      return { errorMessage: "invalid_state", valid: false };
     }
   }
   logger.info("Verification signal with state payload validated successfully");

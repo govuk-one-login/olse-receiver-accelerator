@@ -1,3 +1,4 @@
+// oxlint-disable sort-keys
 import { defineConfig, mergeConfig } from "vitest/config";
 import viteConfig from "../../../vitest.config";
 
@@ -10,9 +11,9 @@ export default mergeConfig(
         exclude: [
           // Exclude test files from coverage
           `!src/**/*.test.ts`,
-          // exclude vendor code
+          // Exclude vendor code
           `!src/vendor/**/*.ts`,
-          // exclude jest config files
+          // Exclude jest config files
           "!**/*/jest.config.{ts,mts,mjs}",
         ],
       },

@@ -1,19 +1,21 @@
-import { type SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
+import type { SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
 import { getSecret } from "./secretsManager";
 
 const mockSend = vi.fn();
 
+// oxlint-disable-next-line vitest/prefer-import-in-mock
 vi.mock("@aws-sdk/client-secrets-manager", () => ({
-  SecretsManagerClient: vi.fn().mockImplementation(function (this: SecretsManagerClient) {
+  GetSecretValueCommand: vi.fn(),
+  SecretsManagerClient: vi.fn().mockImplementation(function mockedFunc(this: SecretsManagerClient) {
     this.send = mockSend;
   }),
-  GetSecretValueCommand: vi.fn(),
 }));
 
 describe("getSecretFromSecretsManager", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
+
   it("should return secret string successfully", async () => {
     const mockSecretValue = "test-secret-value-001";
     mockSend.mockResolvedValue({
