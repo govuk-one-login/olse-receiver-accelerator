@@ -1,55 +1,70 @@
 {
-  "$schema": "https://raw.githubusercontent.com/govuk-one-login/quality-gates/refs/tags/v0.4.0/schemas/schema.json",
+  "$schema": "https://raw.githubusercontent.com/govuk-one-login/quality-gates/refs/tags/v0.19.0/schemas/schema.json",
   "services": [
     {
-      "quality-gates": [
+      "product": "One Login Signal Exchange",
+      "component": "olse-receiver-accelerator",
+      "promotionType": "securePipelines",
+      "automated": [
         {
-          "check-types": ["code style and linting"],
-          "config": {
-            "file": ".github/workflows/ensure-sha-pinned-actions.yaml",
-            "path": "jobs.harden_security"
-          },
           "phase": "pre-merge",
-          "provider": "GitHub"
+          "provider": "GitHub",
+          "checks": [
+            {
+              "name": "code style and linting"
+            }
+          ],
+          "file": ".github/workflows/ensure-sha-pinned-actions.yaml",
+          "path": "$.jobs.harden_security"
         },
         {
-          "check-types": ["code style and linting"],
-          "config": {
-            "file": ".github/workflows/ci.yml",
-            "path": "jobs.Run-CI-Checks"
-          },
           "phase": "pre-merge",
-          "provider": "GitHub"
+          "provider": "GitHub",
+          "checks": [
+            {
+              "name": "code style and linting"
+            }
+          ],
+          "file": ".github/workflows/ci.yml",
+          "path": "$.jobs.Run-CI-Checks"
         },
         {
-          "check-types": ["unit", "vulnerability detection"],
-          "config": {
-            "file": ".github/workflows/vendor.yml",
-            "path": "jobs.vendor"
-          },
           "phase": "pre-merge",
-          "provider": "GitHub"
+          "provider": "GitHub",
+          "checks": [
+            {
+              "name": "unit"
+            },
+            {
+              "name": "vulnerability detection"
+            }
+          ],
+          "file": ".github/workflows/vendor.yml",
+          "path": "$.jobs.vendor"
         },
         {
-          "check-types": ["unit"],
-          "config": {
-            "file": ".github/workflows/ci.yml",
-            "path": "jobs.Run-Vendor-Checks"
-          },
           "phase": "pre-merge",
-          "provider": "GitHub"
+          "provider": "GitHub",
+          "checks": [
+            {
+              "name": "unit"
+            }
+          ],
+          "file": ".github/workflows/ci.yml",
+          "path": "$.jobs.Run-Vendor-Checks"
         },
         {
-          "check-types": ["unit"],
-          "config": {
-            "file": ".github/workflows/ci.yml",
-            "path": "jobs.Run-Implementor-Checks"
-          },
           "phase": "pre-merge",
-          "provider": "GitHub"
+          "provider": "GitHub",
+          "checks": [
+            {
+              "name": "unit"
+            }
+          ],
+          "file": ".github/workflows/ci.yml",
+          "path": "$.jobs.Run-Implementor-Checks"
         }
-      ],
-      "service-tag": "olse-receiver-accelerator"
+      ]
     }
   ]
 }
