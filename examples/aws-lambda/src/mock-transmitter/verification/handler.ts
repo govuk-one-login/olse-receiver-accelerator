@@ -1,5 +1,5 @@
 import { lambdaLogger as logger } from '../../../../../common/logging/logger'
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { getVerificationRequest } from './requestParser'
 import { constructVerificationFullSecurityEvent } from './constructVerificationSecurityEvent'
 import { signedJWTWithKMS } from '../kmsService'
@@ -9,7 +9,7 @@ import {
   NO_CONTENT_RESPONSE
 } from '../responses'
 import { isValidationError } from './validation'
-import { SETVerificationRequest } from '../mockApiTxInterfaces'
+import type { SETVerificationRequest } from '../mockApiTxInterfaces'
 import { getTokenFromCognito } from '../../../../../common/cognito/getTokenFromCognito'
 import { getParameter } from '../../../../../common/ssm/ssm'
 import { ConfigurationKeys } from '../../../../../common/config/configurationKeys'

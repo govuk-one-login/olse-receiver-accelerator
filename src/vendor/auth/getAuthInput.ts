@@ -1,4 +1,4 @@
-import { Request } from 'express'
+import type { Request } from 'express'
 
 export const getAuthInput = (req: Request) => {
   const client_id = req.query['client_id'] as string

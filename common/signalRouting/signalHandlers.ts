@@ -1,5 +1,5 @@
 import { baseLogger as logger } from '../../common/logging/logger'
-import { VerificationPayload } from '../interfaces/interfaces'
+import type { VerificationPayload } from '../interfaces/interfaces'
 import { verifyStateJwt } from './verifyState'
 
 interface validResponse {

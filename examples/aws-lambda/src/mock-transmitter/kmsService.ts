@@ -1,5 +1,5 @@
 import { GetPublicKeyCommand, SignCommand } from '@aws-sdk/client-kms'
-import { SET, KmsPublicKeyData } from './mockApiTxInterfaces'
+import type { SET, KmsPublicKeyData } from './mockApiTxInterfaces'
 import { getEnv } from './utils'
 import { getKMSClient } from '../sdk/sdkClient'
 

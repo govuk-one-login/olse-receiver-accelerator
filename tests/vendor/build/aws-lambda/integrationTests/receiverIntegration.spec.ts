@@ -1,5 +1,5 @@
 import { signedJWTWithKMS } from '../../../../../examples/aws-lambda/src/mock-transmitter/kmsService'
-import { SET } from '../../../../../examples/aws-lambda/src/mock-transmitter/mockApiTxInterfaces'
+import type { SET } from '../../../../../examples/aws-lambda/src/mock-transmitter/mockApiTxInterfaces'
 import { getTokenFromCognito } from '../../../../../common/cognito/getTokenFromCognito'
 import 'dotenv/config'
 
