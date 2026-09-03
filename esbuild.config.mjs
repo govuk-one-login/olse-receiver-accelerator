@@ -1,21 +1,23 @@
+// oxlint-disable unicorn/no-process-exit no-console no-magic-numbers func-style
+// oxlint-disable-next-line capitalized-comments
 // esbuild.config.js
 import { build, context } from "esbuild";
-import { existsSync, readFileSync, cpSync, mkdirSync } from "fs";
-import { dirname, join } from "path";
+import { cpSync, existsSync, mkdirSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { yamlParse } from "yaml-cfn";
 
 const baseEsBuildConfig = {
   bundle: true,
-  minify: false,
-  platform: "node",
-  sourcemap: true,
-  target: "node20",
   format: "esm",
-  treeShaking: true,
   loader: {
     ".ts": "ts", // Handles .ts files
   },
   logLevel: "info",
+  minify: false,
+  platform: "node",
+  sourcemap: true,
+  target: "node20",
+  treeShaking: true,
 };
 
 async function main() {
@@ -47,7 +49,7 @@ function copySchemas(outdir) {
 async function buildFor_AWS_LAMBDA_REFERENCE() {
   const baseLambdaPath = "examples/aws-lambda";
   const { Resources } = yamlParse(
-    readFileSync(join(dirname("."), `${baseLambdaPath}/template.yaml`), "utf-8"),
+    readFileSync(join(dirname("."), `${baseLambdaPath}/template.yaml`), "utf8"),
   );
 
   const lambdas = Object.values(Resources).filter(
@@ -61,22 +63,24 @@ async function buildFor_AWS_LAMBDA_REFERENCE() {
     const sourcePath = codeUri.startsWith("dist/") ? codeUri.substring(5) : codeUri;
     const handlerPath = handler.split(".")[0];
     const entry = join(".", sourcePath, `${handlerPath}.ts`);
-    if (!entries.includes(entry)) entries.push(entry);
+    if (!entries.includes(entry)) {
+      entries.push(entry);
+    }
   }
 
   console.log("entries");
   console.log(entries);
   const outdir = `dist/${baseLambdaPath}/src`;
   const finalConfig = {
-    ...baseEsBuildConfig,
-    format: "esm",
-    entryPoints: entries,
-    outdir,
-    outExtension: { ".js": ".mjs" },
     // Shims require into ESM output for dependencies that use require() internally (e.g. aws-xray-sdk-core)
     banner: {
       js: "import { createRequire } from 'module'; const require = createRequire(import.meta.url);",
     },
+    entryPoints: entries,
+    format: "esm",
+    outExtension: { ".js": ".mjs" },
+    outdir,
+    ...baseEsBuildConfig,
   };
   await build(finalConfig);
   copySchemas(outdir);

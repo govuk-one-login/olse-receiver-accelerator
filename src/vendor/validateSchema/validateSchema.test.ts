@@ -1,21 +1,24 @@
+// oxlint-disable unicorn/numeric-separators-style
 import {
-  verificationSignalWithoutState,
   verificationSignalWithState,
+  verificationSignalWithoutState,
 } from "../../../tests/testConstants";
 import { validateSignalAgainstSchemas } from "../validateSchema/validateSchema";
 
 describe("validateSignalAgainstSchema", () => {
   it("should return valid: true if signal does match one of the given schema", async () => {
-    expect(await validateSignalAgainstSchemas(verificationSignalWithState)).toStrictEqual({
-      valid: true,
+    await expect(validateSignalAgainstSchemas(verificationSignalWithState)).resolves.toStrictEqual({
       schema: "./schemas/verificationEvent.json",
+      valid: true,
     });
   });
 
   it("should return valid: true if signal does match one of the given schema without an optional field", async () => {
-    expect(await validateSignalAgainstSchemas(verificationSignalWithoutState)).toStrictEqual({
-      valid: true,
+    await expect(
+      validateSignalAgainstSchemas(verificationSignalWithoutState),
+    ).resolves.toStrictEqual({
       schema: "./schemas/verificationEvent.json",
+      valid: true,
     });
   });
 
@@ -25,7 +28,7 @@ describe("validateSignalAgainstSchema", () => {
       iss: 2,
     };
     const validatedSignal = await validateSignalAgainstSchemas(signalSet);
-    expect(validatedSignal.valid).toStrictEqual(false);
+    expect(validatedSignal.valid).toBe(false);
   });
 
   const invalidTestCases: {
@@ -35,85 +38,85 @@ describe("validateSignalAgainstSchema", () => {
   }[] = [
     {
       description: "missing required jti field",
+      expectedValid: false,
       input: {
-        iss: "https://transmitter.example.com",
         aud: "receiver.example.com",
-        iat: 1493856000,
-        sub_id: { format: "opaque", id: "f67e39a0a4d34d56b3aa1bc4cff0069f" },
         events: {
           "https://schemas.openid.net/secevent/ssf/event-type/verification": {},
         },
+        iat: 1493856000,
+        iss: "https://transmitter.example.com",
+        sub_id: { format: "opaque", id: "f67e39a0a4d34d56b3aa1bc4cff0069f" },
       },
-      expectedValid: false,
     },
     {
       description: "invalid iss type (number instead of string)",
+      expectedValid: false,
       input: {
-        jti: "123456",
-        iss: 12345,
         aud: "receiver.example.com",
-        iat: 1493856000,
-        sub_id: { format: "opaque", id: "f67e39a0a4d34d56b3aa1bc4cff0069f" },
         events: {
           "https://schemas.openid.net/secevent/ssf/event-type/verification": {},
         },
+        iat: 1493856000,
+        iss: 12345,
+        jti: "123456",
+        sub_id: { format: "opaque", id: "f67e39a0a4d34d56b3aa1bc4cff0069f" },
       },
-      expectedValid: false,
     },
     {
       description: "invalid iat type",
+      expectedValid: false,
       input: {
-        jti: "123456",
-        iss: "https://transmitter.example.com",
         aud: "receiver.example.com",
-        iat: "1493856000",
-        sub_id: { format: "opaque", id: "f67e39a0a4d34d56b3aa1bc4cff0069f" },
         events: {
           "https://schemas.openid.net/secevent/ssf/event-type/verification": {},
         },
+        iat: "1493856000",
+        iss: "https://transmitter.example.com",
+        jti: "123456",
+        sub_id: { format: "opaque", id: "f67e39a0a4d34d56b3aa1bc4cff0069f" },
       },
-      expectedValid: false,
     },
     {
       description: "missing sub_id.format field",
+      expectedValid: false,
       input: {
-        jti: "123456",
-        iss: "https://transmitter.example.com",
         aud: "receiver.example.com",
-        iat: 1493856000,
-        sub_id: { id: "f67e39a0a4d34d56b3aa1bc4cff0069f" },
         events: {
           "https://schemas.openid.net/secevent/ssf/event-type/verification": {},
         },
+        iat: 1493856000,
+        iss: "https://transmitter.example.com",
+        jti: "123456",
+        sub_id: { id: "f67e39a0a4d34d56b3aa1bc4cff0069f" },
       },
-      expectedValid: false,
     },
     {
       description: "empty events object",
-      input: {
-        jti: "123456",
-        iss: "https://transmitter.example.com",
-        aud: "receiver.example.com",
-        iat: 1493856000,
-        sub_id: { format: "opaque", id: "f67e39a0a4d34d56b3aa1bc4cff0069f" },
-        events: {},
-      },
       expectedValid: false,
+      input: {
+        aud: "receiver.example.com",
+        events: {},
+        iat: 1493856000,
+        iss: "https://transmitter.example.com",
+        jti: "123456",
+        sub_id: { format: "opaque", id: "f67e39a0a4d34d56b3aa1bc4cff0069f" },
+      },
     },
     {
       description: "additional unexpected field",
+      expectedValid: false,
       input: {
-        jti: "123456",
-        iss: "https://transmitter.example.com",
         aud: "receiver.example.com",
-        iat: 1493856000,
-        sub_id: { format: "opaque", id: "f67e39a0a4d34d56b3aa1bc4cff0069f" },
         events: {
           "https://schemas.openid.net/secevent/ssf/event-type/verification": {},
         },
+        iat: 1493856000,
+        iss: "https://transmitter.example.com",
+        jti: "123456",
+        sub_id: { format: "opaque", id: "f67e39a0a4d34d56b3aa1bc4cff0069f" },
         unexpectedField: "should not be here",
       },
-      expectedValid: false,
     },
   ];
 

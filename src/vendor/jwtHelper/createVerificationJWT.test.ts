@@ -1,13 +1,15 @@
+// oxlint-disable no-magic-numbers vitest/max-expects
+import { baseLogger } from "../../../common/logging/logger";
 import { createVerificationJwt } from "./createVerificationJWT";
 import { generateJWT } from "../../../src/vendor/auth/jwt";
-import { baseLogger } from "../../../common/logging/logger";
 
 const loggerErrorSpy = vi.spyOn(baseLogger, "error");
 
-vi.mock("../../../src/vendor/auth/jwt", () => ({
+vi.mock(import("../../../src/vendor/auth/jwt"), () => ({
   generateJWT: vi.fn(),
 }));
 
+// oxlint-disable-next-line vitest/prefer-import-in-mock
 vi.mock("../../../common/config/config", () => ({
   config: {
     get: vi.fn().mockReturnValue("https://gds.co.uk"),
@@ -41,7 +43,7 @@ describe("createVerificationJwt", () => {
     expect(args.issuer).toBe("https://gds.co.uk");
     expect(args.jti).toMatch(/^verification-\d+$/);
     expect(args.audience).toBe(relyingPartyUrl);
-    expect(args.payload).toEqual({ streamId: streamId });
+    expect(args.payload).toEqual({ streamId });
     expect(args.useExpClaim).toBe(true);
     expect(result).toBe("mock.jwt.token");
   });
@@ -65,7 +67,7 @@ describe("createVerificationJwt", () => {
     expect(args.issuer).toBe("https://gds.co.uk");
     expect(args.jti).toMatch(/^verification-\d+$/);
     expect(args.audience).toBe(relyingPartyUrl);
-    expect(args.payload).toEqual({ streamId: streamId });
+    expect(args.payload).toEqual({ streamId });
     expect(args.useExpClaim).toBe(true);
     expect(result).toBe("mock.jwt.token");
   });

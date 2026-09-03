@@ -1,25 +1,27 @@
-import type { APIGatewayProxyEvent } from "aws-lambda";
+// oxlint-disable no-magic-numbers capitalized-comments sort-keys
 import * as jose from "jose";
+import type { APIGatewayProxyEvent } from "aws-lambda";
+import type { Mock } from "vitest";
+import { getParameter } from "../../../../../common/ssm/ssm";
 import { getPublicKeyFromRemote } from "../../../../../src/vendor/publicKey/getPublicKey";
-import { validateJWTWithRemoteKey } from "../../../../../src/vendor/jwt/validateJWT";
-import { validateSignalAgainstSchemas } from "../../../../../src/vendor/validateSchema/validateSchema";
 import { handleSignalRouting } from "../../../../../common/signalRouting/signalRouter";
 import { handler } from "./handler";
-import { getParameter } from "../../../../../common/ssm/ssm";
 import { lambdaLogger } from "../../../../../common/logging/logger";
-import { type Mock } from "vitest";
+import { validateJWTWithRemoteKey } from "../../../../../src/vendor/jwt/validateJWT";
+import { validateSignalAgainstSchemas } from "../../../../../src/vendor/validateSchema/validateSchema";
 
-vi.mock("../../../../../src/vendor/publicKey/getPublicKey");
-vi.mock("../../../../../src/vendor/jwt/validateJWT");
-vi.mock("../../../../../src/vendor/validateSchema/validateSchema");
-vi.mock("../../../../../common/signalRouting/signalRouter");
-vi.mock("../../../../../common/ssm/ssm");
+vi.mock(import("../../../../../src/vendor/publicKey/getPublicKey"));
+vi.mock(import("../../../../../src/vendor/jwt/validateJWT"));
+vi.mock(import("../../../../../src/vendor/validateSchema/validateSchema"));
+vi.mock(import("../../../../../common/signalRouting/signalRouter"));
+vi.mock(import("../../../../../common/ssm/ssm"));
+// oxlint-disable-next-line vitest/prefer-import-in-mock
 vi.mock("../../../../../common/logging/logger", () => ({
   lambdaLogger: {
-    info: vi.fn(),
-    error: vi.fn(),
-    warn: vi.fn(),
     debug: vi.fn(),
+    error: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
   },
 }));
 
@@ -35,12 +37,12 @@ const fetchMock: Mock<typeof fetch> = vi.fn();
 global.fetch = fetchMock;
 
 const mockJwtPayload = {
-  sub_id: { format: "opaque", id: "test-id" },
   events: {
     "https://schemas.openid.net/secevent/ssf/event-type/verification": {
       state: "test-state",
     },
   },
+  sub_id: { format: "opaque", id: "test-id" },
 };
 
 const baseEvent: Partial<APIGatewayProxyEvent> = {
@@ -90,89 +92,90 @@ describe("receiver handler", () => {
 
   it("returns 400 when JWT payload is undefined", async () => {
     mockValidateJWTWithRemoteKey.mockResolvedValue({
+      key: new Uint8Array(),
+      // oxlint-disable-next-line no-undefined
       payload: undefined,
       protectedHeader: { alg: "RS256" },
-      key: new Uint8Array(),
     } as unknown as VerifyResult);
     const result = await handler(baseEvent as APIGatewayProxyEvent);
     expect(result).toEqual({
-      statusCode: 400,
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         err: "invalid_request",
         description:
           "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition.",
       }),
+      headers: { "Content-Type": "application/json" },
+      statusCode: 400,
     });
     expect(warnSpy).toHaveBeenCalledWith("JWT payload is undefined");
   });
 
   it("returns 400 when schema validation fails", async () => {
     mockValidateJWTWithRemoteKey.mockResolvedValue({
+      key: new Uint8Array(),
       payload: mockJwtPayload,
       protectedHeader: { alg: "RS256" },
-      key: new Uint8Array(),
     } as unknown as VerifyResult);
     mockValidateSignalAgainstSchemas.mockResolvedValue({
-      valid: false,
       message: "Invalid schema",
+      valid: false,
     });
     const result = await handler(baseEvent as APIGatewayProxyEvent);
     expect(result).toEqual({
-      statusCode: 400,
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        err: "invalid_request",
         description:
           "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition.",
+        err: "invalid_request",
       }),
+      headers: { "Content-Type": "application/json" },
+      statusCode: 400,
     });
     expect(warnSpy).toHaveBeenCalledWith("Schema validationg failed", { Error });
   });
 
   it("returns 400 when signal routing fails", async () => {
     mockValidateJWTWithRemoteKey.mockResolvedValue({
+      key: new Uint8Array(),
       payload: mockJwtPayload,
       protectedHeader: { alg: "RS256" },
-      key: new Uint8Array(),
     } as unknown as VerifyResult);
     mockValidateSignalAgainstSchemas.mockResolvedValue({
-      valid: true,
       schema: "test-schema",
+      valid: true,
     });
     mockHandleSignalRouting.mockResolvedValue({ valid: false });
     const result = await handler(baseEvent as APIGatewayProxyEvent);
     expect(result).toEqual({
-      statusCode: 400,
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        err: "invalid_request",
         description:
           "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition.",
+        err: "invalid_request",
       }),
+      headers: { "Content-Type": "application/json" },
+      statusCode: 400,
     });
     expect(errorSpy).toHaveBeenCalledWith("failed to route signal");
   });
 
   it("returns 202 when signal processing succeeds", async () => {
     mockValidateJWTWithRemoteKey.mockResolvedValue({
+      key: new Uint8Array(),
       payload: mockJwtPayload,
       protectedHeader: { alg: "RS256" },
-      key: new Uint8Array(),
     } as unknown as VerifyResult);
     mockValidateSignalAgainstSchemas.mockResolvedValue({
-      valid: true,
       schema: "test-schema",
+      valid: true,
     });
     mockHandleSignalRouting.mockResolvedValue({
-      valid: true,
       schema: "test-schema",
+      valid: true,
     });
     const result = await handler(baseEvent as APIGatewayProxyEvent);
     expect(result).toEqual({
-      statusCode: 202,
-      headers: { "Content-Type": "application/json" },
       body: "",
+      headers: { "Content-Type": "application/json" },
+      statusCode: 202,
     });
     expect(mockHandleSignalRouting).toHaveBeenCalledWith(mockJwtPayload, "test-schema");
   });
@@ -182,6 +185,14 @@ describe("receiver handler", () => {
       throw new Error("Unexpected error");
     });
     const result = await handler(baseEvent as APIGatewayProxyEvent);
+    // expect(result).toMatchObject({
+    //   body: JSON.stringify({
+    //     description: "An internal error occurred",
+    //     err: "internal_error",
+    //   }),
+    //   headers: { "Content-Type": "application/json" },
+    //   statusCode: 500,
+    // });
     expect(result).toEqual({
       statusCode: 500,
       headers: { "Content-Type": "application/json" },

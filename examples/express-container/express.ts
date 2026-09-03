@@ -1,18 +1,20 @@
+// oxlint-disable no-magic-numbers
 import "dotenv/config";
-import bodyParser from "body-parser";
-import express, { type Request, type Response } from "express";
-import { readFileSync } from "fs";
 import * as jose from "jose";
-import { auth } from "../../src/vendor/auth/auth";
-import { getPublicKeyFromRemote } from "../../src/vendor/publicKey/getPublicKey";
+import type { Request, Response } from "express";
 import { validateJWT, validateJWTWithRemoteKey } from "../../src/vendor/jwt/validateJWT";
-import { validateSignalAgainstSchemas } from "../../src/vendor/validateSchema/validateSchema";
+import { ConfigurationKeys } from "../../common/config/configurationKeys";
+import { auth } from "../../src/vendor/auth/auth";
+import bodyParser from "body-parser";
+import { config } from "../../common/config/config";
+import express from "express";
+import { getPublicKeyFromRemote } from "../../src/vendor/publicKey/getPublicKey";
 import { handleSignalRouting } from "../../common/signalRouting/signalRouter";
 import { httpErrorResponseMessages } from "../../common/constants";
-import { startHealthCheck } from "./verification/startHealthCheck";
 import { baseLogger as logger } from "../../common/logging/logger";
-import { config } from "../../common/config/config";
-import { ConfigurationKeys } from "../../common/config/configurationKeys";
+import { readFileSync } from "node:fs";
+import { startHealthCheck } from "./verification/startHealthCheck";
+import { validateSignalAgainstSchemas } from "../../src/vendor/validateSchema/validateSchema";
 
 const app = express();
 const v1Router = express();
@@ -99,9 +101,9 @@ v1Router.post(
       if (typeof jwtPayload === "undefined") {
         logger.warn("JWT payload is undefined");
         res.type("json").status(400).json({
-          err: "invalid_request",
           description:
             "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition.",
+          err: "invalid_request",
         });
         return;
       }
@@ -143,10 +145,10 @@ v1Router.get("/health-check", (_req: Request, res: Response) => {
   try {
     startHealthCheck();
     res.status(200).json({ status: "ok" });
-  } catch (err) {
+  } catch (error) {
     res.status(500).json({
+      message: error instanceof Error ? error.message : String(error),
       status: "error",
-      message: err instanceof Error ? err.message : String(err),
     });
   }
 });

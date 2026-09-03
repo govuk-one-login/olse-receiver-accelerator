@@ -1,11 +1,12 @@
+// oxlint-disable no-magic-numbers
 import { constructVerificationFullSecurityEvent } from "./constructVerificationSecurityEvent";
 
 describe("constructVerificationFullSecurityEvent", () => {
   it("creates SET", () => {
-    const timeStamp = 10001;
+    const timeStamp = 10_001;
     const result = constructVerificationFullSecurityEvent("test-request-id-001", timeStamp, {
-      stream_id: "test-stream-id-001",
       state: "test-state-001",
+      stream_id: "test-stream-id-001",
     });
 
     expect(result).toEqual({

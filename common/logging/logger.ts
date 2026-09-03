@@ -1,9 +1,9 @@
-import { Logger, LogFormatter, LogItem } from "@aws-lambda-powertools/logger";
 import type {
   LogAttributes,
   LogLevel,
   UnformattedAttributes,
 } from "@aws-lambda-powertools/logger/types";
+import { LogFormatter, LogItem, Logger } from "@aws-lambda-powertools/logger";
 
 class CustomLogFormatter extends LogFormatter {
   public formatAttributes(
@@ -26,14 +26,14 @@ class LambdaLogFormatter extends LogFormatter {
     additionalLogAttributes: LogAttributes,
   ): LogItem {
     const baseAttributes: LogAttributes = {
-      level: attributes.logLevel,
-      message: attributes.message,
-      timestamp: String(attributes.timestamp),
+      function_arn: attributes.lambdaContext?.invokedFunctionArn,
       function_name: attributes.lambdaContext?.functionName,
       function_version: attributes.lambdaContext?.functionVersion,
-      function_arn: attributes.lambdaContext?.invokedFunctionArn,
-      request_id: attributes.lambdaContext?.awsRequestId,
+      level: attributes.logLevel,
       memory_size: attributes.lambdaContext?.memoryLimitInMB,
+      message: attributes.message,
+      request_id: attributes.lambdaContext?.awsRequestId,
+      timestamp: String(attributes.timestamp),
     };
 
     const logItem = new LogItem({ attributes: baseAttributes });
@@ -54,12 +54,14 @@ const getLogLevel = (): LogLevel => {
   return "INFO";
 };
 
-export const baseLogger = new Logger({
-  logLevel: getLogLevel(),
+const baseLogger = new Logger({
   logFormatter: new CustomLogFormatter(),
+  logLevel: getLogLevel(),
 });
 
-export const lambdaLogger = new Logger({
-  logLevel: getLogLevel(),
+const lambdaLogger = new Logger({
   logFormatter: new LambdaLogFormatter(),
+  logLevel: getLogLevel(),
 });
+
+export { baseLogger, lambdaLogger };

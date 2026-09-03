@@ -1,8 +1,10 @@
-import Ajv, { type AnySchema } from "ajv";
+// oxlint-disable no-duplicate-imports
+import Ajv from "ajv";
+import type { AnySchema } from "ajv";
 import addFormats from "ajv-formats";
-import { readFileSync } from "fs";
-import { readdir } from "fs/promises";
 import { baseLogger as logger } from "../../../common/logging/logger";
+import { readFileSync } from "node:fs";
+import { readdir } from "node:fs/promises";
 
 const ajv = new Ajv();
 addFormats(ajv);
@@ -22,15 +24,15 @@ export async function validateSignalAgainstSchemas(signalSet: unknown): Promise<
   const absoluteSchemaPath = "./schemas";
   const schemaList = await readdir(absoluteSchemaPath);
   for (const schemaName of schemaList) {
-    const filePath = absoluteSchemaPath + "/" + schemaName;
+    const filePath = `${absoluteSchemaPath}/${schemaName}`;
 
     const schema: AnySchema = await JSON.parse(readFileSync(filePath, { encoding: "utf8" }));
     const validate = ajv.compile(schema);
     if (validate(signalSet)) {
-      return { valid: true, schema: filePath };
+      return { schema: filePath, valid: true };
     } else {
       logger.info("errors when validating schema", { filePath: filePath });
     }
   }
-  return { valid: false, message: "unable to find matching schema" };
+  return { message: "unable to find matching schema", valid: false };
 }

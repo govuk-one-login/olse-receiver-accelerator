@@ -1,7 +1,8 @@
-import { getTokenFromCognito } from "../../../../../common/cognito/getTokenFromCognito";
+// oxlint-disable no-magic-numbers no-console
 import "dotenv/config";
+import { getTokenFromCognito } from "../../../../../common/cognito/getTokenFromCognito";
 
-describe("SET Verification Event Happy Path Integration Tests", () => {
+describe("sET Verification Event Happy Path Integration Tests", () => {
   const apiUrl = process.env["VERIFICATION_ENDPOINT"] ?? "";
 
   beforeAll(() => {
@@ -16,27 +17,27 @@ describe("SET Verification Event Happy Path Integration Tests", () => {
     }
     console.log(process.env["MOCK_TX_SECRET_ARN"]);
     const token = await getTokenFromCognito(process.env["MOCK_TX_SECRET_ARN"] ?? "");
-    console.log("Bearer " + token);
+    console.log(`Bearer ${token}`);
 
     const verificationPayload = {
-      stream_id: "test-stream-001",
       state: "test-state-001",
+      stream_id: "test-stream-001",
     };
-    // no stream id validation atm
+    // No stream id validation atm
 
     const response = await fetch(`${apiUrl}/verify`, {
-      method: "POST",
+      body: JSON.stringify(verificationPayload),
       headers: {
-        Authorization: "Bearer " + token,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/secevent+jwt",
       },
-      body: JSON.stringify(verificationPayload),
+      method: "POST",
     });
 
     expect(response.ok).toBe(true);
     console.log(response.status);
     expect(response.status).toBe(204);
-  }, 10000);
+  }, 10_000);
 
   it("send event with stream_id and without state and receives a 204", async () => {
     if (process.env["MOCK_TX_SECRET_ARN"] === undefined) {
@@ -44,23 +45,23 @@ describe("SET Verification Event Happy Path Integration Tests", () => {
     }
     console.log(process.env["MOCK_TX_SECRET_ARN"]);
     const token = await getTokenFromCognito(process.env["MOCK_TX_SECRET_ARN"] ?? "");
-    console.log("Bearer " + token);
+    console.log(`Bearer ${token}`);
 
     const verificationPayload = {
       stream_id: "test-stream-001",
     };
 
     const response = await fetch(`${apiUrl}/verify`, {
-      method: "POST",
+      body: JSON.stringify(verificationPayload),
       headers: {
-        Authorization: "Bearer " + token,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/secevent+jwt",
       },
-      body: JSON.stringify(verificationPayload),
+      method: "POST",
     });
 
     expect(response.ok).toBe(true);
     console.log(response.status);
     expect(response.status).toBe(204);
-  }, 10000);
+  }, 10_000);
 });

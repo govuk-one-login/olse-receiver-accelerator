@@ -1,10 +1,11 @@
-import { SignJWT, importJWK, type JWK, type CryptoKey } from "jose";
-import * as fs from "fs";
-import type { generateJWTPayload } from "../types";
+import * as fs from "node:fs";
+// oxlint-disable-next-line import/consistent-type-specifier-style
+import { type CryptoKey, type JWK, SignJWT, importJWK } from "jose";
 import { ConfigurationKeys } from "../../../common/config/configurationKeys";
 import { config } from "../../../common/config/config";
+import type { generateJWTPayload } from "../types";
 
-export const getPrivateKey = async (): Promise<CryptoKey | Uint8Array> => {
+const getPrivateKey = async (): Promise<CryptoKey | Uint8Array> => {
   try {
     const privateKeyFilePath = config.get(ConfigurationKeys.PRIVATE_KEY_PATH);
     const privateKeyContent = fs.readFileSync(privateKeyFilePath, "utf8");
@@ -12,11 +13,11 @@ export const getPrivateKey = async (): Promise<CryptoKey | Uint8Array> => {
     return await importJWK(privateKeyJwk, "RS256");
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    throw new Error(`Failed to load private key: ${message}`);
+    throw new Error(`Failed to load private key: ${message}`, { cause: error });
   }
 };
 
-export const generateJWT = async (payload: generateJWTPayload): Promise<string> => {
+const generateJWT = async (payload: generateJWTPayload): Promise<string> => {
   const key = await getPrivateKey();
   const basePayload = new SignJWT(payload.payload)
     .setProtectedHeader({ alg: payload.alg })
@@ -29,3 +30,5 @@ export const generateJWT = async (payload: generateJWTPayload): Promise<string> 
   }
   return await basePayload.sign(key);
 };
+
+export { generateJWT, getPrivateKey };

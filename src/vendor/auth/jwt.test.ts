@@ -1,9 +1,9 @@
+import * as fs from "node:fs";
 import { config } from "../../../common/config/config";
-import type { generateJWTPayload } from "../types";
 import { generateJWT } from "./jwt";
-import * as fs from "fs";
+import type { generateJWTPayload } from "../types";
 
-vi.mock("fs");
+vi.mock(import("node:fs"));
 
 const mockFs = vi.spyOn(fs, "readFileSync");
 

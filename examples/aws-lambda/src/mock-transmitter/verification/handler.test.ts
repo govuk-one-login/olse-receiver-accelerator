@@ -1,3 +1,4 @@
+// oxlint-disable no-magic-numbers
 import type { APIGatewayProxyEvent } from "aws-lambda";
 import { handler } from "./handler";
 import { getVerificationRequest } from "./requestParser";
@@ -9,15 +10,15 @@ import { getTokenFromCognito } from "../../../../../common/cognito/getTokenFromC
 import { getParameter } from "../../../../../common/ssm/ssm";
 import { getEnv } from "../utils";
 import { ConfigurationKeys } from "../../../../../common/config/configurationKeys";
-import { type Mock } from "vitest";
+import type { Mock } from "vitest";
 
-vi.mock("./requestParser");
-vi.mock("./constructVerificationSecurityEvent");
-vi.mock("../kmsService");
-vi.mock("./validation");
-vi.mock("../../../../../common/cognito/getTokenFromCognito");
-vi.mock("../../../../../common/ssm/ssm");
-vi.mock("../utils");
+vi.mock(import("./requestParser"));
+vi.mock(import("./constructVerificationSecurityEvent"));
+vi.mock(import("../kmsService"));
+vi.mock(import("./validation"));
+vi.mock(import("../../../../../common/cognito/getTokenFromCognito"));
+vi.mock(import("../../../../../common/ssm/ssm"));
+vi.mock(import("../utils"));
 
 const mockParseRequest = vi.mocked(getVerificationRequest);
 const mockBuildSecurityEvent = vi.mocked(constructVerificationFullSecurityEvent);
@@ -39,7 +40,9 @@ describe("transmitter handler", () => {
     vi.clearAllMocks();
     process.env["RECEIVER_SECRET_ARN"] = "arn";
     mockReadEnv.mockImplementation((key: string) => {
-      if (key === ConfigurationKeys.AWS_STACK_NAME) return "test-stack";
+      if (key === ConfigurationKeys.AWS_STACK_NAME) {
+        return "test-stack";
+      }
       throw new Error(`Unexpected key: ${key}`);
     });
     mockGetSsmParameter.mockResolvedValue("https://receiver.com/events");
@@ -54,20 +57,20 @@ describe("transmitter handler", () => {
 
   it("sends a verification event successfully", async () => {
     const request: SETVerificationRequest = {
-      stream_id: "user-123",
       state: undefined,
+      stream_id: "user-123",
     };
     const securityEvent: SET = {
-      jti: "jti-123",
-      iss: "issuer",
       aud: "audience",
-      iat: Math.floor(Date.now() / 1000),
-      sub_id: { format: "opaque", id: "user-123" },
       events: {
         "https://schemas.openid.net/secevent/ssf/event-type/verification": {
           state: "abc",
         },
       },
+      iat: Math.floor(Date.now() / 1000),
+      iss: "issuer",
+      jti: "jti-123",
+      sub_id: { format: "opaque", id: "user-123" },
     };
     mockParseRequest.mockReturnValue(request);
     mockBuildSecurityEvent.mockReturnValue(securityEvent);

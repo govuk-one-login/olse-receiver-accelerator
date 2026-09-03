@@ -1,14 +1,15 @@
+// oxlint-disable no-magic-numbers
 import type { CryptoKey, JWTVerifyResult } from "jose";
-import { getPublicKeyFromJWK } from "../../src/vendor/publicKey/getPublicKey";
-import { validateJWT } from "../../src/vendor/jwt/validateJWT";
-import { verifyStateJwt } from "./verifyState";
 import { ConfigurationKeys } from "../../common/config/configurationKeys";
 import { config } from "../config/config";
-import { readFileSync } from "fs";
+import { getPublicKeyFromJWK } from "../../src/vendor/publicKey/getPublicKey";
+import { readFileSync } from "node:fs";
+import { validateJWT } from "../../src/vendor/jwt/validateJWT";
+import { verifyStateJwt } from "./verifyState";
 
-vi.mock("../../src/vendor/jwt/validateJWT");
-vi.mock("../../src/vendor/publicKey/getPublicKey");
-vi.mock("fs");
+vi.mock(import("../../src/vendor/jwt/validateJWT"));
+vi.mock(import("../../src/vendor/publicKey/getPublicKey"));
+vi.mock(import("node:fs"));
 
 const mockValidateJWT = vi.mocked(validateJWT);
 const mockGetPublicKeyFromJWK = vi.mocked(getPublicKeyFromJWK);
@@ -34,7 +35,7 @@ describe("verifyStateJwt", () => {
     const result = await verifyStateJwt("header.payload.signature");
 
     expect(result).toEqual(mockPayload);
-    expect(mockReadFileSync).toHaveBeenCalled();
+    expect(mockReadFileSync).toHaveBeenCalledWith();
   });
 
   it("returns null for invalid JWT", async () => {
