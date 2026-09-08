@@ -15,7 +15,7 @@ npm run prepare # setup pre-commit hooks
 ```
 
 - `npm run container:dev`: Run a live expressJS server that reloads when changes are made
-- `npm run vendor:test`: Run the vendor tests
+- `npm run test:vendor`: Run the vendor tests
 - `npm run test:unit`: Run the unit tests for the user of the repo
 
 # How to contribute to the One Login Signal Exchange receiver accelerator
@@ -64,7 +64,7 @@ export JWKS_ENDPOINT='https://jwks-endpoint'
 export MOCK_TX_SECRET_ARN='mock-tx-secret-arn'
 
 export KMS_KEY_ID='kms-key-id'
-export AWS_REGION='eu-west-2
+export AWS_REGION='eu-west-2'
 ```
 
 ## Running Tests

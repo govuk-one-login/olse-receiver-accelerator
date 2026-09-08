@@ -1,4 +1,4 @@
-import { APIGatewayProxyEvent } from 'aws-lambda'
+import type { APIGatewayProxyEvent } from 'aws-lambda'
 import * as jose from 'jose'
 import { getPublicKeyFromRemote } from '../../../../../src/vendor/publicKey/getPublicKey'
 import { validateJWTWithRemoteKey } from '../../../../../src/vendor/jwt/validateJWT'
@@ -116,7 +116,7 @@ describe('receiver handler', () => {
       payload: mockJwtPayload,
       protectedHeader: { alg: 'RS256' },
       key: new Uint8Array()
-    } as VerifyResult)
+    } as unknown as VerifyResult)
     mockValidateSignalAgainstSchemas.mockResolvedValue({
       valid: false,
       message: 'Invalid schema'
@@ -139,7 +139,7 @@ describe('receiver handler', () => {
       payload: mockJwtPayload,
       protectedHeader: { alg: 'RS256' },
       key: new Uint8Array()
-    } as VerifyResult)
+    } as unknown as VerifyResult)
     mockValidateSignalAgainstSchemas.mockResolvedValue({
       valid: true,
       schema: 'test-schema'
@@ -163,7 +163,7 @@ describe('receiver handler', () => {
       payload: mockJwtPayload,
       protectedHeader: { alg: 'RS256' },
       key: new Uint8Array()
-    } as VerifyResult)
+    } as unknown as VerifyResult)
     mockValidateSignalAgainstSchemas.mockResolvedValue({
       valid: true,
       schema: 'test-schema'

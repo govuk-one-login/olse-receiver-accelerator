@@ -1,5 +1,5 @@
 import { Logger, LogFormatter, LogItem } from '@aws-lambda-powertools/logger'
-import {
+import type {
   LogAttributes,
   LogLevel,
   UnformattedAttributes

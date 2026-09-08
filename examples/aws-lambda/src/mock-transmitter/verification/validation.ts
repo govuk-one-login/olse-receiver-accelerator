@@ -1,4 +1,4 @@
-import { RequestBody } from '../mockApiTxInterfaces'
+import type { RequestBody } from '../mockApiTxInterfaces'
 
 export function isValidationError(errorMessage: string): boolean {
   const validationErrors = [

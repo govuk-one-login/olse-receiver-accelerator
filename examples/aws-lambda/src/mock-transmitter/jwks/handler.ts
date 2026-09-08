@@ -1,8 +1,8 @@
 import { lambdaLogger as logger } from '../../../../../common/logging/logger'
-import { APIGatewayProxyResult } from 'aws-lambda'
+import type { APIGatewayProxyResult } from 'aws-lambda'
 import { getEnv } from '../utils'
 import { getKmsPublicKey } from '../kmsService'
-import { JsonWebKey } from 'crypto'
+import type { JsonWebKey } from 'crypto'
 import { createJwkFromRawPublicKey } from './createJwksFromRawPublicKey'
 
 export const jwkArray: JsonWebKey[] = []

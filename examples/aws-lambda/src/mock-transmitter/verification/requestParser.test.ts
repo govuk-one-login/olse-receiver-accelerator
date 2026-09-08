@@ -1,4 +1,4 @@
-import { APIGatewayProxyEvent } from 'aws-lambda'
+import type { APIGatewayProxyEvent } from 'aws-lambda'
 import { getVerificationRequest } from './requestParser'
 
 describe('requestParter', () => {

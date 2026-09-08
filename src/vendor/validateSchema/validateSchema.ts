@@ -1,4 +1,4 @@
-import Ajv, { AnySchema } from 'ajv'
+import Ajv, { type AnySchema } from 'ajv'
 import addFormats from 'ajv-formats'
 import { readFileSync } from 'fs'
 import { readdir } from 'fs/promises'

@@ -1,6 +1,6 @@
 import { type KMSClient } from '@aws-sdk/client-kms'
 import { signedJWTWithKMS, getKmsPublicKey } from './kmsService'
-import { SET } from './mockApiTxInterfaces'
+import type { SET } from './mockApiTxInterfaces'
 import { getKMSClient } from '../sdk/sdkClient'
 
 vi.mock('@aws-sdk/client-kms')

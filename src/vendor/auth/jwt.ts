@@ -1,6 +1,6 @@
-import { SignJWT, importJWK, JWK, CryptoKey } from 'jose'
+import { SignJWT, importJWK, type JWK, type CryptoKey } from 'jose'
 import * as fs from 'fs'
-import { generateJWTPayload } from '../types'
+import type { generateJWTPayload } from '../types'
 import { ConfigurationKeys } from '../../../common/config/configurationKeys'
 import { config } from '../../../common/config/config'
 

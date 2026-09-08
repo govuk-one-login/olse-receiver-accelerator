@@ -1,4 +1,4 @@
-import { Request } from 'express'
+import type { Request } from 'express'
 import { generateJWT } from './jwt'
 import { getAuthInput } from './getAuthInput'
 import { ConfigurationKeys } from '../../../common/config/configurationKeys'
