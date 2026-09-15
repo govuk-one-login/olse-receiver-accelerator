@@ -7,7 +7,7 @@ vi.mock('crypto')
 
 const mockedCreateVerificationJwt = vi.mocked(createVerificationJwt)
 describe('sendVerificationSignal', () => {
-  const mockRelyingPartyUrl = 'https://gds.co.uk'
+  const mockRelyingPartyUrl = 'https://signal-exchange.account.gov.uk'
   const mockStreamId = 'test-stream-id-1'
 
   beforeEach(() => {

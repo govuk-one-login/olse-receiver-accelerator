@@ -10,7 +10,7 @@ vi.mock('../../../src/vendor/auth/jwt', () => ({
 
 vi.mock('../../../common/config/config', () => ({
   config: {
-    get: vi.fn().mockReturnValue('https://gds.co.uk')
+    get: vi.fn().mockReturnValue('https://signal-exchange.account.gov.uk')
   }
 }))
 
@@ -38,7 +38,7 @@ describe('createVerificationJwt', () => {
     }
     const args = firstCallArg[0]
     expect(args.alg).toBe('RS256')
-    expect(args.issuer).toBe('https://gds.co.uk')
+    expect(args.issuer).toBe('https://signal-exchange.account.gov.uk')
     expect(args.jti).toMatch(/^verification-\d+$/)
     expect(args.audience).toBe(relyingPartyUrl)
     expect(args.payload).toEqual({ streamId: streamId })
@@ -62,7 +62,7 @@ describe('createVerificationJwt', () => {
     }
     const args = firstCallArg[0]
     expect(args.alg).toBe('RS256')
-    expect(args.issuer).toBe('https://gds.co.uk')
+    expect(args.issuer).toBe('https://signal-exchange.account.gov.uk')
     expect(args.jti).toMatch(/^verification-\d+$/)
     expect(args.audience).toBe(relyingPartyUrl)
     expect(args.payload).toEqual({ streamId: streamId })
