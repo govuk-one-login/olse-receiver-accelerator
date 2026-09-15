@@ -23,7 +23,7 @@ describe('createVerificationJwt', () => {
   })
 
   it('creates JWT with correct structure and state', async () => {
-    const relyingPartyUrl = 'https://rp.co.uk/verify'
+    const relyingPartyUrl = 'https://rp.service.gov.uk/verify'
     const streamId = 'stream-1'
 
     const result = await createVerificationJwt(relyingPartyUrl, streamId)
@@ -47,7 +47,7 @@ describe('createVerificationJwt', () => {
   })
 
   it('creates JWT without state when not provided', async () => {
-    const relyingPartyUrl = 'https://rp.co.uk/verify'
+    const relyingPartyUrl = 'https://rp.service.gov.uk/verify'
     const streamId = 'test-stream-id-001'
 
     const result = await createVerificationJwt(relyingPartyUrl, streamId)
@@ -74,7 +74,7 @@ describe('createVerificationJwt', () => {
     const error = new Error('Error')
     mockGenerateJWT.mockRejectedValue(error)
 
-    const relyingPartyUrl = 'https://rp.co.uk/verification'
+    const relyingPartyUrl = 'https://rp.service.gov.uk/verification'
     const streamId = 'default-stream-id-001'
 
     await expect(
