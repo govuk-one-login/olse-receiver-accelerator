@@ -1,4 +1,4 @@
-import { CryptoKey, JWTVerifyResult } from 'jose'
+import type { CryptoKey, JWTVerifyResult } from 'jose'
 import { getPublicKeyFromJWK } from '../../src/vendor/publicKey/getPublicKey'
 import { validateJWT } from '../../src/vendor/jwt/validateJWT'
 import { verifyStateJwt } from './verifyState'
