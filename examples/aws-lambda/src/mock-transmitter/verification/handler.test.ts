@@ -42,7 +42,7 @@ describe('transmitter handler', () => {
       if (key === ConfigurationKeys.AWS_STACK_NAME) return 'test-stack'
       throw new Error(`Unexpected key: ${key}`)
     })
-    mockGetSsmParameter.mockResolvedValue('https://receiver.com/events')
+    mockGetSsmParameter.mockResolvedValue('https://receiver.example.com/events')
     mockGetCognitoToken.mockResolvedValue('mock-token')
     mockSignWithKms.mockResolvedValue('mock-jwt')
     fetchMock.mockResolvedValue(new Response('', { status: 202 }))

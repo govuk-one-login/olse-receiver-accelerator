@@ -14,7 +14,7 @@ vi.useFakeTimers()
 
 process.env[ConfigurationKeys.VERIFICATION_INTERVAL] = '15'
 process.env[ConfigurationKeys.VERIFICATION_ENDPOINT_URL] =
-  'https://gds.co.uk/verify'
+  'https://signal-exchange.account.gov.uk/verify'
 process.env[ConfigurationKeys.STREAM_ID] = 'stream_id'
 
 describe('startHealthCheck', () => {

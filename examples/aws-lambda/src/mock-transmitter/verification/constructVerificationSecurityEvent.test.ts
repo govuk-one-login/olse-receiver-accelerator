@@ -10,14 +10,14 @@ describe('constructVerificationFullSecurityEvent', () => {
     )
 
     expect(result).toEqual({
-      aud: 'https://gds.co.uk/rp/Events',
+      aud: 'https://signal-exchange.account.gov.uk/rp/Events',
       events: {
         'https://schemas.openid.net/secevent/ssf/event-type/verification': {
           state: 'test-state-001'
         }
       },
       iat: Math.floor(timeStamp / 1000),
-      iss: 'https://gds.co.uk/mock/verify',
+      iss: 'https://signal-exchange.account.gov.uk/mock/verify',
       jti: 'test-request-id-001',
       sub_id: {
         format: 'opaque',

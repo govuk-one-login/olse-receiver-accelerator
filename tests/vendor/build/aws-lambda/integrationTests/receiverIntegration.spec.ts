@@ -18,8 +18,8 @@ describe('handler V1', () => {
     )
 
     const testSet: SET = {
-      iss: 'https://gds.co.uk',
-      aud: 'https://gds.co.uk',
+      iss: 'https://signal-exchange.account.gov.uk',
+      aud: 'https://signal-exchange.account.gov.uk',
       iat: Math.floor(Date.now() / 1000),
       sub_id: { format: 'opaque', id: 'test-sub-001' },
       jti: 'test-id-001',
@@ -104,8 +104,8 @@ describe('handler V1', () => {
       throw new Error('RECEIVER_ENDPOINT environment variable is not set')
     }
     const testSet: SET = {
-      iss: 'https://gds.co.uk',
-      aud: 'https://gds.co.uk',
+      iss: 'https://signal-exchange.account.gov.uk',
+      aud: 'https://signal-exchange.account.gov.uk',
       iat: Math.floor(Date.now() / 1000),
       sub_id: { format: 'opaque', id: 'test-sub-001' },
       jti: 'test-id-001',
@@ -138,8 +138,8 @@ describe('handler V1', () => {
     )
 
     const testSet: SET = {
-      iss: 'https://gds.co.uk',
-      aud: 'https://gds.co.uk',
+      iss: 'https://signal-exchange.account.gov.uk',
+      aud: 'https://signal-exchange.account.gov.uk',
       iat: Math.floor(Date.now() / 1000),
       sub_id: { format: 'opaque', id: 'test-sub-001' },
       jti: 'test-id-001',
@@ -171,8 +171,8 @@ describe('handler V1', () => {
     )
 
     const testSet: SET = {
-      iss: 'https://gds.co.uk',
-      aud: 'https://gds.co.uk',
+      iss: 'https://signal-exchange.account.gov.uk',
+      aud: 'https://signal-exchange.account.gov.uk',
       iat: Math.floor(Date.now() / 1000),
       sub_id: { format: 'opaque', id: 'test-sub-001' },
       jti: 'test-id-001',

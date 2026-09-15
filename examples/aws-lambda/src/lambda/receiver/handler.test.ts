@@ -63,13 +63,13 @@ describe('receiver handler', () => {
     process.env['RECEIVER_SECRET_ARN'] = 'test-arn'
     process.env['AWS_STACK_NAME'] = 'test-stack'
 
-    mockGetParameter.mockResolvedValue('https://test.com/jwks')
+    mockGetParameter.mockResolvedValue('https://example.com/jwks')
     fetchMock.mockResolvedValue(
       new Response(JSON.stringify({ keys: [] }), { status: 200 })
     )
 
     const realRemoteJwks = jose.createRemoteJWKSet(
-      new URL('https://test.com/jwks')
+      new URL('https://example.com/jwks')
     )
     mockGetPublicKeyFromRemote.mockReturnValue(realRemoteJwks)
   })

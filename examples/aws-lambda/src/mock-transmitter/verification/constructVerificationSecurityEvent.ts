@@ -6,8 +6,12 @@ export function constructVerificationFullSecurityEvent(
   verificationReqeuest: SETVerificationRequest
 ): SET {
   const set: SET = {
-    iss: process.env['ISSUER'] ?? 'https://gds.co.uk/mock/verify',
-    aud: process.env['AUDIENCE'] ?? 'https://gds.co.uk/rp/Events',
+    iss:
+      process.env['ISSUER'] ??
+      'https://signal-exchange.account.gov.uk/mock/verify',
+    aud:
+      process.env['AUDIENCE'] ??
+      'https://signal-exchange.account.gov.uk/rp/Events',
     iat: Math.floor(timeStamp / 1000),
     jti: requestId,
     events: {
