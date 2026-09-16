@@ -20,18 +20,6 @@ const baseEsBuildConfig = {
   treeShaking: true,
 };
 
-async function main() {
-  if (process.env["CONTAINER"] === "true") {
-    console.log("Running esbuild for container");
-    await buildForContainer();
-  } else if (process.env["AWS_LAMBDA_REFERENCE"] === "true") {
-    console.log("Running esbuild for AWS Lambda reference");
-    await buildFor_AWS_LAMBDA_REFERENCE();
-  } else {
-    throw new Error("Invalid build target");
-  }
-}
-
 function copySchemas(outdir) {
   const schemasSource = "schemas";
   const schemasTarget = join(outdir, "schemas");
@@ -43,6 +31,26 @@ function copySchemas(outdir) {
     cpSync(schemasSource, schemasTarget, { recursive: true });
   } else {
     console.warn("No schemas folder found to copy");
+  }
+}
+
+async function buildForContainer() {
+  const basePath = "examples/express-container";
+  const finalConfig = {
+    ...baseEsBuildConfig,
+    entryPoints: [`${basePath}/server.ts`],
+    outfile: `dist/${basePath}/server.js`,
+  };
+  try {
+    const ctx = await context(finalConfig);
+
+    // Single build
+    await ctx.rebuild();
+    console.log("Build complete!");
+    await ctx.dispose();
+  } catch (error) {
+    console.error("Build failed:", error);
+    process.exit(1);
   }
 }
 
@@ -86,25 +94,17 @@ async function buildFor_AWS_LAMBDA_REFERENCE() {
   copySchemas(outdir);
 }
 
-async function buildForContainer() {
-  const basePath = "examples/express-container";
-  const finalConfig = {
-    ...baseEsBuildConfig,
-    entryPoints: [`${basePath}/server.ts`],
-    outfile: `dist/${basePath}/server.js`,
-  };
-  try {
-    const ctx = await context(finalConfig);
-
-    // Single build
-    await ctx.rebuild();
-    console.log("Build complete!");
-    await ctx.dispose();
-  } catch (error) {
-    console.error("Build failed:", error);
-    process.exit(1);
+async function main() {
+  if (process.env["CONTAINER"] === "true") {
+    console.log("Running esbuild for container");
+    await buildForContainer();
+  } else if (process.env["AWS_LAMBDA_REFERENCE"] === "true") {
+    console.log("Running esbuild for AWS Lambda reference");
+    await buildFor_AWS_LAMBDA_REFERENCE();
+  } else {
+    throw new Error("Invalid build target");
   }
 }
 
 // --- Run the build ---
-main().then(() => console.log("finished build"));
+void main().then(() => console.log("finished build"));

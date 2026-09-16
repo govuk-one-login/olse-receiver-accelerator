@@ -1,4 +1,4 @@
-// oxlint-disable no-magic-numbers
+// oxlint-disable no-magic-numbers typescript/no-dynamic-delete
 import * as jose from "jose";
 import * as signalRouting from "../../common/signalRouting/signalRouter";
 import { ConfigurationKeys } from "../../common/config/configurationKeys";
@@ -43,8 +43,9 @@ const sampleVerificationEvent = {
   useExpClaim: false,
 };
 
-let publicKeyString;
-let publicKeyJson;
+let publicKeyString = "";
+let publicKeyJson = {};
+// oxlint-disable-next-line init-declarations
 let key: webcrypto.CryptoKey | Uint8Array;
 
 describe("express server /v1 endpoint", () => {
@@ -63,8 +64,7 @@ describe("express server /v1 endpoint", () => {
     publicKeyString = readFileSync("./keys/authPublic.key", {
       encoding: "utf8",
     });
-    // eslint-disable-next-line
-    publicKeyJson = JSON.parse(publicKeyString as any);
+    publicKeyJson = JSON.parse(publicKeyString as string);
     key = await jose.importJWK(publicKeyJson as jose.JWK, "RS256");
 
     const privateKeyString = readFileSync("./keys/authPrivate.key", {
@@ -86,7 +86,7 @@ describe("express server /v1 endpoint", () => {
     });
 
     expect(response.status).toBe(400);
-    expect(response.body).toEqual({ error: "invalid_grant" });
+    expect(response.body).toStrictEqual({ error: "invalid_grant" });
   });
 
   it("should return 401 for incorrect client_id", async () => {
@@ -97,7 +97,7 @@ describe("express server /v1 endpoint", () => {
     });
 
     expect(response.status).toBe(401);
-    expect(response.body).toEqual({ error: "invalid_client" });
+    expect(response.body).toStrictEqual({ error: "invalid_client" });
   });
 
   it("should return 401 for incorrect client_secret", async () => {
@@ -108,11 +108,10 @@ describe("express server /v1 endpoint", () => {
     });
 
     expect(response.status).toBe(401);
-    expect(response.body).toEqual({ error: "invalid_client" });
+    expect(response.body).toStrictEqual({ error: "invalid_client" });
   });
 
   it("should return 401 when CLIENT_ID env var is missing", async () => {
-    // eslint-disable-next-line
     delete process.env[ConfigurationKeys.CLIENT_ID];
 
     const response = await request(app)
@@ -125,11 +124,10 @@ describe("express server /v1 endpoint", () => {
       });
 
     expect(response.status).toBe(401);
-    expect(response.body).toEqual({ error: "invalid_client" });
+    expect(response.body).toStrictEqual({ error: "invalid_client" });
   });
 
   it("should return 401 when CLIENT_SECRET env var is missing", async () => {
-    // eslint-disable-next-line
     delete process.env[ConfigurationKeys.CLIENT_SECRET];
 
     const response = await request(app).post("/v1/token").query({
@@ -139,7 +137,7 @@ describe("express server /v1 endpoint", () => {
     });
 
     expect(response.status).toBe(401);
-    expect(response.body).toEqual({ error: "invalid_client" });
+    expect(response.body).toStrictEqual({ error: "invalid_client" });
   });
 
   it("should return 200 with valid credentials", async () => {

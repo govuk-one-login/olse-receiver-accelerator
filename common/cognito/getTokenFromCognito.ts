@@ -6,7 +6,7 @@ interface CognitoTokenResponse {
   token_type: string;
 }
 
-export const getTokenFromCognito = async (secretArn: string) => {
+export const getTokenFromCognito = async (secretArn: string): Promise<string> => {
   const secrets = await getSecrets(secretArn);
   const { userPoolClientId, userPoolClientSecret, domain } = secrets;
   try {
@@ -30,6 +30,7 @@ export const getTokenFromCognito = async (secretArn: string) => {
     const accessToken: string = accessTokenJsonResponse.access_token;
     return accessToken;
   } catch (error) {
+    // oxlint-disable-next-line no-console
     console.error("Error fetching access token:", error);
     throw error;
   }

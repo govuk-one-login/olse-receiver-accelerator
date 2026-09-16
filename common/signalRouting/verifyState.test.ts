@@ -34,7 +34,7 @@ describe("verifyStateJwt", () => {
 
     const result = await verifyStateJwt("header.payload.signature");
 
-    expect(result).toEqual(mockPayload);
+    expect(result).toStrictEqual(mockPayload);
     expect(mockReadFileSync).toHaveBeenCalledWith();
   });
 

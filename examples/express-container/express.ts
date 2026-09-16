@@ -81,6 +81,7 @@ v1Router.post(
       logger.debug("Retriving public key", { jwksUrl });
       const publicKey = getPublicKeyFromRemote(jwksUrl);
 
+      // oxlint-disable-next-line init-declarations
       let verifiedJwtBody;
       try {
         logger.debug("Validating JWT with remote key");

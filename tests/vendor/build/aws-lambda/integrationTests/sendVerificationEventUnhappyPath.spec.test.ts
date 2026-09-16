@@ -1,6 +1,6 @@
-// oxlint-disable no-magic-numbers
-import { getTokenFromCognito } from "../../../../../common/cognito/getTokenFromCognito";
+// oxlint-disable no-magic-numbers no-console
 import "dotenv/config";
+import { getTokenFromCognito } from "../../../../../common/cognito/getTokenFromCognito";
 
 describe("sET Verification Event Unhappy Path Integration Tests", () => {
   const apiUrl = process.env["VERIFICATION_ENDPOINT"] ?? "";
@@ -27,7 +27,7 @@ describe("sET Verification Event Unhappy Path Integration Tests", () => {
     const response = await fetch(`${apiUrl}/verify`, {
       body: JSON.stringify(verificationPayload),
       headers: {
-        Authorization: "Bearer " + token,
+        Authorization: `Bearer ${token}`,
       },
       method: "POST",
     });
@@ -54,7 +54,7 @@ describe("sET Verification Event Unhappy Path Integration Tests", () => {
     const response = await fetch(`${apiUrl}/verify`, {
       body: JSON.stringify(verificationPayload),
       headers: {
-        Authorization: "Bearer " + token,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "blah-invalid-content-type",
       },
       method: "POST",
@@ -82,7 +82,7 @@ describe("sET Verification Event Unhappy Path Integration Tests", () => {
     const response = await fetch(`${apiUrl}/verify`, {
       body: JSON.stringify(verificationPayload),
       headers: {
-        Authorization: "Bearer " + token,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       method: "POST",
@@ -111,7 +111,7 @@ describe("sET Verification Event Unhappy Path Integration Tests", () => {
     const response = await fetch(`${apiUrl}/verify`, {
       body: JSON.stringify(verificationPayload),
       headers: {
-        Authorization: "Bearer " + token,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       method: "POST",
@@ -139,7 +139,7 @@ describe("sET Verification Event Unhappy Path Integration Tests", () => {
     const response = await fetch(`${apiUrl}/verify`, {
       body: JSON.stringify(verificationPayload),
       headers: {
-        Authorization: "Bearer " + token,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       method: "POST",
@@ -164,13 +164,13 @@ describe("sET Verification Event Unhappy Path Integration Tests", () => {
     const response = await fetch(`${apiUrl}/verify`, {
       body: JSON.stringify(verificationPayload),
       headers: {
-        Authorization: "Bearer " + token,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       method: "POST",
     });
 
-    expect(response.ok).toBeFalsy();
+    expect(response.ok).toBe(false);
     console.log(response.status);
     expect(response.status).toBe(400);
   }, 10_000);
@@ -183,18 +183,19 @@ describe("sET Verification Event Unhappy Path Integration Tests", () => {
     const token = await getTokenFromCognito(process.env["MOCK_TX_SECRET_ARN"] ?? "");
     console.log(`Bearer ${token}`);
 
+    // oxlint-disable-next-line unicorn/no-null
     const verificationPayload = null;
 
     const response = await fetch(`${apiUrl}/verify`, {
       body: JSON.stringify(verificationPayload),
       headers: {
-        Authorization: "Bearer " + token,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       method: "POST",
     });
 
-    expect(response.ok).toBeFalsy();
+    expect(response.ok).toBe(false);
     console.log(response.status);
     expect(response.status).toBe(500);
     // Should this be 400?
@@ -213,13 +214,13 @@ describe("sET Verification Event Unhappy Path Integration Tests", () => {
     const response = await fetch(`${apiUrl}/verify`, {
       body: JSON.stringify(verificationPayload),
       headers: {
-        Authorization: "Bearer " + token,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       method: "POST",
     });
 
-    expect(response.ok).toBeFalsy();
+    expect(response.ok).toBe(false);
     console.log(response.status);
     expect(response.status).toBe(400);
   }, 10_000);
@@ -241,7 +242,7 @@ describe("sET Verification Event Unhappy Path Integration Tests", () => {
     const response = await fetch(`${apiUrl}/verify`, {
       body: JSON.stringify(verificationPayload),
       headers: {
-        Authorization: "Bearer " + token,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/secevent+jwt",
       },
       method: "POST",
@@ -267,13 +268,13 @@ describe("sET Verification Event Unhappy Path Integration Tests", () => {
     const response = await fetch(`${apiUrl}/verify`, {
       body: JSON.stringify(verificationPayload),
       headers: {
-        Authorization: "Bearer " + token,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       method: "POST",
     });
 
-    expect(response.ok).toBeFalsy();
+    expect(response.ok).toBe(false);
     console.log(response);
     console.log(response.status);
     expect(response.status).toBe(400);
@@ -321,7 +322,7 @@ describe("sET Verification Event Unhappy Path Integration Tests", () => {
       method: "POST",
     });
 
-    expect(response.ok).toBeFalsy();
+    expect(response.ok).toBe(false);
     console.log(response.status);
     expect(response.status).toBe(401);
   }, 10_000);
@@ -348,7 +349,7 @@ describe("sET Verification Event Unhappy Path Integration Tests", () => {
       method: "POST",
     });
 
-    expect(response.ok).toBeFalsy();
+    expect(response.ok).toBe(false);
     console.log(response.status);
     expect(response.status).toBe(401);
   }, 10_000);
@@ -375,7 +376,7 @@ describe("sET Verification Event Unhappy Path Integration Tests", () => {
       method: "POST",
     });
 
-    expect(response.ok).toBeFalsy();
+    expect(response.ok).toBe(false);
     console.log(response.status);
     expect(response.status).toBe(401);
   }, 10_000);

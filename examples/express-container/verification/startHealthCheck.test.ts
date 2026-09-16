@@ -1,9 +1,9 @@
-import { startHealthCheck } from "./startHealthCheck";
 import { ConfigurationKeys } from "../../../common/config/configurationKeys";
 import { baseLogger as logger } from "../../../common/logging/logger";
 import { sendVerificationSignal } from "../../../src/vendor/jwtHelper/sendVerification";
+import { startHealthCheck } from "./startHealthCheck";
 
-vi.mock("../../../src/vendor/jwtHelper/sendVerification", () => ({
+vi.mock(import("../../../src/vendor/jwtHelper/sendVerification"), () => ({
   sendVerificationSignal: vi.fn(),
 }));
 

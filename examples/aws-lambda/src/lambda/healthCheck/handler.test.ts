@@ -18,8 +18,9 @@ const mockGetTokenFromCognito = vi.mocked(getTokenFromCognito);
 
 process.env["AWS_REGION"] = "eu-west-2";
 
-global.fetch = vi.fn();
-const mockFetch = global.fetch as Mock;
+// oxlint-disable-next-line vitest/prefer-spy-on
+globalThis.fetch = vi.fn();
+const mockFetch = globalThis.fetch as Mock;
 
 describe("handler", () => {
   beforeEach(() => {
@@ -51,7 +52,7 @@ describe("handler", () => {
     const result = await handler(createDefaultApiRequest(), mockLambdaContext);
 
     expect(result.statusCode).toBe(200);
-    expect(JSON.parse(result.body)).toEqual({
+    expect(JSON.parse(result.body)).toStrictEqual({
       message: "Health check passed",
       status: 204,
       success: true,

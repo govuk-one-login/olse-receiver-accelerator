@@ -1,16 +1,16 @@
 // oxlint-disable no-magic-numbers
-import type { APIGatewayProxyEvent } from "aws-lambda";
-import { handler } from "./handler";
-import { getVerificationRequest } from "./requestParser";
-import { constructVerificationFullSecurityEvent } from "./constructVerificationSecurityEvent";
-import { signedJWTWithKMS } from "../kmsService";
-import { isValidationError } from "./validation";
 import type { SET, SETVerificationRequest } from "../mockApiTxInterfaces";
-import { getTokenFromCognito } from "../../../../../common/cognito/getTokenFromCognito";
-import { getParameter } from "../../../../../common/ssm/ssm";
-import { getEnv } from "../utils";
+import type { APIGatewayProxyEvent } from "aws-lambda";
 import { ConfigurationKeys } from "../../../../../common/config/configurationKeys";
 import type { Mock } from "vitest";
+import { constructVerificationFullSecurityEvent } from "./constructVerificationSecurityEvent";
+import { getEnv } from "../utils";
+import { getParameter } from "../../../../../common/ssm/ssm";
+import { getTokenFromCognito } from "../../../../../common/cognito/getTokenFromCognito";
+import { getVerificationRequest } from "./requestParser";
+import { handler } from "./handler";
+import { isValidationError } from "./validation";
+import { signedJWTWithKMS } from "../kmsService";
 
 vi.mock(import("./requestParser"));
 vi.mock(import("./constructVerificationSecurityEvent"));
@@ -29,7 +29,7 @@ const mockGetSsmParameter = vi.mocked(getParameter);
 const mockReadEnv = vi.mocked(getEnv);
 
 const fetchMock: Mock<typeof fetch> = vi.fn();
-global.fetch = fetchMock;
+globalThis.fetch = fetchMock;
 
 const mockEvent: Partial<APIGatewayProxyEvent> = {
   requestContext: { requestId: "test-request-id-001" },
@@ -57,6 +57,7 @@ describe("transmitter handler", () => {
 
   it("sends a verification event successfully", async () => {
     const request: SETVerificationRequest = {
+      // oxlint-disable-next-line no-undefined
       state: undefined,
       stream_id: "user-123",
     };

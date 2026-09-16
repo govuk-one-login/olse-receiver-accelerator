@@ -38,7 +38,7 @@ export abstract class AbstractConfigurationProvider {
   /**
    * Get all available configuration keys.
    */
-  public getAllKeys(): string[] {
+  public static getAllKeys(): string[] {
     return Object.values(ConfigurationKeys);
   }
 

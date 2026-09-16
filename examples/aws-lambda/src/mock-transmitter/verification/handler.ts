@@ -1,19 +1,19 @@
-import { lambdaLogger as logger } from "../../../../../common/logging/logger";
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import { getVerificationRequest } from "./requestParser";
-import { constructVerificationFullSecurityEvent } from "./constructVerificationSecurityEvent";
-import { signedJWTWithKMS } from "../kmsService";
 import {
   INTERNAL_SERVER_ERROR_RESPONSE,
   INVALID_REQUEST_RESPONSE,
   NO_CONTENT_RESPONSE,
 } from "../responses";
-import { isValidationError } from "./validation";
-import type { SETVerificationRequest } from "../mockApiTxInterfaces";
-import { getTokenFromCognito } from "../../../../../common/cognito/getTokenFromCognito";
-import { getParameter } from "../../../../../common/ssm/ssm";
 import { ConfigurationKeys } from "../../../../../common/config/configurationKeys";
+import type { SETVerificationRequest } from "../mockApiTxInterfaces";
+import { constructVerificationFullSecurityEvent } from "./constructVerificationSecurityEvent";
 import { getEnv } from "../utils";
+import { getParameter } from "../../../../../common/ssm/ssm";
+import { getTokenFromCognito } from "../../../../../common/cognito/getTokenFromCognito";
+import { getVerificationRequest } from "./requestParser";
+import { isValidationError } from "./validation";
+import { lambdaLogger as logger } from "../../../../../common/logging/logger";
+import { signedJWTWithKMS } from "../kmsService";
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
@@ -37,16 +37,17 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     const access_token = await getTokenFromCognito(process.env["RECEIVER_SECRET_ARN"]);
 
     const response = await fetch(receiverEndpoint, {
-      method: "POST",
+      body: signedJWT,
       headers: {
-        "Content-Type": "application/secevent+jwt",
         Accept: "application/json",
         Authorization: `Bearer ${access_token}`,
+        "Content-Type": "application/secevent+jwt",
       },
-      body: signedJWT,
+      method: "POST",
     });
     logger.info("Receiver response status:", { status: response.status });
 
+    // oxlint-disable-next-line no-magic-numbers
     if (response.status === 202) {
       logger.info("Verification SET delivered successfully", {
         receiverEndpoint,

@@ -26,6 +26,7 @@ export async function validateSignalAgainstSchemas(signalSet: unknown): Promise<
   for (const schemaName of schemaList) {
     const filePath = `${absoluteSchemaPath}/${schemaName}`;
 
+    // oxlint-disable-next-line no-await-in-loop
     const schema: AnySchema = await JSON.parse(readFileSync(filePath, { encoding: "utf8" }));
     const validate = ajv.compile(schema);
     if (validate(signalSet)) {

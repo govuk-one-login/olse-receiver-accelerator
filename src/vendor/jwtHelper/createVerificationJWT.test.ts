@@ -43,7 +43,7 @@ describe("createVerificationJwt", () => {
     expect(args.issuer).toBe("https://gds.co.uk");
     expect(args.jti).toMatch(/^verification-\d+$/);
     expect(args.audience).toBe(relyingPartyUrl);
-    expect(args.payload).toEqual({ streamId });
+    expect(args.payload).toStrictEqual({ streamId });
     expect(args.useExpClaim).toBe(true);
     expect(result).toBe("mock.jwt.token");
   });
@@ -67,7 +67,7 @@ describe("createVerificationJwt", () => {
     expect(args.issuer).toBe("https://gds.co.uk");
     expect(args.jti).toMatch(/^verification-\d+$/);
     expect(args.audience).toBe(relyingPartyUrl);
-    expect(args.payload).toEqual({ streamId });
+    expect(args.payload).toStrictEqual({ streamId });
     expect(args.useExpClaim).toBe(true);
     expect(result).toBe("mock.jwt.token");
   });

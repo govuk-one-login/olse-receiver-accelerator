@@ -13,7 +13,7 @@ const mockGetAuthInput = vi.mocked(getAuthInput);
 const loggerWarnSpy = vi.spyOn(logger, "warn");
 
 describe("auth", () => {
-  let mockReq: Request;
+  let mockReq: Request = {} as Request;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -44,7 +44,7 @@ describe("auth", () => {
     expect(loggerWarnSpy).toHaveBeenCalledWith(
       "Invalid request: The request is missing required parameters or is malformed",
     );
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       error: "invalid_request",
       response_code: 400,
       valid: false,
@@ -64,7 +64,7 @@ describe("auth", () => {
     expect(loggerWarnSpy).toHaveBeenCalledWith(
       "Invalid grant: The provided authorisation grant is invalid or expired",
     );
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       error: "invalid_grant",
       response_code: 400,
       valid: false,
@@ -80,7 +80,7 @@ describe("auth", () => {
 
     const result = await auth(mockReq);
 
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       error: "invalid_client",
       response_code: 401,
       valid: false,

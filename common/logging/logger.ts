@@ -1,3 +1,4 @@
+// oxlint-disable class-methods-use-this
 import type {
   LogAttributes,
   LogLevel,

@@ -1,25 +1,25 @@
-export interface RequestBody {
+interface RequestBody {
   stream_id: string;
   state?: string;
 }
 
-export interface KmsPublicKeyData {
+interface KmsPublicKeyData {
   keyId: string;
   publicKey: Uint8Array;
 }
 
-export interface SETVerificationRequest {
+interface SETVerificationRequest {
   stream_id: string;
   state: string | undefined;
 }
 
-export interface TokenResponse {
+interface TokenResponse {
   access_token: string;
   token_type: string;
   expires_in: number;
 }
 
-export interface SET {
+interface SET {
   iss: string;
   aud: string;
   iat: number;
@@ -35,3 +35,5 @@ export interface SET {
     id: string;
   };
 }
+
+export type { RequestBody, KmsPublicKeyData, SETVerificationRequest, TokenResponse, SET };

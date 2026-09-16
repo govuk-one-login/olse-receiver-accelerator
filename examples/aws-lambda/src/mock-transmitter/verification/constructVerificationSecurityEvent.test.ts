@@ -9,7 +9,7 @@ describe("constructVerificationFullSecurityEvent", () => {
       stream_id: "test-stream-id-001",
     });
 
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       aud: "https://gds.co.uk/rp/Events",
       events: {
         "https://schemas.openid.net/secevent/ssf/event-type/verification": {
