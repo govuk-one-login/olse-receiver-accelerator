@@ -1,89 +1,89 @@
-import type { Request } from 'express'
-import { auth } from './auth'
-import { generateJWT } from './jwt'
-import { getAuthInput } from './getAuthInput'
-import { ConfigurationKeys } from '../../../common/config/configurationKeys'
-import { baseLogger as logger } from '../../../common/logging/logger'
+import type { Request } from "express";
+import { auth } from "./auth";
+import { generateJWT } from "./jwt";
+import { getAuthInput } from "./getAuthInput";
+import { ConfigurationKeys } from "../../../common/config/configurationKeys";
+import { baseLogger as logger } from "../../../common/logging/logger";
 
-vi.mock('./jwt')
-vi.mock('./getAuthInput')
+vi.mock("./jwt");
+vi.mock("./getAuthInput");
 
-const mockGenerateJWT = vi.mocked(generateJWT)
-const mockGetAuthInput = vi.mocked(getAuthInput)
-const loggerWarnSpy = vi.spyOn(logger, 'warn')
+const mockGenerateJWT = vi.mocked(generateJWT);
+const mockGetAuthInput = vi.mocked(getAuthInput);
+const loggerWarnSpy = vi.spyOn(logger, "warn");
 
-describe('auth', () => {
-  let mockReq: Request
+describe("auth", () => {
+  let mockReq: Request;
 
   beforeEach(() => {
-    vi.clearAllMocks()
-    mockReq = {} as Request
+    vi.clearAllMocks();
+    mockReq = {} as Request;
 
-    process.env[ConfigurationKeys.CLIENT_ID] = 'test_client_id'
-    process.env[ConfigurationKeys.CLIENT_SECRET] = 'test_client_secret'
-    process.env[ConfigurationKeys.AWS_REGION] = 'eu-west-2'
-  })
+    process.env[ConfigurationKeys.CLIENT_ID] = "test_client_id";
+    process.env[ConfigurationKeys.CLIENT_SECRET] = "test_client_secret";
+    process.env[ConfigurationKeys.AWS_REGION] = "eu-west-2";
+  });
 
   afterEach(() => {
     // clean up but used to avoid lint error for deleting dynamically computed property keys
-    delete process.env['CLIENT_ID']
-    delete process.env['CLIENT_SECRET']
-    delete process.env['AWS_REGION']
-  })
+    delete process.env["CLIENT_ID"];
+    delete process.env["CLIENT_SECRET"];
+    delete process.env["AWS_REGION"];
+  });
 
-  it('handle invalid_request error and log correct message', async () => {
+  it("handle invalid_request error and log correct message", async () => {
     mockGetAuthInput.mockReturnValue({
-      client_id: 'test_client_id',
-      client_secret: 'test_client_secret',
-      grant_type: 'client_credentials'
-    })
-    mockGenerateJWT.mockRejectedValue(new Error('invalid_request'))
+      client_id: "test_client_id",
+      client_secret: "test_client_secret",
+      grant_type: "client_credentials",
+    });
+    mockGenerateJWT.mockRejectedValue(new Error("invalid_request"));
 
-    const result = await auth(mockReq)
+    const result = await auth(mockReq);
 
     expect(loggerWarnSpy).toHaveBeenCalledWith(
-      'Invalid request: The request is missing required parameters or is malformed'
-    )
+      "Invalid request: The request is missing required parameters or is malformed",
+    );
     expect(result).toEqual({
       valid: false,
-      error: 'invalid_request',
-      response_code: 400
-    })
-  })
+      error: "invalid_request",
+      response_code: 400,
+    });
+  });
 
-  it('handle invalid_grant error and log correct message', async () => {
+  it("handle invalid_grant error and log correct message", async () => {
     mockGetAuthInput.mockReturnValue({
-      client_id: 'test_client_id',
-      client_secret: 'test_client_secret',
-      grant_type: 'client_credentials'
-    })
-    mockGenerateJWT.mockRejectedValue(new Error('invalid_grant'))
+      client_id: "test_client_id",
+      client_secret: "test_client_secret",
+      grant_type: "client_credentials",
+    });
+    mockGenerateJWT.mockRejectedValue(new Error("invalid_grant"));
 
-    const result = await auth(mockReq)
+    const result = await auth(mockReq);
 
     expect(loggerWarnSpy).toHaveBeenCalledWith(
-      'Invalid grant: The provided authorisation grant is invalid or expired'
-    )
+      "Invalid grant: The provided authorisation grant is invalid or expired",
+    );
     expect(result).toEqual({
       valid: false,
-      error: 'invalid_grant',
-      response_code: 400
-    })
-  })
+      error: "invalid_grant",
+      response_code: 400,
+    });
+  });
 
-  it('return invalid_client for wrong credentials', async () => {
+  it("return invalid_client for wrong credentials", async () => {
     mockGetAuthInput.mockReturnValue({
-      client_id: 'wrong_id',
-      client_secret: 'wrong_secret',
-      grant_type: 'client_credentials'
-    })
+      client_id: "wrong_id",
+      client_secret: "wrong_secret",
+      grant_type: "client_credentials",
+    });
 
-    const result = await auth(mockReq)
+    const result = await auth(mockReq);
 
     expect(result).toEqual({
       valid: false,
-      error: 'invalid_client',
-      response_code: 401
-    })
-  })
-})
+      error: "invalid_client",
+      response_code: 401,
+    });
+  });
+});

@@ -11,7 +11,12 @@
     }
   ],
   // sensible autosave settings
+  "editor.defaultFormatter": "oxc.oxc-vscode",
   "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+  // force vscode to use oxlint and oxfmt. the extension `oxc.oxc-vscode` will only run against the files supported by oxlint and oxfmt
+  "oxc.enable.oxlint": true,
+  "oxc.enable.oxfmt": true,
   "files.autoSave": "onFocusChange",
   // prompt vscode to use the typescript version in package.json vs the typescript version bundled in vscode
   "typescript.tsdk": "node_modules/typescript/lib",

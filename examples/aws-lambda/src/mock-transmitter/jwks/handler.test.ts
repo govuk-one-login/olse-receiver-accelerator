@@ -1,46 +1,46 @@
-import { getKmsPublicKey } from '../kmsService'
-import { getEnv } from '../utils'
-import { handler, jwkArray } from './handler'
+import { getKmsPublicKey } from "../kmsService";
+import { getEnv } from "../utils";
+import { handler, jwkArray } from "./handler";
 
-vi.mock('../utils')
-vi.mock('../kmsService')
-vi.mock('./createJwksFromRawPublicKey', () => ({
+vi.mock("../utils");
+vi.mock("../kmsService");
+vi.mock("./createJwksFromRawPublicKey", () => ({
   createJwkFromRawPublicKey: vi.fn(() => ({
-    kty: 'RSA',
-    kid: 'test-key-id-001',
-    n: 'keyModulus456',
-    e: 'keyExpontent456'
-  }))
-}))
+    kty: "RSA",
+    kid: "test-key-id-001",
+    n: "keyModulus456",
+    e: "keyExpontent456",
+  })),
+}));
 
-const mockGetEnv = vi.mocked(getEnv)
-const mockGetKmsPublicKey = vi.mocked(getKmsPublicKey)
+const mockGetEnv = vi.mocked(getEnv);
+const mockGetKmsPublicKey = vi.mocked(getKmsPublicKey);
 
-describe('JWKS handler', () => {
+describe("JWKS handler", () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-    jwkArray.length = 0
-  })
+    vi.clearAllMocks();
+    jwkArray.length = 0;
+  });
 
-  it('processes and returns all keys successfully', async () => {
+  it("processes and returns all keys successfully", async () => {
     const mockPublicKey = {
-      keyId: 'test-key-id-001',
-      publicKey: new Uint8Array([1, 2, 3])
-    }
+      keyId: "test-key-id-001",
+      publicKey: new Uint8Array([1, 2, 3]),
+    };
 
-    mockGetEnv.mockReturnValue('test-kms-key-001')
-    mockGetKmsPublicKey.mockResolvedValue(mockPublicKey)
+    mockGetEnv.mockReturnValue("test-kms-key-001");
+    mockGetKmsPublicKey.mockResolvedValue(mockPublicKey);
 
-    const result = await handler()
+    const result = await handler();
 
-    expect(result.statusCode).toBe(200)
-  })
+    expect(result.statusCode).toBe(200);
+  });
 
-  it('returns 500 when key retrieve fails', async () => {
-    mockGetEnv.mockReturnValue('test-kms-key-001')
-    mockGetKmsPublicKey.mockRejectedValue(new Error('Error'))
-    const result = await handler()
+  it("returns 500 when key retrieve fails", async () => {
+    mockGetEnv.mockReturnValue("test-kms-key-001");
+    mockGetKmsPublicKey.mockRejectedValue(new Error("Error"));
+    const result = await handler();
 
-    expect(result.statusCode).toBe(500)
-  })
-})
+    expect(result.statusCode).toBe(500);
+  });
+});

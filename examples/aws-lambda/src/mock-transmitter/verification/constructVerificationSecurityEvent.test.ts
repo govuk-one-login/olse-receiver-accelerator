@@ -1,28 +1,28 @@
-import { constructVerificationFullSecurityEvent } from './constructVerificationSecurityEvent'
+import { describe, expect, it } from "vitest";
+import { constructVerificationFullSecurityEvent } from "./constructVerificationSecurityEvent";
 
-describe('constructVerificationFullSecurityEvent', () => {
-  it('creates SET', () => {
-    const timeStamp = 10001
-    const result = constructVerificationFullSecurityEvent(
-      'test-request-id-001',
-      timeStamp,
-      { stream_id: 'test-stream-id-001', state: 'test-state-001' }
-    )
+describe(constructVerificationFullSecurityEvent, () => {
+  it("creates SET", () => {
+    const timeStamp = 10_001;
+    const result = constructVerificationFullSecurityEvent("test-request-id-001", timeStamp, {
+      state: "test-state-001",
+      stream_id: "test-stream-id-001",
+    });
 
-    expect(result).toEqual({
-      aud: 'https://signal-exchange.account.gov.uk/rp/Events',
+    expect(result).toStrictEqual({
+      aud: "https://signal-exchange.account.gov.uk/rp/Events",
       events: {
-        'https://schemas.openid.net/secevent/ssf/event-type/verification': {
-          state: 'test-state-001'
-        }
+        "https://schemas.openid.net/secevent/ssf/event-type/verification": {
+          state: "test-state-001",
+        },
       },
       iat: Math.floor(timeStamp / 1000),
-      iss: 'https://signal-exchange.account.gov.uk/mock/verify',
-      jti: 'test-request-id-001',
+      iss: "https://signal-exchange.account.gov.uk/mock/verify",
+      jti: "test-request-id-001",
       sub_id: {
-        format: 'opaque',
-        id: 'test-stream-id-001'
-      }
-    })
-  })
-})
+        format: "opaque",
+        id: "test-stream-id-001",
+      },
+    });
+  });
+});

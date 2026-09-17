@@ -1,5 +1,5 @@
-import { defineConfig, mergeConfig } from 'vitest/config'
-import viteConfig from '../../../vitest.config'
+import { defineConfig, mergeConfig } from "vitest/config";
+import viteConfig from "../../../vitest.config";
 
 export default mergeConfig(
   viteConfig,
@@ -9,7 +9,7 @@ export default mergeConfig(
         include: [
           `examples/express-container/**/*.ts`,
           `examples/aws-lambda/**/*.ts`,
-          `**/vendor/**/*.ts`
+          `**/vendor/**/*.ts`,
         ],
         exclude: [
           // Exclude test files from coverage
@@ -19,14 +19,14 @@ export default mergeConfig(
           // Exclude tests directory from coverage
           `tests/**/*`,
           // exclude jest config files
-          '**/*/jest.config.{ts,mts,mjs}',
+          "**/*/jest.config.{ts,mts,mjs}",
           // exclude server.ts
           `examples/express-container/server.ts`,
-          `examples/aws-lambda/**/handler.ts`
-        ]
+          `examples/aws-lambda/**/handler.ts`,
+        ],
       },
-      reporters: ['default', 'junit'],
-      outputFile: 'coverage/vendor/junit.xml'
-    }
-  })
-)
+      reporters: ["default", "junit"],
+      outputFile: "coverage/vendor/junit.xml",
+    },
+  }),
+);
