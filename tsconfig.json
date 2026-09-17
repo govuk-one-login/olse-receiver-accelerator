@@ -7,7 +7,6 @@
   "compilerOptions": {
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "skipLibCheck": false,
     "types": ["vitest/globals"],
     "erasableSyntaxOnly": false
   }
