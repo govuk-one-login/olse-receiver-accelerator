@@ -1,4 +1,4 @@
-import { Context } from 'aws-lambda'
+import type { Context } from 'aws-lambda'
 
 export const mockLambdaContext: Context = {
   callbackWaitsForEmptyEventLoop: false,
