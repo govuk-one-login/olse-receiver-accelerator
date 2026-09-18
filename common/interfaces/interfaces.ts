@@ -1,4 +1,4 @@
-export interface SetPayload {
+interface SetPayload {
   iss?: string;
   aud?: string | string[];
   iat?: number;
@@ -9,7 +9,7 @@ export interface SetPayload {
   toe?: number;
 }
 
-export interface VerificationPayload {
+interface VerificationPayload {
   iss: string;
   jti: string;
   aud: string;
@@ -24,3 +24,5 @@ export interface VerificationPayload {
     };
   };
 }
+
+export type { SetPayload, VerificationPayload };

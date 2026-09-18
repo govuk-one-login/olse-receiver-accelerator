@@ -1,23 +1,24 @@
-import { webcrypto } from "crypto";
-import { readFileSync } from "fs";
+// oxlint-disable no-magic-numbers typescript/no-dynamic-delete
 import * as jose from "jose";
-import request from "supertest";
+import * as signalRouting from "../../common/signalRouting/signalRouter";
+import { ConfigurationKeys } from "../../common/config/configurationKeys";
+import { app } from "./express";
+import { baseLogger } from "../../common/logging/logger";
 import { generateJWT } from "../../src/vendor/auth/jwt";
 import { getPublicKeyFromRemote } from "../../src/vendor/publicKey/getPublicKey";
-import { app } from "./express";
-import * as signalRouting from "../../common/signalRouting/signalRouter";
-import { stopVerificationSignals } from "./verification/startHealthCheck";
-import { ConfigurationKeys } from "../../common/config/configurationKeys";
-import { baseLogger } from "../../common/logging/logger";
 import { getSecret } from "../../common/secretsManager/secretsManager";
+import { readFileSync } from "node:fs";
+import request from "supertest";
+import { stopVerificationSignals } from "./verification/startHealthCheck";
+import type { webcrypto } from "node:crypto";
 
-vi.mock("../../src/vendor/publicKey/getPublicKey", () => ({
+vi.mock(import("../../src/vendor/publicKey/getPublicKey"), () => ({
   getPublicKeyFromRemote: vi.fn(),
 }));
 
 const loggerErrorSpy = vi.spyOn(baseLogger, "error");
 
-vi.mock("../../common/secretsManager/secretsManager", () => ({
+vi.mock(import("../../common/secretsManager/secretsManager"), () => ({
   getSecret: vi.fn(),
 }));
 
@@ -28,25 +29,26 @@ const sampleVerificationEvent = {
   audience: "https://aud.example.com",
   issuer: "https://issuer.example.com",
   jti: "123456",
-  useExpClaim: false,
   payload: {
-    sub_id: {
-      format: "opaque",
-      id: "f67e39a0a4d34d56b3aa1bc4cff0069f",
-    },
     events: {
       "https://schemas.openid.net/secevent/ssf/event-type/verification": {
         state: "VGhpcyBpcyBhbiBleGFtcGxlIHN0YXRlIHZhbHVlLgo=",
       },
     },
+    sub_id: {
+      format: "opaque",
+      id: "f67e39a0a4d34d56b3aa1bc4cff0069f",
+    },
   },
+  useExpClaim: false,
 };
 
-let publicKeyString;
-let publicKeyJson;
+let publicKeyString = "";
+let publicKeyJson = {};
+// oxlint-disable-next-line init-declarations
 let key: webcrypto.CryptoKey | Uint8Array;
 
-describe("Express server /v1 endpoint", () => {
+describe("express server /v1 endpoint", () => {
   beforeEach(async () => {
     vi.resetAllMocks();
     vi.clearAllMocks();
@@ -62,8 +64,7 @@ describe("Express server /v1 endpoint", () => {
     publicKeyString = readFileSync("./keys/authPublic.key", {
       encoding: "utf8",
     });
-    // eslint-disable-next-line
-    publicKeyJson = JSON.parse(publicKeyString as any);
+    publicKeyJson = JSON.parse(publicKeyString as string);
     key = await jose.importJWK(publicKeyJson as jose.JWK, "RS256");
 
     const privateKeyString = readFileSync("./keys/authPrivate.key", {
@@ -85,7 +86,7 @@ describe("Express server /v1 endpoint", () => {
     });
 
     expect(response.status).toBe(400);
-    expect(response.body).toEqual({ error: "invalid_grant" });
+    expect(response.body).toStrictEqual({ error: "invalid_grant" });
   });
 
   it("should return 401 for incorrect client_id", async () => {
@@ -96,7 +97,7 @@ describe("Express server /v1 endpoint", () => {
     });
 
     expect(response.status).toBe(401);
-    expect(response.body).toEqual({ error: "invalid_client" });
+    expect(response.body).toStrictEqual({ error: "invalid_client" });
   });
 
   it("should return 401 for incorrect client_secret", async () => {
@@ -107,11 +108,10 @@ describe("Express server /v1 endpoint", () => {
     });
 
     expect(response.status).toBe(401);
-    expect(response.body).toEqual({ error: "invalid_client" });
+    expect(response.body).toStrictEqual({ error: "invalid_client" });
   });
 
   it("should return 401 when CLIENT_ID env var is missing", async () => {
-    // eslint-disable-next-line
     delete process.env[ConfigurationKeys.CLIENT_ID];
 
     const response = await request(app)
@@ -124,11 +124,10 @@ describe("Express server /v1 endpoint", () => {
       });
 
     expect(response.status).toBe(401);
-    expect(response.body).toEqual({ error: "invalid_client" });
+    expect(response.body).toStrictEqual({ error: "invalid_client" });
   });
 
   it("should return 401 when CLIENT_SECRET env var is missing", async () => {
-    // eslint-disable-next-line
     delete process.env[ConfigurationKeys.CLIENT_SECRET];
 
     const response = await request(app).post("/v1/token").query({
@@ -138,7 +137,7 @@ describe("Express server /v1 endpoint", () => {
     });
 
     expect(response.status).toBe(401);
-    expect(response.body).toEqual({ error: "invalid_client" });
+    expect(response.body).toStrictEqual({ error: "invalid_client" });
   });
 
   it("should return 200 with valid credentials", async () => {
@@ -211,9 +210,9 @@ describe("Express server /v1 endpoint", () => {
 
     expect(response.status).toBe(400);
     expect(response.body).toStrictEqual({
-      err: "invalid_request",
       description:
         "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition.",
+      err: "invalid_request",
     });
 
     expect(loggerErrorSpy).toHaveBeenCalledWith("failed to route signal", expect.any(Object));
@@ -227,18 +226,18 @@ describe("Express server /v1 endpoint", () => {
       audience: "https://aud.example.com",
       issuer: "https://issuer.example.com",
       jti: "123456",
-      useExpClaim: false,
       payload: {
-        foo: {
-          format: "opaque",
-          id: "f67e39a0a4d34d56b3aa1bc4cff0069f",
-        },
         events: {
           "https://schemas.openid.net/secevent/ssf/event-type/verification": {
             state: "VGhpcyBpcyBhbiBleGFtcGxlIHN0YXRlIHZhbHVlLgo=",
           },
         },
+        foo: {
+          format: "opaque",
+          id: "f67e39a0a4d34d56b3aa1bc4cff0069f",
+        },
       },
+      useExpClaim: false,
     });
 
     const tokenResponse = await request(app).post("/v1/token").query({
@@ -261,9 +260,9 @@ describe("Express server /v1 endpoint", () => {
 
     expect(response.status).toBe(400);
     expect(response.body).toStrictEqual({
-      err: "invalid_request",
       description:
         "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition.",
+      err: "invalid_request",
     });
   });
 
@@ -291,9 +290,9 @@ describe("Express server /v1 endpoint", () => {
 
     expect(response.status).toBe(400);
     expect(response.body).toStrictEqual({
-      err: "invalid_key",
       description:
         "One or more keys used to encrypt or sign the SET is invalid or otherwise unacceptable to the SET Recipient (expired, revoked, failed certificate validation, etc.).",
+      err: "invalid_key",
     });
 
     expect(loggerErrorSpy).toHaveBeenCalledWith(
@@ -317,7 +316,7 @@ describe("Express server /v1 endpoint", () => {
 
     const token = tokenResponse.body.access_token as string;
 
-    vi.advanceTimersByTime(3600000 + 1);
+    vi.advanceTimersByTime(3_600_000 + 1);
 
     const response = await request(app)
       .post("/v1/Events")

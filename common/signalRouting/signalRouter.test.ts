@@ -1,6 +1,6 @@
-import { verificationSignalWithState } from "../../tests/testConstants";
 import { SignalSchema } from "../constants";
 import { handleSignalRouting } from "./signalRouter";
+import { verificationSignalWithState } from "../../tests/testConstants";
 
 describe("handleSetRouting", () => {
   beforeEach(() => {

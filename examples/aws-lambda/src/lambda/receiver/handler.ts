@@ -1,13 +1,13 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+import { ConfigurationKeys } from "../../../../../common/config/configurationKeys";
+import { getEnv } from "../../mock-transmitter/utils";
+import { getParameter } from "../../../../../common/ssm/ssm";
 import { getPublicKeyFromRemote } from "../../../../../src/vendor/publicKey/getPublicKey";
-import { validateJWTWithRemoteKey } from "../../../../../src/vendor/jwt/validateJWT";
-import { validateSignalAgainstSchemas } from "../../../../../src/vendor/validateSchema/validateSchema";
 import { handleSignalRouting } from "../../../../../common/signalRouting/signalRouter";
 import { httpErrorResponseMessages } from "../../../../../common/constants";
-import { ConfigurationKeys } from "../../../../../common/config/configurationKeys";
-import { getParameter } from "../../../../../common/ssm/ssm";
-import { getEnv } from "../../mock-transmitter/utils";
 import { lambdaLogger as logger } from "../../../../../common/logging/logger";
+import { validateJWTWithRemoteKey } from "../../../../../src/vendor/jwt/validateJWT";
+import { validateSignalAgainstSchemas } from "../../../../../src/vendor/validateSchema/validateSchema";
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
@@ -18,24 +18,24 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       logger.error("No JWT found in request body");
       logger.warn("Request missing body");
       return {
-        statusCode: 400,
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          err: "invalid_request",
           description: "Request body is required",
+          err: "invalid_request",
         }),
+        headers: { "Content-Type": "application/json" },
+        statusCode: 400,
       };
     }
     const secretArn = process.env["RECEIVER_SECRET_ARN"];
     if (!secretArn) {
       logger.error("RECEIVER_SECRET_ARN environment variable is not set");
       return {
-        statusCode: 500,
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          err: "internal_error",
           description: "RECEIVER_SECRET_ARN environment variable is required",
+          err: "internal_error",
         }),
+        headers: { "Content-Type": "application/json" },
+        statusCode: 500,
       };
     }
 
@@ -45,6 +45,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     const publicKey = getPublicKeyFromRemote(jwksUrl);
     logger.debug("Fetched public key from JWKS URL");
 
+    // oxlint-disable-next-line init-declarations
     let verifiedJwtBody;
     try {
       logger.debug("Validating JWT with remote key");
@@ -55,9 +56,9 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
         error: error instanceof Error ? error.message : String(error),
       });
       return {
-        statusCode: 400,
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(httpErrorResponseMessages.invalid_key),
+        headers: { "Content-Type": "application/json" },
+        statusCode: 400,
       };
     }
 
@@ -65,13 +66,13 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     if (typeof jwtPayload === "undefined") {
       logger.warn("JWT payload is undefined");
       return {
-        statusCode: 400,
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          err: "invalid_request",
           description:
             "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition.",
+          err: "invalid_request",
         }),
+        headers: { "Content-Type": "application/json" },
+        statusCode: 400,
       };
     }
 
@@ -81,9 +82,9 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     if (!schemaValidationResult.valid) {
       logger.warn("Schema validationg failed", { Error });
       return {
-        statusCode: 400,
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(httpErrorResponseMessages.invalid_request),
+        headers: { "Content-Type": "application/json" },
+        statusCode: 400,
       };
     }
     logger.info("Schema validated successfully");
@@ -93,16 +94,16 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     if (result.valid) {
       logger.info("Signal routing processed successfully");
       return {
-        statusCode: 202,
-        headers: { "Content-Type": "application/json" },
         body: "",
+        headers: { "Content-Type": "application/json" },
+        statusCode: 202,
       };
     } else {
       logger.error("failed to route signal");
       return {
-        statusCode: 400,
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(httpErrorResponseMessages.invalid_request),
+        headers: { "Content-Type": "application/json" },
+        statusCode: 400,
       };
     }
   } catch (error) {
@@ -110,12 +111,12 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       error: error instanceof Error ? error.message : String(error),
     });
     return {
-      statusCode: 500,
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        err: "internal_error",
         description: "An internal error occurred",
+        err: "internal_error",
       }),
+      headers: { "Content-Type": "application/json" },
+      statusCode: 500,
     };
   }
 };

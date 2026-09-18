@@ -1,7 +1,9 @@
-export const getEnv = (name: string) => {
+export const getEnv = (name: string): string => {
   const env = process.env[name];
 
-  if (env === undefined) throw Error(`Missing environment variable: ${name}`);
+  if (env === undefined) {
+    throw new Error(`Missing environment variable: ${name}`);
+  }
 
   return env;
 };

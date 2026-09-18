@@ -16,10 +16,13 @@ export const handleSignalRouting = async (
   switch (schema) {
     case SignalSchema.VERIFICATION_SIGNAL: {
       const handleResponse = await handleVerificationSignal(signalPayload);
-      if (!handleResponse.valid) return { valid: false };
-      return { valid: true, schema };
+      if (!handleResponse.valid) {
+        return { valid: false };
+      }
+      return { schema, valid: true };
     }
-    default:
+    default: {
       return { valid: false };
+    }
   }
 };

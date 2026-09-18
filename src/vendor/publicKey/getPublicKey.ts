@@ -1,9 +1,11 @@
 import * as jose from "jose";
+import type { webcrypto } from "node:crypto";
 
-export const getPublicKeyFromRemote = (url: string) => {
-  return jose.createRemoteJWKSet(new URL(url));
-};
+const getPublicKeyFromRemote = (url: string): jose.RemoteJWKSet =>
+  jose.createRemoteJWKSet(new URL(url));
 
-export const getPublicKeyFromJWK = async (jwk: Record<string, unknown>) => {
-  return await jose.importJWK(jwk);
-};
+const getPublicKeyFromJWK = async (
+  jwk: Record<string, unknown>,
+): Promise<webcrypto.CryptoKey | Uint8Array> => await jose.importJWK(jwk);
+
+export { getPublicKeyFromJWK, getPublicKeyFromRemote };
