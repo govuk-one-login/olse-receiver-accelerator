@@ -1,29 +1,29 @@
-import { Logger, LogFormatter, LogItem } from '@aws-lambda-powertools/logger'
+import { Logger, LogFormatter, LogItem } from "@aws-lambda-powertools/logger";
 import type {
   LogAttributes,
   LogLevel,
-  UnformattedAttributes
-} from '@aws-lambda-powertools/logger/types'
+  UnformattedAttributes,
+} from "@aws-lambda-powertools/logger/types";
 
 class CustomLogFormatter extends LogFormatter {
   public formatAttributes(
     attributes: UnformattedAttributes,
-    additionalLogAttributes: LogAttributes
+    additionalLogAttributes: LogAttributes,
   ): LogItem {
     const baseAttributes: LogAttributes = {
       level: attributes.logLevel,
       message: attributes.message,
       ...additionalLogAttributes,
-      timestamp: String(attributes.timestamp)
-    }
-    return new LogItem({ attributes: baseAttributes })
+      timestamp: String(attributes.timestamp),
+    };
+    return new LogItem({ attributes: baseAttributes });
   }
 }
 
 class LambdaLogFormatter extends LogFormatter {
   public formatAttributes(
     attributes: UnformattedAttributes,
-    additionalLogAttributes: LogAttributes
+    additionalLogAttributes: LogAttributes,
   ): LogItem {
     const baseAttributes: LogAttributes = {
       level: attributes.logLevel,
@@ -33,33 +33,33 @@ class LambdaLogFormatter extends LogFormatter {
       function_version: attributes.lambdaContext?.functionVersion,
       function_arn: attributes.lambdaContext?.invokedFunctionArn,
       request_id: attributes.lambdaContext?.awsRequestId,
-      memory_size: attributes.lambdaContext?.memoryLimitInMB
-    }
+      memory_size: attributes.lambdaContext?.memoryLimitInMB,
+    };
 
-    const logItem = new LogItem({ attributes: baseAttributes })
-    logItem.addAttributes(additionalLogAttributes)
+    const logItem = new LogItem({ attributes: baseAttributes });
+    logItem.addAttributes(additionalLogAttributes);
 
-    return logItem
+    return logItem;
   }
 }
 
 const getLogLevel = (): LogLevel => {
-  const envLevel = process.env['LOG_LEVEL']
-  const validLevels: LogLevel[] = ['ERROR', 'WARN', 'INFO', 'DEBUG']
+  const envLevel = process.env["LOG_LEVEL"];
+  const validLevels: LogLevel[] = ["ERROR", "WARN", "INFO", "DEBUG"];
 
   if (validLevels.includes(envLevel as LogLevel)) {
-    return envLevel as LogLevel
+    return envLevel as LogLevel;
   }
 
-  return 'INFO'
-}
+  return "INFO";
+};
 
 export const baseLogger = new Logger({
   logLevel: getLogLevel(),
-  logFormatter: new CustomLogFormatter()
-})
+  logFormatter: new CustomLogFormatter(),
+});
 
 export const lambdaLogger = new Logger({
   logLevel: getLogLevel(),
-  logFormatter: new LambdaLogFormatter()
-})
+  logFormatter: new LambdaLogFormatter(),
+});

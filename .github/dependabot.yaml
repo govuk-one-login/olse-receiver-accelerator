@@ -1,7 +1,7 @@
 version: 2
 updates:
-  - package-ecosystem: 'npm'
-    directory: '/'
+  - package-ecosystem: "npm"
+    directory: "/"
     schedule:
       interval: weekly
     groups:
@@ -14,19 +14,19 @@ updates:
       - direct-dependency-update
       - javascript
     ignore:
-      - dependency-name: 'node'
-        versions: ['21.x']
+      - dependency-name: "node"
+        versions: ["21.x"]
     commit-message:
       prefix: BAU
 
-  - package-ecosystem: 'docker'
-    directory: '/tests'
+  - package-ecosystem: "docker"
+    directory: "/tests"
     schedule:
       interval: weekly
     groups:
       dev-deps:
         patterns:
-          - '*'
+          - "*"
     target-branch: main
     labels:
       - direct-dependency-update
@@ -34,14 +34,14 @@ updates:
     commit-message:
       prefix: BAU
 
-  - package-ecosystem: 'github-actions'
-    directory: '/'
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
       interval: weekly
     groups:
       actions-deps:
         patterns:
-          - '*'
+          - "*"
     target-branch: main
     labels:
       - direct-dependency-update

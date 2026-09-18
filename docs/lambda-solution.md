@@ -354,11 +354,7 @@ The following AWS resources are provisioned for the mockset verification API (mo
     - _Body_:
       ```json
       {
-        "keys": [
-          {
-            /* Some object */
-          }
-        ]
+        "keys": [{/* Some object */}]
       }
       ```
   - **500 Internal Server Error**: Server error

@@ -84,3 +84,14 @@ npm run test:vendor:build
 - Ensure correct aws access credentials are set (they rotate)
 - Ensure all required environment variables are set
 - Review test logs for errors
+
+## Secret Scanning & Linting
+
+This project makes use of the following tools (and assumes that you have them installed and available in $PATH)
+
+- betterleaks (https://github.com/betterleaks/betterleaks)
+- checkov (https://www.checkov.io/)
+- sam (https://github.com/aws/aws-sam-cli)
+- cfn-lint (https://github.com/aws-cloudformation/cfn-lint)
+
+Once installed there are various `npm run` commands that make use of these tools to ensure quality code.
