@@ -1,44 +1,36 @@
-import { createPublicKey, KeyObject } from 'crypto'
-import {
-  createJwkFromRawPublicKey,
-  uint8ArrayToBase64
-} from './createJwksFromRawPublicKey'
+import { createPublicKey, KeyObject } from "crypto";
+import { createJwkFromRawPublicKey, uint8ArrayToBase64 } from "./createJwksFromRawPublicKey";
 
-vi.mock('crypto')
+vi.mock("crypto");
 
-const mockCreatePublicKey = vi.mocked(createPublicKey)
+const mockCreatePublicKey = vi.mocked(createPublicKey);
 
-describe('uint8ArrayToBase64', () => {
-  it('converts uint8 to base 64', () => {
-    const result = uint8ArrayToBase64(new Uint8Array([1, 2, 3]))
-    expect(result).toBe('AQID')
-  })
-})
+describe("uint8ArrayToBase64", () => {
+  it("converts uint8 to base 64", () => {
+    const result = uint8ArrayToBase64(new Uint8Array([1, 2, 3]));
+    expect(result).toBe("AQID");
+  });
+});
 
-describe('createJwkFromRawPublicKey', () => {
-  it('creates jwk successfully', () => {
-    const mockJwk = { kty: 'RSA', n: 'test-001' }
+describe("createJwkFromRawPublicKey", () => {
+  it("creates jwk successfully", () => {
+    const mockJwk = { kty: "RSA", n: "test-001" };
     mockCreatePublicKey.mockReturnValue({
-      export: vi.fn().mockReturnValue(mockJwk)
-    } as unknown as KeyObject)
+      export: vi.fn().mockReturnValue(mockJwk),
+    } as unknown as KeyObject);
 
-    const result = createJwkFromRawPublicKey(
-      new Uint8Array([1, 2, 3]),
-      'test-key-001'
-    )
+    const result = createJwkFromRawPublicKey(new Uint8Array([1, 2, 3]), "test-key-001");
 
-    expect(result['kid']).toBe('test-key-001')
-  })
+    expect(result["kid"]).toBe("test-key-001");
+  });
 
-  it('throws error when fails to create public key', () => {
+  it("throws error when fails to create public key", () => {
     mockCreatePublicKey.mockImplementation(() => {
-      throw new Error('Invalid key')
-    })
+      throw new Error("Invalid key");
+    });
 
-    expect(() =>
-      createJwkFromRawPublicKey(new Uint8Array([1, 2, 3]), 'test-key-001')
-    ).toThrow(
-      'Could not create Public Key. Imported key may be in an incorrect format'
-    )
-  })
-})
+    expect(() => createJwkFromRawPublicKey(new Uint8Array([1, 2, 3]), "test-key-001")).toThrow(
+      "Could not create Public Key. Imported key may be in an incorrect format",
+    );
+  });
+});

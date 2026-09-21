@@ -1,5 +1,5 @@
-import { defineConfig, mergeConfig } from 'vitest/config'
-import viteConfig from '../../../vitest.config'
+import { defineConfig, mergeConfig } from "vitest/config";
+import viteConfig from "../../../vitest.config";
 
 export default mergeConfig(
   viteConfig,
@@ -13,11 +13,11 @@ export default mergeConfig(
           // exclude vendor code
           `!src/vendor/**/*.ts`,
           // exclude jest config files
-          '!**/*/jest.config.{ts,mts,mjs}'
-        ]
+          "!**/*/jest.config.{ts,mts,mjs}",
+        ],
       },
-      reporters: ['default', 'junit'],
-      outputFile: 'coverage/implementor/junit.xml'
-    }
-  })
-)
+      reporters: ["default", "junit"],
+      outputFile: "coverage/implementor/junit.xml",
+    },
+  }),
+);
