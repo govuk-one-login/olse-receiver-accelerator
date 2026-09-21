@@ -1,0 +1,5 @@
+[extend]
+useDefault = true
+
+[allowlist]
+paths = ['.betterleaks-dir-baseline.json', '.betterleaks-git-baseline.json']
