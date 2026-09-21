@@ -1,4 +1,3 @@
-// oxlint-disable no-magic-numbers
 import { createJwkFromRawPublicKey, uint8ArrayToBase64 } from "./createJwksFromRawPublicKey";
 import type { KeyObject } from "node:crypto";
 import { createPublicKey } from "node:crypto";
@@ -16,7 +15,6 @@ describe("uint8ArrayToBase64", () => {
 
 describe("createJwkFromRawPublicKey", () => {
   it("creates jwk successfully", () => {
-    // oxlint-disable-next-line id-length
     const mockJwk = { kty: "RSA", n: "test-001" };
     mockCreatePublicKey.mockReturnValue({
       export: vi.fn().mockReturnValue(mockJwk),

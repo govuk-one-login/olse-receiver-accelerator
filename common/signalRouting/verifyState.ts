@@ -20,7 +20,6 @@ export const verifyStateJwt = async (stateJwt: string): Promise<Record<string, u
     logger.error("Failed to verify state JWT:", {
       error: error instanceof Error ? error.message : String(error),
     });
-    // oxlint-disable-next-line unicorn/no-null
     return null;
   }
 };

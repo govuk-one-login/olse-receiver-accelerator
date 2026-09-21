@@ -1,4 +1,3 @@
-// oxlint-disable no-duplicate-imports
 import Ajv from "ajv";
 import type { AnySchema } from "ajv";
 import addFormats from "ajv-formats";

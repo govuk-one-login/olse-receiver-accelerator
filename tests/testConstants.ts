@@ -1,4 +1,3 @@
-// oxlint-disable unicorn/numeric-separators-style
 const verificationSignalWithState = {
   aud: "receiver.example.com",
   events: {

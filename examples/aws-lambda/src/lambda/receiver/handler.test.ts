@@ -1,4 +1,3 @@
-// oxlint-disable no-magic-numbers
 import * as jose from "jose";
 import type { APIGatewayProxyEvent } from "aws-lambda";
 import type { Mock } from "vitest";
@@ -15,7 +14,6 @@ vi.mock(import("../../../../../src/vendor/jwt/validateJWT"));
 vi.mock(import("../../../../../src/vendor/validateSchema/validateSchema"));
 vi.mock(import("../../../../../common/signalRouting/signalRouter"));
 vi.mock(import("../../../../../common/ssm/ssm"));
-// oxlint-disable-next-line vitest/prefer-import-in-mock
 vi.mock("../../../../../common/logging/logger", () => ({
   lambdaLogger: {
     debug: vi.fn(),
@@ -77,7 +75,6 @@ describe("receiver handler", () => {
   });
 
   it("returns 400 when request body is missing", async () => {
-    // oxlint-disable-next-line unicorn/no-null
     const event = { ...baseEvent, body: null };
     const result = await handler(event as APIGatewayProxyEvent);
     expect(result.statusCode).toBe(400);
@@ -93,7 +90,6 @@ describe("receiver handler", () => {
   it("returns 400 when JWT payload is undefined", async () => {
     mockValidateJWTWithRemoteKey.mockResolvedValue({
       key: new Uint8Array(),
-      // oxlint-disable-next-line no-undefined
       payload: undefined,
       protectedHeader: { alg: "RS256" },
     } as unknown as VerifyResult);

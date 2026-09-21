@@ -1,4 +1,3 @@
-// oxlint-disable no-magic-numbers
 import type { Context } from "aws-lambda";
 
 export const mockLambdaContext: Context = {

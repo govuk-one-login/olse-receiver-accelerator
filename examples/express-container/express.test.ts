@@ -1,4 +1,3 @@
-// oxlint-disable no-magic-numbers typescript/no-dynamic-delete
 import * as jose from "jose";
 import * as signalRouting from "../../common/signalRouting/signalRouter";
 import { ConfigurationKeys } from "../../common/config/configurationKeys";
@@ -45,7 +44,6 @@ const sampleVerificationEvent = {
 
 let publicKeyString = "";
 let publicKeyJson = {};
-// oxlint-disable-next-line init-declarations
 let key: webcrypto.CryptoKey | Uint8Array;
 
 describe("express server /v1 endpoint", () => {

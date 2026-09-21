@@ -1,4 +1,3 @@
-// oxlint-disable no-magic-numbers
 import { constructVerificationFullSecurityEvent } from "./constructVerificationSecurityEvent";
 
 describe("constructVerificationFullSecurityEvent", () => {

@@ -1,4 +1,3 @@
-// oxlint-disable sort-keys
 import { defineConfig, mergeConfig } from "vitest/config";
 import viteConfig from "../../../vitest.config";
 

@@ -1,4 +1,3 @@
-// oxlint-disable no-magic-numbers no-console
 import "dotenv/config";
 import type { SET } from "../../../../../examples/aws-lambda/src/mock-transmitter/mockApiTxInterfaces";
 import { getTokenFromCognito } from "../../../../../common/cognito/getTokenFromCognito";

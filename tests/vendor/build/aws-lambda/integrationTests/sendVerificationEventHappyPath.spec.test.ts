@@ -1,4 +1,3 @@
-// oxlint-disable no-magic-numbers no-console
 import "dotenv/config";
 import { getTokenFromCognito } from "../../../../../common/cognito/getTokenFromCognito";
 

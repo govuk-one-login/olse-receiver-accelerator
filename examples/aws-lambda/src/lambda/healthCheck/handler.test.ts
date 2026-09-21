@@ -1,4 +1,3 @@
-// oxlint-disable no-magic-numbers
 import type { Mock } from "vitest";
 import { createDefaultApiRequest } from "../../../../awsPayloads/defaultApiRequest";
 import { getEnv } from "../../mock-transmitter/utils";
@@ -18,7 +17,6 @@ const mockGetTokenFromCognito = vi.mocked(getTokenFromCognito);
 
 process.env["AWS_REGION"] = "eu-west-2";
 
-// oxlint-disable-next-line vitest/prefer-spy-on
 globalThis.fetch = vi.fn();
 const mockFetch = globalThis.fetch as Mock;
 

@@ -13,6 +13,5 @@ export class EnvironmentVariableConfigurationProvider extends AbstractConfigurat
     throw new Error(`Missing required environment variable: ${key}`);
   }
 
-  // oxlint-disable-next-line no-empty-function
   public override async initialise(): Promise<void> {}
 }

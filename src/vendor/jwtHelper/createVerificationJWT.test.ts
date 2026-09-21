@@ -1,4 +1,3 @@
-// oxlint-disable no-magic-numbers vitest/max-expects
 import { baseLogger } from "../../../common/logging/logger";
 import { createVerificationJwt } from "./createVerificationJWT";
 import { generateJWT } from "../../../src/vendor/auth/jwt";
@@ -9,7 +8,6 @@ vi.mock(import("../../../src/vendor/auth/jwt"), () => ({
   generateJWT: vi.fn(),
 }));
 
-// oxlint-disable-next-line vitest/prefer-import-in-mock
 vi.mock("../../../common/config/config", () => ({
   config: {
     get: vi.fn().mockReturnValue("https://signal-exchange.account.gov.uk"),

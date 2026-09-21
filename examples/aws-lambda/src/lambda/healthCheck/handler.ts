@@ -1,4 +1,3 @@
-// oxlint-disable no-magic-numbers
 import type { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from "aws-lambda";
 import { ConfigurationKeys } from "../../../../../common/config/configurationKeys";
 import { getEnv } from "../../mock-transmitter/utils";

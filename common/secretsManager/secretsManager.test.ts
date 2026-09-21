@@ -3,7 +3,6 @@ import { getSecret } from "./secretsManager";
 
 const mockSend = vi.fn();
 
-// oxlint-disable-next-line vitest/prefer-import-in-mock
 vi.mock("@aws-sdk/client-secrets-manager", () => ({
   GetSecretValueCommand: vi.fn(),
   SecretsManagerClient: vi.fn().mockImplementation(function mockedFunc(this: SecretsManagerClient) {

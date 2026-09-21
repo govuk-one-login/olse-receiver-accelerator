@@ -47,7 +47,6 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     });
     logger.info("Receiver response status:", { status: response.status });
 
-    // oxlint-disable-next-line no-magic-numbers
     if (response.status === 202) {
       logger.info("Verification SET delivered successfully", {
         receiverEndpoint,

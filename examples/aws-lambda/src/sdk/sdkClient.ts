@@ -1,4 +1,3 @@
-// oxlint-disable init-declarations
 import { KMSClient } from "@aws-sdk/client-kms";
 import { SSMClient } from "@aws-sdk/client-ssm";
 import { SecretsManagerClient } from "@aws-sdk/client-secrets-manager";

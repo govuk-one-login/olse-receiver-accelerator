@@ -1,5 +1,4 @@
 import * as fs from "node:fs";
-// oxlint-disable-next-line import/consistent-type-specifier-style
 import { type CryptoKey, type JWK, SignJWT, importJWK } from "jose";
 import { ConfigurationKeys } from "../../../common/config/configurationKeys";
 import { config } from "../../../common/config/config";

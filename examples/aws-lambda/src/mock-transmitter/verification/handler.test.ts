@@ -1,4 +1,3 @@
-// oxlint-disable no-magic-numbers
 import type { SET, SETVerificationRequest } from "../mockApiTxInterfaces";
 import type { APIGatewayProxyEvent } from "aws-lambda";
 import { ConfigurationKeys } from "../../../../../common/config/configurationKeys";
@@ -57,7 +56,6 @@ describe("transmitter handler", () => {
 
   it("sends a verification event successfully", async () => {
     const request: SETVerificationRequest = {
-      // oxlint-disable-next-line no-undefined
       state: undefined,
       stream_id: "user-123",
     };

@@ -3,7 +3,6 @@ import { config } from "../../../common/config/config";
 import { baseLogger as logger } from "../../../common/logging/logger";
 import { sendVerificationSignal } from "../../../src/vendor/jwtHelper/sendVerification";
 
-// oxlint-disable-next-line init-declarations
 let verificationTimer: NodeJS.Timeout | undefined;
 
 function startHealthCheck(): boolean {

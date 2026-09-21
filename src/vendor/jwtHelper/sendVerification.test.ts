@@ -1,4 +1,3 @@
-// oxlint-disable vitest/prefer-spy-on
 import { createVerificationJwt } from "./createVerificationJWT";
 import { sendVerificationSignal } from "./sendVerification";
 

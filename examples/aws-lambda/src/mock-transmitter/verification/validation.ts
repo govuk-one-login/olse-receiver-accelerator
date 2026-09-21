@@ -1,4 +1,3 @@
-// oxlint-disable no-magic-numbers
 import type { RequestBody } from "../mockApiTxInterfaces";
 
 function isValidStreamId(streamId: string): boolean {
@@ -24,7 +23,6 @@ function validateBody(body: string | null): RequestBody {
     throw new Error("MISSING_BODY");
   }
 
-  // oxlint-disable-next-line init-declarations
   let requestBody: RequestBody;
 
   try {

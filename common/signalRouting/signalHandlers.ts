@@ -24,7 +24,6 @@ export const handleVerificationSignal = async (
     return { valid: true };
   }
 
-  // oxlint-disable-next-line no-magic-numbers
   if (typeof state === "string" && state.split(".").length === 3) {
     logger.info("Verification signal with state recieved", {
       stateFormat: "JWT",

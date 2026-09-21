@@ -1,5 +1,3 @@
-// oxlint-disable unicorn/no-process-exit no-console no-magic-numbers func-style
-// oxlint-disable-next-line capitalized-comments
 // esbuild.config.js
 import { build, context } from "esbuild";
 import { cpSync, existsSync, mkdirSync, readFileSync } from "node:fs";

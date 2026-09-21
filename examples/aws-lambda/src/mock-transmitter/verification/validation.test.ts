@@ -1,4 +1,3 @@
-// oxlint-disable unicorn/no-null
 import { isValidationError, validateBody } from "./validation";
 
 describe("isValidationError", () => {

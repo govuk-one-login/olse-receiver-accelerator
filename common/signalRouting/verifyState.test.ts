@@ -1,4 +1,3 @@
-// oxlint-disable no-magic-numbers
 import type { CryptoKey, JWTVerifyResult } from "jose";
 import { ConfigurationKeys } from "../../common/config/configurationKeys";
 import { config } from "../config/config";

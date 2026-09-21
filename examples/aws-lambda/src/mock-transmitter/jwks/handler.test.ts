@@ -1,4 +1,3 @@
-// oxlint-disable no-magic-numbers id-length
 import { handler, jwkArray } from "./handler";
 import { getEnv } from "../utils";
 import { getKmsPublicKey } from "../kmsService";

@@ -1,4 +1,3 @@
-// oxlint-disable import/prefer-default-export
 import { ConfigurationKeys } from "../../../common/config/configurationKeys";
 import type { Request } from "express";
 import { generateJWT } from "./jwt";

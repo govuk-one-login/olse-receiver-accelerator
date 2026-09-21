@@ -1,4 +1,3 @@
-// oxlint-disable no-magic-numbers
 import type { SET, SETVerificationRequest } from "../mockApiTxInterfaces";
 
 function addStateToVerificationEvent(set: SET, state: string): void {

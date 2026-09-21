@@ -30,7 +30,6 @@ export const getTokenFromCognito = async (secretArn: string): Promise<string> =>
     const accessToken: string = accessTokenJsonResponse.access_token;
     return accessToken;
   } catch (error) {
-    // oxlint-disable-next-line no-console
     console.error("Error fetching access token:", error);
     throw error;
   }

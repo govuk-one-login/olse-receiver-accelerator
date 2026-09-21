@@ -1,4 +1,3 @@
-// oxlint-disable no-magic-numbers no-console
 import "dotenv/config";
 import { getTokenFromCognito } from "../../../../../common/cognito/getTokenFromCognito";
 
@@ -183,7 +182,6 @@ describe("sET Verification Event Unhappy Path Integration Tests", () => {
     const token = await getTokenFromCognito(process.env["MOCK_TX_SECRET_ARN"] ?? "");
     console.log(`Bearer ${token}`);
 
-    // oxlint-disable-next-line unicorn/no-null
     const verificationPayload = null;
 
     const response = await fetch(`${apiUrl}/verify`, {

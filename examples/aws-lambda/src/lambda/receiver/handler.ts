@@ -45,7 +45,6 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     const publicKey = getPublicKeyFromRemote(jwksUrl);
     logger.debug("Fetched public key from JWKS URL");
 
-    // oxlint-disable-next-line init-declarations
     let verifiedJwtBody;
     try {
       logger.debug("Validating JWT with remote key");

@@ -1,4 +1,3 @@
-// oxlint-disable no-magic-numbers
 import type { APIGatewayProxyResult } from "aws-lambda";
 import type { JsonWebKey } from "node:crypto";
 import { createJwkFromRawPublicKey } from "./createJwksFromRawPublicKey";

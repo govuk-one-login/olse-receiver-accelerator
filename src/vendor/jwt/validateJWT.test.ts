@@ -1,4 +1,3 @@
-// oxlint-disable id-length
 import * as jose from "jose";
 import { validateJWT } from "./validateJWT";
 

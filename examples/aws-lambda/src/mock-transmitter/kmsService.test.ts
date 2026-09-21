@@ -1,4 +1,3 @@
-// oxlint-disable no-magic-numbers unicorn/no-null
 import { getKmsPublicKey, signedJWTWithKMS } from "./kmsService";
 import type { KMSClient } from "@aws-sdk/client-kms";
 import type { SET } from "./mockApiTxInterfaces";

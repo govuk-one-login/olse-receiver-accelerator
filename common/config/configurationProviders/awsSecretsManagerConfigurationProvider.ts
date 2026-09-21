@@ -31,7 +31,6 @@ export class AWSSecretsManagerConfigurationProvider extends AbstractConfiguratio
         unknown
       >;
 
-      // oxlint-disable-next-line guard-for-in
       for (const key in secretData) {
         const value = secretData[key];
         configMap.set(key, value as string);
