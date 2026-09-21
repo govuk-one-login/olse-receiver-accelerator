@@ -24,6 +24,8 @@
     "container:build": "CONTAINER=true node esbuild.config.mjs",
     "container:dev": "nodemon --exec tsx examples/express-container/server.ts",
     "lambda:build": "AWS_LAMBDA_REFERENCE=true node esbuild.config.mjs",
+    "secret_scan": "betterleaks dir -v --baseline-path .betterleaks-dir-baseline.json .",
+    "secret_scan:git": "betterleaks git -v --baseline-path .betterleaks-git-baseline.json .",
     "test:vendor": "vitest run --project vendor/unit --config tests/vendor/unit/vitest.config.ts",
     "test:vendor:build": "vitest run --project vendor/build",
     "test:vendor:staging": "vitest run --project vendor/staging",

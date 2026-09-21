@@ -43,6 +43,7 @@ Integration tests are located in `tests/vendor/build/aws-lambda/integrationTests
 
 ## Prerequisites
 
+- Run `brew install betterleaks`
 - Run `npm install` to install dependencies
 - Set required environment variables (see below)
 - **You must export and set AWS credentials so the tests can access and hit your AWS stack.**
