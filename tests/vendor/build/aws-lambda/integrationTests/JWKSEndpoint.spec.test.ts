@@ -1,6 +1,6 @@
 import "dotenv/config";
 
-describe("JWKS Endpoint Integration Tests", () => {
+describe("jWKS Endpoint Integration Tests", () => {
   const jwksUrl = process.env["JWKS_ENDPOINT"] ?? "";
 
   beforeAll(() => {

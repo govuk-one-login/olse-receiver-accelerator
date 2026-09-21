@@ -1,10 +1,10 @@
+import { baseLogger } from "../../../common/logging/logger";
 import { createVerificationJwt } from "./createVerificationJWT";
 import { generateJWT } from "../../../src/vendor/auth/jwt";
-import { baseLogger } from "../../../common/logging/logger";
 
 const loggerErrorSpy = vi.spyOn(baseLogger, "error");
 
-vi.mock("../../../src/vendor/auth/jwt", () => ({
+vi.mock(import("../../../src/vendor/auth/jwt"), () => ({
   generateJWT: vi.fn(),
 }));
 
@@ -41,7 +41,7 @@ describe("createVerificationJwt", () => {
     expect(args.issuer).toBe("https://signal-exchange.account.gov.uk");
     expect(args.jti).toMatch(/^verification-\d+$/);
     expect(args.audience).toBe(relyingPartyUrl);
-    expect(args.payload).toEqual({ streamId: streamId });
+    expect(args.payload).toStrictEqual({ streamId });
     expect(args.useExpClaim).toBe(true);
     expect(result).toBe("mock.jwt.token");
   });
@@ -65,7 +65,7 @@ describe("createVerificationJwt", () => {
     expect(args.issuer).toBe("https://signal-exchange.account.gov.uk");
     expect(args.jti).toMatch(/^verification-\d+$/);
     expect(args.audience).toBe(relyingPartyUrl);
-    expect(args.payload).toEqual({ streamId: streamId });
+    expect(args.payload).toStrictEqual({ streamId });
     expect(args.useExpClaim).toBe(true);
     expect(result).toBe("mock.jwt.token");
   });

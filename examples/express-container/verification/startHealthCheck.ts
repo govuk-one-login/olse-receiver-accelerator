@@ -5,7 +5,7 @@ import { sendVerificationSignal } from "../../../src/vendor/jwtHelper/sendVerifi
 
 let verificationTimer: NodeJS.Timeout | undefined;
 
-export function startHealthCheck(): boolean {
+function startHealthCheck(): boolean {
   if (verificationTimer) {
     return true;
   }
@@ -27,8 +27,10 @@ export function startHealthCheck(): boolean {
   }
 }
 
-export function stopVerificationSignals(): void {
+function stopVerificationSignals(): void {
   if (verificationTimer) {
     clearInterval(verificationTimer);
   }
 }
+
+export { startHealthCheck, stopVerificationSignals };

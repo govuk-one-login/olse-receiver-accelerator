@@ -1,30 +1,30 @@
-import { type KMSClient } from "@aws-sdk/client-kms";
-import { signedJWTWithKMS, getKmsPublicKey } from "./kmsService";
+import { getKmsPublicKey, signedJWTWithKMS } from "./kmsService";
+import type { KMSClient } from "@aws-sdk/client-kms";
 import type { SET } from "./mockApiTxInterfaces";
 import { getKMSClient } from "../sdk/sdkClient";
 
-vi.mock("@aws-sdk/client-kms");
-vi.mock("../sdk/sdkClient");
+vi.mock(import("@aws-sdk/client-kms"));
+vi.mock(import("../sdk/sdkClient"));
 
 const mockSend = vi.fn();
 vi.mocked(getKMSClient).mockReturnValue({
   send: mockSend,
 } as unknown as KMSClient);
 
-beforeEach(() => {
-  vi.clearAllMocks();
-  process.env["AWS_REGION"] = "eu-west-2";
-  process.env["KMS_KEY_ID"] = "test-key-001";
-});
-
 describe("signedJwtWithKms", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    process.env["AWS_REGION"] = "eu-west-2";
+    process.env["KMS_KEY_ID"] = "test-key-001";
+  });
+
   it("creates valid jwt", async () => {
     const mockSignature = new Uint8Array([1, 2, 3]);
     mockSend.mockResolvedValue({
       Signature: mockSignature,
     });
 
-    const payload = { sub: "user001", exp: 123 };
+    const payload = { exp: 123, sub: "user001" };
     const result = await signedJWTWithKMS(payload as unknown as SET);
 
     expect(result.split(".")).toHaveLength(3);
@@ -45,26 +45,33 @@ describe("signedJwtWithKms", () => {
 });
 
 describe("getKmsPublicKey", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    process.env["AWS_REGION"] = "eu-west-2";
+    process.env["KMS_KEY_ID"] = "test-key-001";
+  });
+
   it("gets public key successfully", async () => {
     const mockPublicKey = new Uint8Array([1, 2, 3]);
     const mockKeyId = "test-key-id-001";
 
     mockSend.mockResolvedValue({
-      PublicKey: mockPublicKey,
       KeyId: mockKeyId,
+      PublicKey: mockPublicKey,
     });
 
     const result = await getKmsPublicKey("key-arn");
 
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       keyId: mockKeyId,
       publicKey: mockPublicKey,
     });
   });
+
   it("throws error when get public key fails", async () => {
     mockSend.mockResolvedValue({
-      PublicKey: null,
       KeyId: null,
+      PublicKey: null,
     });
 
     await expect(getKmsPublicKey("key-arn")).rejects.toThrow(

@@ -1,16 +1,16 @@
 import type { Context } from "aws-lambda";
 
 export const mockLambdaContext: Context = {
-  callbackWaitsForEmptyEventLoop: false,
-  functionName: "someFunction",
-  functionVersion: "someVersion",
-  invokedFunctionArn: "someFunctionArn",
-  memoryLimitInMB: "1",
   awsRequestId: "someRequestId",
-  logGroupName: "someLogGroupName",
-  logStreamName: "someLogStreamName",
-  getRemainingTimeInMillis: () => 1,
+  callbackWaitsForEmptyEventLoop: false,
   done: () => 1,
   fail: () => 1,
+  functionName: "someFunction",
+  functionVersion: "someVersion",
+  getRemainingTimeInMillis: () => 1,
+  invokedFunctionArn: "someFunctionArn",
+  logGroupName: "someLogGroupName",
+  logStreamName: "someLogStreamName",
+  memoryLimitInMB: "1",
   succeed: () => 1,
 };

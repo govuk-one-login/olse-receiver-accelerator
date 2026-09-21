@@ -1,5 +1,5 @@
-import { baseLogger as logger } from "../../../common/logging/logger";
 import { createVerificationJwt } from "./createVerificationJWT";
+import { baseLogger as logger } from "../../../common/logging/logger";
 
 export async function sendVerificationSignal(
   relyingPartyUrl: string,
@@ -9,17 +9,17 @@ export async function sendVerificationSignal(
     const verificationJwt = await createVerificationJwt(relyingPartyUrl, streamId);
 
     const requestBody = {
-      stream_id: streamId,
       state: verificationJwt,
+      stream_id: streamId,
     };
 
     const response = await fetch(relyingPartyUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/secevent+jwt",
-        Accept: "application/json",
-      },
       body: JSON.stringify(requestBody),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/secevent+jwt",
+      },
+      method: "POST",
     });
     if (response.ok) {
       logger.info("Verification signal sent successfully to: ", {

@@ -1,7 +1,7 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from "aws-lambda";
 import { ConfigurationKeys } from "../../../../../common/config/configurationKeys";
-import { getParameter } from "../../../../../common/ssm/ssm";
 import { getEnv } from "../../mock-transmitter/utils";
+import { getParameter } from "../../../../../common/ssm/ssm";
 import { getTokenFromCognito } from "../../../../../common/cognito/getTokenFromCognito";
 import { lambdaLogger as logger } from "../../../../../common/logging/logger";
 
@@ -22,55 +22,55 @@ export const handler = async (
     const access_token = await getTokenFromCognito(mockTxSecretArn);
 
     const verificationRequest = {
-      stream_id: "health-check-stream",
       state: "health-check-state",
+      stream_id: "health-check-stream",
     };
 
     logger.debug("Sending verification signal");
     const response = await fetch(verificationEndpointUrl, {
-      method: "POST",
+      body: JSON.stringify(verificationRequest),
       headers: {
-        "Content-Type": "application/json",
         Accept: "application/json",
         Authorization: `Bearer ${access_token}`,
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(verificationRequest),
+      method: "POST",
     });
     logger.info("Verification signal sent", {
-      status: response.status,
       ok: response.ok,
+      status: response.status,
     });
 
     if (response.status !== 204) {
       return {
-        statusCode: 500,
         body: JSON.stringify({
-          success: false,
-          status: response.status,
           message: "Health check failed",
+          status: response.status,
+          success: false,
         }),
+        statusCode: 500,
       };
     }
 
     return {
-      statusCode: 200,
       body: JSON.stringify({
-        success: true,
-        status: response.status,
         message: "Health check passed",
+        status: response.status,
+        success: true,
       }),
+      statusCode: 200,
     };
   } catch (error) {
     logger.error("Error processing request:", {
       error: error instanceof Error ? error.message : String(error),
     });
     return {
-      statusCode: 500,
       body: JSON.stringify({
-        success: false,
-        status: 500,
         message: "Health check failed",
+        status: 500,
+        success: false,
       }),
+      statusCode: 500,
     };
   }
 };

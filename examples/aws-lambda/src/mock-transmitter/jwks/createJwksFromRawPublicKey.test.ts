@@ -1,7 +1,8 @@
-import { createPublicKey, KeyObject } from "crypto";
 import { createJwkFromRawPublicKey, uint8ArrayToBase64 } from "./createJwksFromRawPublicKey";
+import type { KeyObject } from "node:crypto";
+import { createPublicKey } from "node:crypto";
 
-vi.mock("crypto");
+vi.mock(import("node:crypto"));
 
 const mockCreatePublicKey = vi.mocked(createPublicKey);
 

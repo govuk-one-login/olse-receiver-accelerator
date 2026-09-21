@@ -18,9 +18,9 @@ export default mergeConfig(
           `**/vendor/**/*.test.ts`,
           // Exclude tests directory from coverage
           `tests/**/*`,
-          // exclude jest config files
+          // Exclude jest config files
           "**/*/jest.config.{ts,mts,mjs}",
-          // exclude server.ts
+          // Exclude server.ts
           `examples/express-container/server.ts`,
           `examples/aws-lambda/**/handler.ts`,
         ],

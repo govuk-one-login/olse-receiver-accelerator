@@ -1,14 +1,13 @@
-import { it, vi, afterEach, expect, describe, beforeEach } from "vitest";
-import type { APIGatewayProxyEvent } from "aws-lambda";
 import * as jose from "jose";
+import type { APIGatewayProxyEvent } from "aws-lambda";
+import type { Mock } from "vitest";
+import { getParameter } from "../../../../../common/ssm/ssm";
 import { getPublicKeyFromRemote } from "../../../../../src/vendor/publicKey/getPublicKey";
-import { validateJWTWithRemoteKey } from "../../../../../src/vendor/jwt/validateJWT";
-import { validateSignalAgainstSchemas } from "../../../../../src/vendor/validateSchema/validateSchema";
 import { handleSignalRouting } from "../../../../../common/signalRouting/signalRouter";
 import { handler } from "./handler";
-import { getParameter } from "../../../../../common/ssm/ssm";
 import { lambdaLogger } from "../../../../../common/logging/logger";
-import type { Mock } from "vitest";
+import { validateJWTWithRemoteKey } from "../../../../../src/vendor/jwt/validateJWT";
+import { validateSignalAgainstSchemas } from "../../../../../src/vendor/validateSchema/validateSchema";
 
 vi.mock(import("../../../../../src/vendor/publicKey/getPublicKey"));
 vi.mock(import("../../../../../src/vendor/jwt/validateJWT"));
@@ -26,13 +25,14 @@ vi.mock("../../../../../common/logging/logger", () => ({
 
 type VerifyResult = Awaited<ReturnType<typeof validateJWTWithRemoteKey>>;
 
-const mockGetPublicKeyFromRemote = vi.mocked(getPublicKeyFromRemote),
-  mockValidateJWTWithRemoteKey = vi.mocked(validateJWTWithRemoteKey),
-  mockValidateSignalAgainstSchemas = vi.mocked(validateSignalAgainstSchemas),
-  mockHandleSignalRouting = vi.mocked(handleSignalRouting),
-  mockGetParameter = vi.mocked(getParameter),
-  fetchMock: Mock<typeof fetch> = vi.fn();
-global.fetch = fetchMock;
+const mockGetPublicKeyFromRemote = vi.mocked(getPublicKeyFromRemote);
+const mockValidateJWTWithRemoteKey = vi.mocked(validateJWTWithRemoteKey);
+const mockValidateSignalAgainstSchemas = vi.mocked(validateSignalAgainstSchemas);
+const mockHandleSignalRouting = vi.mocked(handleSignalRouting);
+const mockGetParameter = vi.mocked(getParameter);
+
+const fetchMock: Mock<typeof fetch> = vi.fn();
+globalThis.fetch = fetchMock;
 
 const mockJwtPayload = {
     events: {
@@ -49,7 +49,8 @@ const mockJwtPayload = {
     } as APIGatewayProxyEvent["requestContext"],
   };
 
-let warnSpy: Mock, errorSpy: Mock;
+let warnSpy: Mock = vi.spyOn(lambdaLogger, "warn");
+let errorSpy: Mock = vi.spyOn(lambdaLogger, "error");
 
 describe("receiver handler", () => {
   beforeEach(() => {
@@ -62,7 +63,7 @@ describe("receiver handler", () => {
     process.env["AWS_STACK_NAME"] = "test-stack";
 
     mockGetParameter.mockResolvedValue("https://example.com/jwks");
-    fetchMock.mockResolvedValue(new Response(JSON.stringify({ keys: [] }), { status: 200 }));
+    fetchMock.mockResolvedValue(Response.json({ keys: [] }, { status: 200 }));
 
     const realRemoteJwks = jose.createRemoteJWKSet(new URL("https://example.com/jwks"));
     mockGetPublicKeyFromRemote.mockReturnValue(realRemoteJwks);
@@ -74,8 +75,8 @@ describe("receiver handler", () => {
   });
 
   it("returns 400 when request body is missing", async () => {
-    const event = { ...baseEvent, body: null },
-      result = await handler(event as APIGatewayProxyEvent);
+    const event = { ...baseEvent, body: null };
+    const result = await handler(event as APIGatewayProxyEvent);
     expect(result.statusCode).toBe(400);
     expect(warnSpy).toHaveBeenCalledWith("Request missing body");
   });
@@ -95,9 +96,9 @@ describe("receiver handler", () => {
     const result = await handler(baseEvent as APIGatewayProxyEvent);
     expect(result).toStrictEqual({
       body: JSON.stringify({
-        err: "invalid_request",
         description:
           "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition.",
+        err: "invalid_request",
       }),
       headers: { "Content-Type": "application/json" },
       statusCode: 400,
@@ -118,9 +119,9 @@ describe("receiver handler", () => {
     const result = await handler(baseEvent as APIGatewayProxyEvent);
     expect(result).toStrictEqual({
       body: JSON.stringify({
-        err: "invalid_request",
         description:
           "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition.",
+        err: "invalid_request",
       }),
       headers: { "Content-Type": "application/json" },
       statusCode: 400,
@@ -142,9 +143,9 @@ describe("receiver handler", () => {
     const result = await handler(baseEvent as APIGatewayProxyEvent);
     expect(result).toStrictEqual({
       body: JSON.stringify({
-        err: "invalid_request",
         description:
           "The request body cannot be parsed as a SET, or the Event Payload within the SET does not conform to the event's definition.",
+        err: "invalid_request",
       }),
       headers: { "Content-Type": "application/json" },
       statusCode: 400,
@@ -182,8 +183,8 @@ describe("receiver handler", () => {
     const result = await handler(baseEvent as APIGatewayProxyEvent);
     expect(result).toStrictEqual({
       body: JSON.stringify({
-        err: "internal_error",
         description: "An internal error occurred",
+        err: "internal_error",
       }),
       headers: { "Content-Type": "application/json" },
       statusCode: 500,

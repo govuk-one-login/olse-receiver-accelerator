@@ -1,9 +1,9 @@
-import { sendVerificationSignal } from "./sendVerification";
 import { createVerificationJwt } from "./createVerificationJWT";
+import { sendVerificationSignal } from "./sendVerification";
 
-vi.mock("./createVerificationJWT");
-vi.mock("jose");
-vi.mock("crypto");
+vi.mock(import("./createVerificationJWT"));
+vi.mock(import("jose"));
+vi.mock(import("node:crypto"));
 
 const mockedCreateVerificationJwt = vi.mocked(createVerificationJwt);
 describe("sendVerificationSignal", () => {
@@ -17,23 +17,23 @@ describe("sendVerificationSignal", () => {
   });
 
   it("returns true when response.ok is true", async () => {
-    global.fetch = vi.fn().mockResolvedValue({ ok: true } as Response);
+    globalThis.fetch = vi.fn().mockResolvedValue({ ok: true } as Response);
 
     const result = await sendVerificationSignal(mockRelyingPartyUrl, mockStreamId);
 
     expect(result).toBe(true);
-    expect(global.fetch).toHaveBeenCalledWith(mockRelyingPartyUrl, {
-      method: "POST",
+    expect(globalThis.fetch).toHaveBeenCalledWith(mockRelyingPartyUrl, {
+      body: JSON.stringify({ state: "state-jwt", stream_id: mockStreamId }),
       headers: {
-        "Content-Type": "application/secevent+jwt",
         Accept: "application/json",
+        "Content-Type": "application/secevent+jwt",
       },
-      body: JSON.stringify({ stream_id: mockStreamId, state: "state-jwt" }),
+      method: "POST",
     });
   });
 
   it("returns false when response.ok is false", async () => {
-    global.fetch = vi.fn().mockResolvedValue({
+    globalThis.fetch = vi.fn().mockResolvedValue({
       ok: false,
       status: 400,
       statusText: "Bad Request",
@@ -43,7 +43,7 @@ describe("sendVerificationSignal", () => {
   });
 
   it("returns false when an error is thrown", async () => {
-    global.fetch = vi.fn().mockRejectedValue(new Error("some error"));
+    globalThis.fetch = vi.fn().mockRejectedValue(new Error("some error"));
 
     await expect(sendVerificationSignal(mockRelyingPartyUrl, mockStreamId)).resolves.toBe(false);
   });

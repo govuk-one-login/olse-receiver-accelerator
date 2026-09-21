@@ -6,22 +6,22 @@ interface CognitoTokenResponse {
   token_type: string;
 }
 
-export const getTokenFromCognito = async (secretArn: string) => {
+export const getTokenFromCognito = async (secretArn: string): Promise<string> => {
   const secrets = await getSecrets(secretArn);
   const { userPoolClientId, userPoolClientSecret, domain } = secrets;
   try {
     const accessTokenResponse = await fetch(
       `https://${domain}.auth.eu-west-2.amazoncognito.com/token`,
       {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
         body: new URLSearchParams({
           client_id: userPoolClientId,
           client_secret: userPoolClientSecret,
           grant_type: "client_credentials",
         }),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        method: "POST",
       },
     );
 

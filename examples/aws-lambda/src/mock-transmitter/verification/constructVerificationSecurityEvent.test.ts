@@ -1,7 +1,6 @@
-import { describe, expect, it } from "vitest";
 import { constructVerificationFullSecurityEvent } from "./constructVerificationSecurityEvent";
 
-describe(constructVerificationFullSecurityEvent, () => {
+describe("constructVerificationFullSecurityEvent", () => {
   it("creates SET", () => {
     const timeStamp = 10_001;
     const result = constructVerificationFullSecurityEvent("test-request-id-001", timeStamp, {
