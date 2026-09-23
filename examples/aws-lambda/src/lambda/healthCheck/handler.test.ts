@@ -1,7 +1,6 @@
 import { getParameter } from "../../../../../common/ssm/ssm";
 import { getTokenFromCognito } from "../../../../../common/cognito/getTokenFromCognito";
 import { createDefaultApiRequest } from "../../../../awsPayloads/defaultApiRequest";
-import { mockLambdaContext } from "../../../../awsPayloads/mockLambdaContext";
 import { getEnv } from "../../mock-transmitter/utils";
 import { handler } from "./handler";
 import { type Mock } from "vitest";
@@ -41,7 +40,7 @@ describe("handler", () => {
       status: 204,
     } as unknown as Response);
 
-    const result = await handler(createDefaultApiRequest(), mockLambdaContext);
+    const result = await handler(createDefaultApiRequest());
 
     expect(result.statusCode).toBe(200);
     expect(JSON.parse(result.body)).toEqual({
@@ -57,7 +56,7 @@ describe("handler", () => {
       status: 400,
     } as unknown as Response);
 
-    const result = await handler(createDefaultApiRequest(), mockLambdaContext);
+    const result = await handler(createDefaultApiRequest());
 
     expect(result.statusCode).toBe(500);
   });
