@@ -89,7 +89,6 @@ npm run test:vendor:build
 
 This project makes use of the following tools (and assumes that you have them installed and available in $PATH)
 
-- betterleaks (https://github.com/betterleaks/betterleaks)
 - checkov (https://www.checkov.io/)
 - sam (https://github.com/aws/aws-sam-cli)
 - cfn-lint (https://github.com/aws-cloudformation/cfn-lint)
