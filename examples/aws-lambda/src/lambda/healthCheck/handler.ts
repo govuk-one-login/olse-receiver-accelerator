@@ -1,14 +1,11 @@
-import type { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from "aws-lambda";
+import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { ConfigurationKeys } from "../../../../../common/config/configurationKeys";
 import { getParameter } from "../../../../../common/ssm/ssm";
 import { getEnv } from "../../mock-transmitter/utils";
 import { getTokenFromCognito } from "../../../../../common/cognito/getTokenFromCognito";
 import { lambdaLogger as logger } from "../../../../../common/logging/logger";
 
-export const handler = async (
-  event: APIGatewayProxyEvent,
-  _context: Context,
-): Promise<APIGatewayProxyResult> => {
+export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
     logger.info("Processing verification request", { event: event });
 
