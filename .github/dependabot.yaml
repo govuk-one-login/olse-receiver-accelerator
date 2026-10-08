@@ -16,6 +16,8 @@ updates:
     ignore:
       - dependency-name: "node"
         versions: ["21.x"]
+      - dependency-name: "typescript"
+        versions: [">= 7"]
     commit-message:
       prefix: BAU
 
