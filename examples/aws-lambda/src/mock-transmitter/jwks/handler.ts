@@ -2,10 +2,9 @@ import { lambdaLogger as logger } from "../../../../../common/logging/logger";
 import type { APIGatewayProxyResult } from "aws-lambda";
 import { getEnv } from "../utils";
 import { getKmsPublicKey } from "../kmsService";
-import type { JsonWebKey } from "crypto";
 import { createJwkFromRawPublicKey } from "./createJwksFromRawPublicKey";
 
-export const jwkArray: JsonWebKey[] = [];
+export const jwkArray: Record<string, unknown>[] = [];
 
 const SIGNING_KEY_ENV_VAR_NAMES = ["KMS_KEY_ID"];
 export const handler = async (): Promise<APIGatewayProxyResult> => {
