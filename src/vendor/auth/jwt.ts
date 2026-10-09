@@ -12,7 +12,7 @@ export const getPrivateKey = async (): Promise<CryptoKey | Uint8Array> => {
     return await importJWK(privateKeyJwk, "RS256");
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    throw new Error(`Failed to load private key: ${message}`);
+    throw new Error(`Failed to load private key: ${message}`, { cause: error });
   }
 };
 

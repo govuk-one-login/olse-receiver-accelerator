@@ -27,6 +27,6 @@ export async function createVerificationJwt(
     logger.error("Error creating verification JWT:", {
       error: error instanceof Error ? error.message : String(error),
     });
-    throw new Error("Failed to create verification JWT");
+    throw new Error("Failed to create verification JWT", { cause: error });
   }
 }
