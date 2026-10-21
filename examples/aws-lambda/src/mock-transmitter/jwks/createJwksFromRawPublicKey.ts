@@ -1,6 +1,9 @@
 import { createPublicKey } from "crypto";
 
-export function createJwkFromRawPublicKey(publicKeyData: Uint8Array, keyId: string): Record<string, unknown> {
+export function createJwkFromRawPublicKey(
+  publicKeyData: Uint8Array,
+  keyId: string,
+): Record<string, unknown> {
   const stringPublicKey = uint8ArrayToBase64(publicKeyData);
 
   const formattedPublicKey =
