@@ -1,9 +1,26 @@
 version: 2
+
+# Cooldown: delays version update PRs until a new release has been published
+# for a minimum number of days. This mitigates supply chain attacks by giving
+# the community and security vendors time to flag compromised packages.
+# Security updates (GitHub Advisory) bypass cooldown and are always immediate.
+#
+# Day values:
+#   patch (1 day)  - low risk; 1 day catches yanked/compromised releases
+#   minor (3 days) - gives the community time to surface regressions
+#   major (7 days) - breaking changes need more scrutiny; a week lets early
+#                    adopters shake out issues before we upgrade
+
 updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 3
+      semver-major-days: 7
+      semver-minor-days: 3
+      semver-patch-days: 1
     groups:
       dev-deps:
         dependency-type: development
@@ -14,8 +31,6 @@ updates:
       - direct-dependency-update
       - javascript
     ignore:
-      - dependency-name: "node"
-        versions: ["21.x"]
       - dependency-name: "typescript"
         versions: [">= 7"]
     commit-message:
@@ -25,6 +40,8 @@ updates:
     directory: "/tests"
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 3
     groups:
       dev-deps:
         patterns:
@@ -40,6 +57,8 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 3
     groups:
       actions-deps:
         patterns:
