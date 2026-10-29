@@ -60,7 +60,6 @@ Conditions:
 Globals:
   Function:
     #checkov:skip=CKV_AWS_117: VPC config
-    CodeSigningConfigArn: !If [UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue]
     Architectures:
       - arm64
     Runtime: nodejs22.x
@@ -239,6 +238,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: dist/examples/aws-lambda/src
+      CodeSigningConfigArn: !If [UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue]
       Description: Lambda function that processes signal events
       FunctionName: !Sub ${AWS::StackName}-receiver
       Handler: lambda/receiver/handler.handler
@@ -330,6 +330,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: dist/examples/aws-lambda/src/lambda/healthCheck
+      CodeSigningConfigArn: !If [UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue]
       Description: Lambda function that processes period health check
       FunctionName: !Sub ${AWS::StackName}-healthCheck
       Handler: handler.handler
@@ -406,6 +407,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: dist/examples/aws-lambda/src/lambda/receiver
+      CodeSigningConfigArn: !If [UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue]
       Description: Lambda function that exposes public JWKS
       Handler: handler.handler
       FunctionName: !Sub ${AWS::StackName}-get-jwks-function
@@ -547,6 +549,7 @@ Resources:
       Handler: handler.handler
       KmsKeyArn: "{{resolve:ssm:LambdaKmsKeyArn}}"
       CodeUri: dist/examples/aws-lambda/src/mock-transmitter/verification/
+      CodeSigningConfigArn: !If [UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue]
       Role: !GetAtt MockVerfTxLambdaExecutionRole.Arn
       Environment:
         Variables:
@@ -629,6 +632,7 @@ Resources:
       Handler: handler.handler
       KmsKeyArn: "{{resolve:ssm:LambdaKmsKeyArn}}"
       CodeUri: dist/examples/aws-lambda/src/mock-transmitter/jwks/
+      CodeSigningConfigArn: !If [UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue]
       Role: !GetAtt MockVerfTxLambdaExecutionRole.Arn
       Environment:
         Variables:
