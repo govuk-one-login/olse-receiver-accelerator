@@ -44,6 +44,7 @@
     "@aws-sdk/client-cognito-identity-provider": "^3.1156.0",
     "@aws-sdk/client-secrets-manager": "^3.1156.0",
     "@eslint/js": "^10.0.1",
+    "@govuk-one-login/data-npm": "^0.0.23",
     "@tsconfig/node-ts": "^23.6.4",
     "@tsconfig/node24": "^24.0.5",
     "@tsconfig/strictest": "^2.0.8",
