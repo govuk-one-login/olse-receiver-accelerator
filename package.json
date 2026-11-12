@@ -31,18 +31,18 @@
   },
   "dependencies": {
     "@aws-lambda-powertools/logger": "^2.36.0",
-    "@aws-sdk/client-cloudformation": "^3.1161.0",
-    "@aws-sdk/client-cognito-identity-provider": "^3.1161.0",
-    "@aws-sdk/client-kms": "^3.1161.0",
-    "@aws-sdk/client-secrets-manager": "^3.1161.0",
-    "@aws-sdk/client-ssm": "^3.1161.0",
+    "@aws-sdk/client-cloudformation": "^3.1164.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.1164.0",
+    "@aws-sdk/client-kms": "^3.1164.0",
+    "@aws-sdk/client-secrets-manager": "^3.1164.0",
+    "@aws-sdk/client-ssm": "^3.1164.0",
     "aws-jwt-verify": "^5.2.1",
     "express": "^5.3.0",
-    "jose": "^6.2.15"
+    "jose": "^6.2.17"
   },
   "devDependencies": {
-    "@aws-sdk/client-cognito-identity-provider": "^3.1161.0",
-    "@aws-sdk/client-secrets-manager": "^3.1161.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.1164.0",
+    "@aws-sdk/client-secrets-manager": "^3.1164.0",
     "@eslint/js": "^10.0.1",
     "@govuk-one-login/data-npm": "^0.0.23",
     "@tsconfig/node-ts": "^23.6.4",
